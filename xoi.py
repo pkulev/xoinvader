@@ -70,13 +70,13 @@ class App(object):
         #self.screen = curses.initscr()
         curses.initscr()
         self.border = namedtuple("border", ["y", "x"])(24, 80)
-        self.field  = namedtuple("field", ["y". "x"])(self.border.y-1, self.border.x-1)
+        self.field  = namedtuple("field", ["y", "x"])(self.border.y-1, self.border.x)
         self.screen = curses.newwin(self.border.y, self.border.x, 0, 0)
-        self.screen.keypad(True)
-        self.screen.nodelay(True)
+        self.screen.keypad(1)
+        self.screen.nodelay(1)
         curses.noecho()
-        curses.cbreak()
-        curses.curs_set(False)
+        #curses.cbreak()
+        curses.curs_set(0)
         self.spaceship = Spaceship(self.field)
         self._objects = []
         self._objects.append(self.spaceship)
@@ -93,7 +93,7 @@ class App(object):
     def events(self):
         c = self.screen.getch()
         if c == 27: #Escape
-            #self.deinit()
+            self.deinit()
             sys.exit(1)
         else:
             for o in self._objects:
@@ -104,12 +104,14 @@ class App(object):
             o.update()
 
     def render(self):
-     self.screen.clear()
-     self.screen.border(0)
-     for o in self._objects:
-        o.draw(self.screen)
-     self.screen.refresh()
-
+        self.screen.clear()
+        self.screen.border(0)
+        self.screen.addstr(0, 2, "Score: {}".format(0))
+        self.screen.addstr(0, self.border.x // 2 - 4, "XOInvader", curses.A_BOLD)
+        for o in self._objects:
+            o.draw(self.screen)
+        self.screen.refresh()
+        #self.screen.border(0)
 
     def loop(self):
         while True:
