@@ -82,11 +82,11 @@ class App(object):
         self._objects.append(self.spaceship)
 
     def deinit(self):
-        #self.screen.nodelay(False)
-        self.screen.keypad(False)
+        self.screen.nodelay(0)
+        self.screen.keypad(0)
         curses.nocbreak()
         curses.echo()
-        curses.curs_set(True)
+        curses.curs_set(1)
         curses.endwin()
 
 
@@ -111,7 +111,7 @@ class App(object):
         for o in self._objects:
             o.draw(self.screen)
         self.screen.refresh()
-        #self.screen.border(0)
+        time.sleep(0.03)
 
     def loop(self):
         while True:
