@@ -106,7 +106,7 @@ class App(object):
     def render(self):
         self.screen.clear()
         self.screen.border(0)
-        self.screen.addstr(0, 2, "Score: {}".format(0))
+        self.screen.addstr(0, 2, "Score: {} ".format(0))
         self.screen.addstr(0, self.border.x // 2 - 4, "XOInvader", curses.A_BOLD)
         for o in self._objects:
             o.draw(self.screen)
@@ -117,8 +117,11 @@ class App(object):
         while True:
             self.events()
             self.update()
-            self.render()
-
+            try:
+                self.render()
+            except:
+                self.deinit()
+                sys.exit(1)
 def main():
     app = App()
     app.loop()
