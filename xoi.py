@@ -10,6 +10,8 @@ from collections import namedtuple
 KEY = "KEY"
 K_A = ord("a")
 K_D = ord("d")
+K_SPACE = ord(" ")
+K_ESCAPE = 27
 
 class Point:
     def __init__(self, x, y):
@@ -42,6 +44,7 @@ class Spaceship(object):
         self._dx = 1
         self.border = border
         self._pos = Point(self.border.x // 2, self.border.y - 1)
+        self._fire = False
 
 
     def events(self, event):
@@ -50,6 +53,8 @@ class Spaceship(object):
                 self._dx = -1
             if event.val == K_D:
                 self._dx = 1
+            if event.val == K_SPACE:
+                self._fire = True if self._fire else False
 
     def update(self):
         if self._pos.x == self.border.x - len(self._image) - 1 and self._dx > 0:
@@ -59,6 +64,10 @@ class Spaceship(object):
 
         self._pos.x += self._dx
         self._dx = 0
+
+        if self._fire:
+            pass
+
 
     def draw(self, screen):
         screen.addstr(self._pos.y, self._pos.x, self._image, curses.A_BOLD)
@@ -92,7 +101,7 @@ class App(object):
 
     def events(self):
         c = self.screen.getch()
-        if c == 27: #Escape
+        if c == K_ESCAPE:
             self.deinit()
             sys.exit(1)
         else:
