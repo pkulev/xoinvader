@@ -100,19 +100,21 @@ class Spaceship(object):
         self.__image = "<i>"
         self.__dx = 1
         self.__border = border
-        self.__pos = Point(self.__border.x // 2, self.__border.y - 1)
+        self.__pos = Point(self.__border.x // 2 - len(self.__image), self.__border.y - 1)
         self.__fire = False
         #self.__weapon = Weapon(type="Blaster")
 
 
-    def events(self, event):
-        if event.type == KEY:
-            if event.val == K_A:
-                self.__dx = -1
-            if event.val == K_D:
-                self.__dx = 1
-            if event.val == K_SPACE:
-                self.__fire = True if self.__fire else False
+    def move_left(self):
+        self.__dx = -1
+
+
+    def move_right(self):
+        self.__dx = 1
+
+    def toggle_fire(self):
+        self.__fire = not self.__fire
+
 
     def update(self):
         if self.__pos.x == self.__border.x - len(self.__image) - 1 and self.__dx > 0:
@@ -166,13 +168,17 @@ class App(object):
         if c == K_ESCAPE:
             self.deinit()
             sys.exit(1)
-        else:
-            for o in self._objects:
-                o.events(Event(type="KEY", val=c))
+        elif c == K_A:
+            self.spaceship.move_left()
+        elif c == K_D:
+            self.spaceship.move_right()
+        elif c == K_SPACE:
+            self.spaceship.toggle_fire()
+
 
     def update(self):
-        for o in self._objects:
-            o.update()
+        self.spaceship.update()
+
 
     def render(self):
         self.screen.clear()
