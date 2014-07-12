@@ -1,9 +1,9 @@
 #! /usr/bin/env python
 
 import sys
+import time
 import curses
 from curses import KEY_ENTER
-import time
 from collections import namedtuple
 
 
@@ -14,6 +14,7 @@ K_SPACE = ord(" ")
 K_ESCAPE = 27
 #fix freezes [issue#1]
 KEYS = [K_A, K_D, K_SPACE, K_ESCAPE]
+
 
 class Point:
     def __init__(self, x, y):
@@ -39,66 +40,60 @@ class Point:
 
 Event = namedtuple("Event", ["type", "val"])
 
-def Weapon(w_class, w_ammo=-1, w_time=-1):
-    from abc import ABCMeta
-    class AbstractWeapon(object, metaclass=ABCMeta):
-        def __init__(self, image, damage, ammo, delay, radius):
-            self.__type == None
 
-            self.__image = image
-            self.__damage = damage
-            self.__ammo = ammo
-            self.__delay = delay
+class Weapon(object):
+    def __init__(self, image, damage, max_ammo, ammo, delay, radius):
+        self.__type == None
 
-            self.__coords = []
+        self.__image = image
+        self.__damage = damage
+        self.__max_ammo = max_ammo
+        self.__ammo = ammo
+        self.__delay = delay
 
-            #Behaviour
-            self.update = None
-            self.render = None
+        self.__coords = []
 
-
-        @property
-        def image(self):
-            return self.__image
+        #Behaviour
+        self.update = None
+        self.render = None
 
 
-        #TODO:
-        def __iter__(self):
-            return (c for c in self._coords)
+    @property
+    def image(self):
+        return self.__image
 
-        @classmethod
-        def create_weapon(cls, w_type, behaviour=None):
-            weapons = {
-                    "Blaster": cls(image="^", damage=1, ammo=-1, delay= 5, radius=0),
-                    "Laser"  : cls(image="|", damage=2, ammo=10, delay=10, radius=0),
-                    "NCRC"   : cls(image="*", damage=5, ammo= 5, delay=15, radius=2),
-                    }
-            try:
-                weapon = weapons[w_type]
-                weapon.__type = w_type
-                weapon.behaviour = None
 
-            except KeyError as e:
-                print("No such weapon type! Error: {}".format(str(e))); return None
-            except:
-                print("Unhandled exception! Error: {}".format(str(e))); return None
+    #TODO:
+    def __iter__(self):
+        return (c for c in self.__coords)
 
-        def update(self):
+
+    @classmethod
+    def create_weapon(cls, w_type):
+        #temporary stub
+        def default_update():
             pass
 
-        def render(self, screen):
-            pass
+        behaviours = {t: None for t in ["Blaster", "Laser", "NCRC"]}
 
-        create_weapon = lambda w_class, *args, **kwargs: w_class(*args, **kwargs)
+        weapons = {
+                "Blaster": cls(image="^", damage=1, max_ammo=-1, ammo=-1, delay= 5, radius=0),
+                "Laser"  : cls(image="|", damage=2, max_ammo=10, ammo=10, delay=10, radius=0),
+                "NCRC"   : cls(image="*", damage=5, max_ammo= 5, ammo= 5, delay=15, radius=2),
+                }
 
-    weapons = {
-            "Laser" : None,
-            "Blaster" : None,
-            "Rocket" : None,
-            }
-    if not weapons.has_key(w_class):
-        raise KeyError("No such weapon class")
-    return weapons[w_class]
+        try:
+            weapon = weapons[w_type]
+            weapon.__type = w_type
+            weapon.behaviour = behaviours[w_type]
+
+        except KeyError as e:
+            print("No such weapon type! Error: {}".format(str(e))); return None
+        except:
+            print("Unhandled exception! Error: {}".format(str(e))); return None
+
+        return weapon
+
 
 class Spaceship(object):
     def __init__(self, border):
@@ -107,7 +102,8 @@ class Spaceship(object):
         self.__border = border
         self.__pos = Point(self.__border.x // 2, self.__border.y - 1)
         self.__fire = False
-        #self.__weapon = Weapon(type="Laser", ammo=-1)
+        #self.__weapon = Weapon(type="Blaster")
+
 
     def events(self, event):
         if event.type == KEY:
@@ -128,12 +124,16 @@ class Spaceship(object):
         self.__dx = 0
 
         if self.__fire:
+            #self.__weapon.make_shoot()
             pass
 
+    @property
+    def image(self):
+        return self.__image
 
-    def draw(self, screen):
-        screen.addstr(self.__pos.y, self.__pos.x, self.__image, curses.A_BOLD)
-
+    @property
+    def pos(self):
+        return self.__pos
 
 
 class App(object):
@@ -179,8 +179,10 @@ class App(object):
         self.screen.border(0)
         self.screen.addstr(0, 2, "Score: {} ".format(0))
         self.screen.addstr(0, self.border.x // 2 - 4, "XOInvader", curses.A_BOLD)
-        for o in self._objects:
-            o.draw(self.screen)
+
+        self.screen.addstr(self.spaceship.pos.y, self.spaceship.pos.x,
+                           self.spaceship.image, curses.A_BOLD)
+
         self.screen.refresh()
         time.sleep(0.03)
 
