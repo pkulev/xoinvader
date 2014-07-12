@@ -37,6 +37,65 @@ class Point:
 
 Event = namedtuple("Event", ["type", "val"])
 
+def Weapon(w_class, w_ammo=-1, w_time=-1):
+    from abc import ABCMeta
+    class AbstractWeapon(object, metaclass=ABCMeta):
+        def __init__(self, image, damage, ammo, delay, radius):
+            self.__type == None
+
+            self.__image = image
+            self.__damage = damage
+            self.__ammo = ammo
+            self.__delay = delay
+
+            self.__coords = []
+
+            #Behaviour
+            self.update = None
+            self.render = None
+
+
+        @property
+        def image(self):
+            return self.__image
+
+
+        #TODO:
+        def __iter__(self):
+            return (c for c in self._coords)
+
+        @classmethod
+        def create_weapon(cls, w_type, behaviour=None):
+            weapons = {
+                    "Blaster": cls(image="^", damage=1, ammo=-1, delay= 5, radius=0),
+                    "Laser"  : cls(image="|", damage=2, ammo=10, delay=10, radius=0),
+                    "NCRC"   : cls(image="*", damage=5, ammo= 5, delay=15, radius=2),
+                    }
+            try:
+                weapon = weapons[w_type]
+                weapon.__type = w_type
+                weapon.
+            except KeyError as e:
+                print("No such weapon type! Error: {}".format(str(e))); return None
+            except:
+                print("Unhandled exception! Error: {}".format(str(e))); return None
+
+        def update(self):
+            pass
+
+        def render(self, screen):
+            pass
+
+        create_weapon = lambda w_class, *args, **kwargs: w_class(*args, **kwargs)
+
+    weapons = {
+            "Laser" : None,
+            "Blaster" : None,
+            "Rocket" : None,
+            }
+    if not weapons.has_key(w_class):
+        raise KeyError("No such weapon class")
+    return weapons[w_class]
 
 class Spaceship(object):
     def __init__(self, border):
@@ -45,7 +104,7 @@ class Spaceship(object):
         self.border = border
         self._pos = Point(self.border.x // 2, self.border.y - 1)
         self._fire = False
-
+        self.weapon = Weapon(type="Laser", ammo=-1)
 
     def events(self, event):
         if event.type == KEY:
