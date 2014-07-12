@@ -12,6 +12,8 @@ K_A = ord("a")
 K_D = ord("d")
 K_SPACE = ord(" ")
 K_ESCAPE = 27
+#fix freezes [issue#1]
+KEYS = [K_A, K_D, K_SPACE, K_ESCAPE]
 
 class Point:
     def __init__(self, x, y):
@@ -74,7 +76,8 @@ def Weapon(w_class, w_ammo=-1, w_time=-1):
             try:
                 weapon = weapons[w_type]
                 weapon.__type = w_type
-                weapon.
+                weapon.behaviour = None
+
             except KeyError as e:
                 print("No such weapon type! Error: {}".format(str(e))); return None
             except:
@@ -99,37 +102,37 @@ def Weapon(w_class, w_ammo=-1, w_time=-1):
 
 class Spaceship(object):
     def __init__(self, border):
-        self._image = "<i>"
-        self._dx = 1
-        self.border = border
-        self._pos = Point(self.border.x // 2, self.border.y - 1)
-        self._fire = False
-        self.weapon = Weapon(type="Laser", ammo=-1)
+        self.__image = "<i>"
+        self.__dx = 1
+        self.__border = border
+        self.__pos = Point(self.__border.x // 2, self.__border.y - 1)
+        self.__fire = False
+        #self.__weapon = Weapon(type="Laser", ammo=-1)
 
     def events(self, event):
         if event.type == KEY:
             if event.val == K_A:
-                self._dx = -1
+                self.__dx = -1
             if event.val == K_D:
-                self._dx = 1
+                self.__dx = 1
             if event.val == K_SPACE:
-                self._fire = True if self._fire else False
+                self.__fire = True if self.__fire else False
 
     def update(self):
-        if self._pos.x == self.border.x - len(self._image) - 1 and self._dx > 0:
-            self._pos.x = 0
-        elif self._pos.x == 1 and self._dx < 0:
-            self._pos.x = self.border.x - len(self._image)
+        if self.__pos.x == self.__border.x - len(self.__image) - 1 and self.__dx > 0:
+            self.__pos.x = 0
+        elif self.__pos.x == 1 and self.__dx < 0:
+            self.__pos.x = self.__border.x - len(self.__image)
 
-        self._pos.x += self._dx
-        self._dx = 0
+        self.__pos.x += self.__dx
+        self.__dx = 0
 
-        if self._fire:
+        if self.__fire:
             pass
 
 
     def draw(self, screen):
-        screen.addstr(self._pos.y, self._pos.x, self._image, curses.A_BOLD)
+        screen.addstr(self.__pos.y, self.__pos.x, self.__image, curses.A_BOLD)
 
 
 
