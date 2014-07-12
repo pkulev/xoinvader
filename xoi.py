@@ -69,8 +69,8 @@ class App(object):
     def __init__(self):
         #self.screen = curses.initscr()
         curses.initscr()
-        self.border = namedtuple("border", ["y", "x"])(24, 80)
-        self.field  = namedtuple("field", ["y", "x"])(self.border.y-1, self.border.x)
+        self.border = Point(x=80, y=24)
+        self.field  = Point(x=self.border.x, y=self.border.y-1)
         self.screen = curses.newwin(self.border.y, self.border.x, 0, 0)
         self.screen.keypad(1)
         self.screen.nodelay(1)
