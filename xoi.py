@@ -92,62 +92,29 @@ class IWeaponRenderBehaviour(object):
 
 
 class Blaster(IWeapon):
-    def __init__(self, ammo):
-        super(self, 
+    def __init__(self, border, ammo):
+        IWeapon.__init__(self, ammo)
+        self.__image = "^"
+        self.__dy = 1
+        self.__max_ammo = 100
+        self.__delay = 1
+        self.__radius = 0
+        self.__damage = 1
 
-
-class Weapon(object):
-    def __init__(self, image, damage, max_ammo, ammo, delay, radius):
-        self.__type == None
-
-        self.__image = image
-        self.__damage = damage
-        self.__max_ammo = max_ammo
-        self.__ammo = ammo
-        self.__delay = delay
-
+        #!!!!
+        self.__border = border
+        #!!!!
         self.__coords = []
 
-        #Behaviour
-        self.update = None
-        self.render = None
+    def make_shot(self, pos):
+        self.__coords.append(pos)
 
-
-    @property
-    def image(self):
-        return self.__image
-
-
-    #TODO:
-    def __iter__(self):
-        return (c for c in self.__coords)
-
-
-    @classmethod
-    def create_weapon(cls, w_type):
-        #temporary stub
-        def default_update():
-            pass
-
-        behaviours = {t: None for t in ["Blaster", "Laser", "NCRC"]}
-
-        weapons = {
-                "Blaster": cls(image="^", damage=1, max_ammo=-1, ammo=-1, delay= 5, radius=0),
-                "Laser"  : cls(image="|", damage=2, max_ammo=10, ammo=10, delay=10, radius=0),
-                "NCRC"   : cls(image="*", damage=5, max_ammo= 5, ammo= 5, delay=15, radius=2),
-                }
-
-        try:
-            weapon = weapons[w_type]
-            weapon.__type = w_type
-            weapon.behaviour = behaviours[w_type]
-
-        except KeyError as e:
-            print("No such weapon type! Error: {}".format(str(e))); return None
-        except:
-            print("Unhandled exception! Error: {}".format(str(e))); return None
-
-        return weapon
+    def update(self):
+        for i in range(len(self.__coords) - 1):
+            if self.__coords[i].y == self.border.y - 1:
+                self.__coords.remove(i)
+            else:
+                self.__coords[i] = Point(self.__coords[i].x, self.__coords[i].y + self.__dy)
 
 
 class Spaceship(object):
@@ -157,8 +124,7 @@ class Spaceship(object):
         self.__border = border
         self.__pos = Point(self.__border.x // 2 - len(self.__image), self.__border.y - 1)
         self.__fire = False
-        #self.__weapon = Weapon(type="Blaster")
-
+        self.__weapon = Blaster(self.__border, 50)
 
     def move_left(self):
         self.__dx = -1
@@ -181,8 +147,7 @@ class Spaceship(object):
         self.__dx = 0
 
         if self.__fire:
-            #self.__weapon.make_shoot()
-            pass
+            self.__weapon.make_shoot()
 
     @property
     def image(self):
@@ -241,8 +206,13 @@ class App(object):
         self.screen.addstr(0, 2, "Score: {} ".format(0))
         self.screen.addstr(0, self.border.x // 2 - 4, "XOInvader", curses.A_BOLD)
 
+        #Render spaceship
         self.screen.addstr(self.spaceship.pos.y, self.spaceship.pos.x,
                            self.spaceship.image, curses.A_BOLD)
+
+        #Render cannons
+        for c in self.spaceship.weapon.coords:
+            self.screen.addstr(c.y, c.x, self.spaceship.weapon.image)
 
         self.screen.refresh()
         time.sleep(0.03)
