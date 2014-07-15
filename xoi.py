@@ -40,6 +40,61 @@ class Point:
 
 Event = namedtuple("Event", ["type", "val"])
 
+from abc import ABCMeta, abstractmethod
+
+class IWeapon(object):
+    __metaclass__ = ABCMeta
+    def __init__(self, ammo):
+        self.__image = None
+        self.__damage = None
+        self.__max_ammo = None
+        self.__ammo = ammo
+        self.__delay = None
+
+        self.__coords = []
+
+        self.update = None
+        self.render = None
+
+    @abstractmethod
+    def make_shot(self):
+        raise NotImplemented
+
+    @property
+    def image(self):
+        return self.__image
+
+    #TEMP:
+    #until good colision detection code is implemented
+    @property
+    def coords(self):
+        return self.__coords[:]
+
+
+class IWeaponUpdateBehaviour(object):
+    __metaclass__ = ABCMeta
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def update(self):
+        raise NotImplemented
+
+
+class IWeaponRenderBehaviour(object):
+    __metaclass__ = ABCMeta
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def render(self):
+        raise NotImplemented
+
+
+class Blaster(IWeapon):
+    def __init__(self, ammo):
+        super(self, 
+
 
 class Weapon(object):
     def __init__(self, image, damage, max_ammo, ammo, delay, radius):
