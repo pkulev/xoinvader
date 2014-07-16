@@ -3,7 +3,6 @@
 import sys
 import time
 import curses
-from curses import KEY_ENTER
 from collections import namedtuple
 
 
