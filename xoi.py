@@ -41,79 +41,45 @@ Event = namedtuple("Event", ["type", "val"])
 
 from abc import ABCMeta, abstractmethod
 
-class IWeapon(object):
-    __metaclass__ = ABCMeta
-    def __init__(self, ammo):
-        self.__image = None
-        self.__damage = None
-        self.__max_ammo = None
+class Weapon(object):
+    def __init__(self, image=None, max_ammo=None, ammo=None, fire_rate=None, damage=None, radius=None, dy=None):
+        self.__image = image
+        self.__max_ammo = max_ammo
         self.__ammo = ammo
-        self.__delay = None
+        self.__fire_rate = fire_rate
+        self.__damage = damage
+        self.__radius = radius
+        self.__dy = dy
 
         self.__coords = []
 
-        self.update = None
-        self.render = None
 
-    @abstractmethod
-    def make_shot(self):
-        raise NotImplemented
+    def __call__(self, w_type):
+        weapons = {"Blaster": Weapon(image="^", max_ammo=-1, ammo=-1, fire_rate=1, damage=1, radius=0, dy=-1),
+            }
+        return weapons[w_type]
 
-    @property
-    def image(self):
-        return self.__image
-
-    #TEMP:
-    #until good colision detection code is implemented
-    @property
-    def coords(self):
-        return self.__coords[:]
-
-
-class IWeaponUpdateBehaviour(object):
-    __metaclass__ = ABCMeta
-    def __init__(self):
-        pass
-
-    @abstractmethod
-    def update(self):
-        raise NotImplemented
-
-
-class IWeaponRenderBehaviour(object):
-    __metaclass__ = ABCMeta
-    def __init__(self):
-        pass
-
-    @abstractmethod
-    def render(self):
-        raise NotImplemented
-
-
-class Blaster(IWeapon):
-    def __init__(self, border, ammo):
-        IWeapon.__init__(self, ammo)
-        self.__image = "^"
-        self.__dy = 1
-        self.__max_ammo = 100
-        self.__delay = 1
-        self.__radius = 0
-        self.__damage = 1
-
-        #!!!!
-        self.__border = border
-        #!!!!
-        self.__coords = []
 
     def make_shot(self, pos):
-        self.__coords.append(pos)
+        self.__coords.append(Point(x=pos.x, y=pos.y - 1))
+
+    def get_data(self):
+        return (self.__image, self.__coords)
 
     def update(self):
-        for i in range(len(self.__coords) - 1):
-            if self.__coords[i].y == self.border.y - 1:
-                self.__coords.remove(i)
-            else:
-                self.__coords[i] = Point(self.__coords[i].x, self.__coords[i].y + self.__dy)
+        new_coords = []
+        for i in self.__coords:
+            if i.y + self.__dy > 0:
+                new_coords.append(Point(x=i.x, y=i.y + self.__dy))
+        self.__coords = new_coords[:]
+
+        #for i in range(len(copy) - 1):
+        #    if copy[i].y + self.__dy < 0:
+        #        self.__coords.pop(self.__coords.index(copy[i])
+        #    else:
+        #        self.__coords[i].y += self.__dy
+
+
 
 
 class Spaceship(object):
@@ -123,7 +89,7 @@ class Spaceship(object):
         self.__border = border
         self.__pos = Point(self.__border.x // 2 - len(self.__image), self.__border.y - 1)
         self.__fire = False
-        self.__weapon = Blaster(self.__border, 50)
+        self.__weapon = Weapon()("Blaster")
 
     def move_left(self):
         self.__dx = -1
@@ -145,8 +111,9 @@ class Spaceship(object):
         self.__pos.x += self.__dx
         self.__dx = 0
 
+        self.__weapon.update()
         if self.__fire:
-            self.__weapon.make_shoot()
+            self.__weapon.make_shot(Point(x=self.__pos.x + 1, y=self.__pos.y))
 
     @property
     def image(self):
@@ -210,8 +177,9 @@ class App(object):
                            self.spaceship.image, curses.A_BOLD)
 
         #Render cannons
-        for c in self.spaceship.weapon.coords:
-            self.screen.addstr(c.y, c.x, self.spaceship.weapon.image)
+        image, coords = self.spaceship._Spaceship__weapon.get_data()
+        for pos in coords:
+            self.screen.addstr(pos.y, pos.x, image)
 
         self.screen.refresh()
         time.sleep(0.03)
@@ -220,11 +188,8 @@ class App(object):
         while True:
             self.events()
             self.update()
-            try:
-                self.render()
-            except:
-                self.deinit()
-                sys.exit(1)
+            self.render()
+
 def main():
     app = App()
     app.loop()
