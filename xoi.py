@@ -81,6 +81,8 @@ class Weapon(object):
 
     def __call__(self, w_type):
         weapons = {"Blaster": Weapon(image="^", max_ammo=-1, ammo=-1, cooldown=1, damage=1, radius=0, dy=-1),
+                   "Laser"  : Weapon(image="|", max_ammo=50, ammo=50, cooldown=5, damage=2, radius=-1,dy=-1),
+                   "UM"     : Weapon(image="*", max_ammo=15, ammo=15, cooldown=7, damage=5, radius=2, dy=-1),
             }
         return weapons[w_type]
 
