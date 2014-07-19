@@ -67,7 +67,8 @@ class WeaponBay(object):
         self.__pylons.add(weapon, pylon)
 
 class Weapon(object):
-    def __init__(self, image=None, max_ammo=None, ammo=None, cooldown=None, damage=None, radius=None, dy=None):
+    def __init__(self, w_type=None, image=None, max_ammo=None, ammo=None, cooldown=None, damage=None, radius=None, dy=None):
+        self.__type = w_type
         self.__image = image
         self.__max_ammo = max_ammo
         self.__ammo = ammo
@@ -80,19 +81,34 @@ class Weapon(object):
 
 
     def __call__(self, w_type):
-        weapons = {"Blaster": Weapon(image="^", max_ammo=-1, ammo=-1, cooldown=1, damage=1, radius=0, dy=-1),
-                   "Laser"  : Weapon(image="|", max_ammo=50, ammo=50, cooldown=5, damage=2, radius=-1,dy=-1),
-                   "UM"     : Weapon(image="*", max_ammo=15, ammo=15, cooldown=7, damage=5, radius=2, dy=-1),
+        weapons = {"Blaster": Weapon(w_type=w_type, image="^", max_ammo=-1, ammo=-1, cooldown=1, damage=1, radius=0, dy=-1),
+                   "Laser"  : Weapon(w_type=w_type, image="|", max_ammo=50, ammo=50, cooldown=5, damage=2, radius=-1,dy=-1),
+                   "UM"     : Weapon(w_type=w_type, image="*", max_ammo=15, ammo=15, cooldown=7, damage=5, radius=2, dy=-1),
             }
         return weapons[w_type]
 
 
     def make_shot(self, pos):
-        self.__coords.append(Point(x=pos.x, y=pos.y - 1))
+        if self.__ammo == -1 or self.__ammo > 0:
+            self.__coords.append(Point(x=pos.x, y=pos.y - 1))
+        if self.__ammo > 0: self.__ammo -= 1
+        if self.__ammo == 0: raise ValueError("No ammo!")
+
 
     @property
     def ammo(self):
-        return self.__ammo
+        return 999 if self.__ammo == -1 else self.__ammo
+    
+    
+    @property
+    def max_ammo(self):
+        return 999 if self.__ammo == -1 else self.__ammo
+
+    
+    @property
+    def type(self):
+        return self.__type
+
 
     def get_data(self):
         return (self.__image, self.__coords)
@@ -153,9 +169,15 @@ class Spaceship(object):
         return self.__pos
 
 
+    def get_weapon_info(self):
+        return "Weapon: {w} | [{c}/{m}".format(w=self.__weapon.type, c=self.__weapon.ammo, m=self.__weapon.max_ammo)
+
+
+
 class App(object):
     def __init__(self):
         curses.initscr()
+        curses.start_color()
         self.border = Point(x=80, y=24)
         self.field  = Point(x=self.border.x, y=self.border.y-1)
         self.screen = curses.newwin(self.border.y, self.border.x, 0, 0)
@@ -200,14 +222,20 @@ class App(object):
         self.screen.addstr(0, 2, "Score: {} ".format(0))
         self.screen.addstr(0, self.border.x // 2 - 4, "XOInvader", curses.A_BOLD)
 
+        curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        self.screen.addstr(self.border.y - 1, 2, self.spaceship.get_weapon_info(),
+                            (curses.color_pair(1) | curses.A_BOLD))
+
         #Render spaceship
         self.screen.addstr(self.spaceship.pos.y, self.spaceship.pos.x,
                            self.spaceship.image, curses.A_BOLD)
 
+
+        curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
         #Render cannons
         image, coords = self.spaceship._Spaceship__weapon.get_data()
         for pos in coords:
-            self.screen.addstr(pos.y, pos.x, image)
+            self.screen.addstr(pos.y, pos.x, image, curses.color_pair(2) | curses.A_BOLD)
 
         self.screen.refresh()
         time.sleep(0.03)
