@@ -223,8 +223,15 @@ class App(object):
         self.screen.addstr(0, self.border.x // 2 - 4, "XOInvader", curses.A_BOLD)
 
         curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-        self.screen.addstr(self.border.y - 1, 2, self.spaceship.get_weapon_info(),
+
+
+        #health_info = self.spaceship.get_health_info()
+
+
+        weapon_info = self.spaceship.get_weapon_info()
+        self.screen.addstr(self.border.y - 1, self.border.x - len(weapon_info) - 2, weapon_info,
                             (curses.color_pair(1) | curses.A_BOLD))
+
 
         #Render spaceship
         self.screen.addstr(self.spaceship.pos.y, self.spaceship.pos.x,
