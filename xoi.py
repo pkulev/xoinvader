@@ -39,14 +39,39 @@ class Point:
 
 Event = namedtuple("Event", ["type", "val"])
 
-from abc import ABCMeta, abstractmethod
+class WeaponBay(object):
+    class __Pylons(object):
+        """Aircraft weapon pylons data structure"""
+        def __init__(self, l, m, h):
+            self.light = l
+            self.medium = m
+            self.h = h
+
+        def get_all(self, struct=tuple):
+            return struct(l, m, h)
+
+        def add(self, pylon, weapon):
+            pass
+
+    def __init__(self, light, medium, heavy):
+        self.__pylons = __Pylons(light, medium, heavy)
+        self.__cwg = self.__pylons.light
+
+    #pos is the center pos?
+    def cwg_fire(self, pos):
+        for weapon in self.__cwg:
+            if weapon.ammo == "inf" or self.weapon.ammo > 0:
+                weapon.make_shot(pos)
+
+    def add_weapon(self, weapon, pylon):
+        self.__pylons.add(weapon, pylon)
 
 class Weapon(object):
-    def __init__(self, image=None, max_ammo=None, ammo=None, fire_rate=None, damage=None, radius=None, dy=None):
+    def __init__(self, image=None, max_ammo=None, ammo=None, cooldown=None, damage=None, radius=None, dy=None):
         self.__image = image
         self.__max_ammo = max_ammo
         self.__ammo = ammo
-        self.__fire_rate = fire_rate
+        self.__cooldown = cooldown
         self.__damage = damage
         self.__radius = radius
         self.__dy = dy
@@ -55,13 +80,17 @@ class Weapon(object):
 
 
     def __call__(self, w_type):
-        weapons = {"Blaster": Weapon(image="^", max_ammo=-1, ammo=-1, fire_rate=1, damage=1, radius=0, dy=-1),
+        weapons = {"Blaster": Weapon(image="^", max_ammo=-1, ammo=-1, cooldown=1, damage=1, radius=0, dy=-1),
             }
         return weapons[w_type]
 
 
     def make_shot(self, pos):
         self.__coords.append(Point(x=pos.x, y=pos.y - 1))
+
+    @property
+    def ammo(self):
+        return self.__ammo
 
     def get_data(self):
         return (self.__image, self.__coords)
@@ -73,13 +102,6 @@ class Weapon(object):
                 new_coords.append(Point(x=i.x, y=i.y + self.__dy))
         self.__coords = new_coords[:]
 
-        #for i in range(len(copy) - 1):
-        #    if copy[i].y + self.__dy < 0:
-        #        self.__coords.pop(self.__coords.index(copy[i])
-        #    else:
-        #        self.__coords[i].y += self.__dy
-
-
 
 
 class Spaceship(object):
@@ -90,6 +112,11 @@ class Spaceship(object):
         self.__pos = Point(self.__border.x // 2 - len(self.__image), self.__border.y - 1)
         self.__fire = False
         self.__weapon = Weapon()("Blaster")
+
+        #self.__weapon_bay = WeaponBay()
+        #self.__weapon_bay.add_weapon(wp)
+        #self.__weapon_bay.remove_veapon(wp)
+
 
     def move_left(self):
         self.__dx = -1
@@ -126,7 +153,6 @@ class Spaceship(object):
 
 class App(object):
     def __init__(self):
-        #self.screen = curses.initscr()
         curses.initscr()
         self.border = Point(x=80, y=24)
         self.field  = Point(x=self.border.x, y=self.border.y-1)
@@ -134,7 +160,7 @@ class App(object):
         self.screen.keypad(1)
         self.screen.nodelay(1)
         curses.noecho()
-        #curses.cbreak()
+        curses.cbreak()
         curses.curs_set(0)
         self.spaceship = Spaceship(self.field)
         self._objects = []
