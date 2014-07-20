@@ -130,6 +130,11 @@ class Spaceship(object):
         self.__pos = Point(self.__border.x // 2 - len(self.__image), self.__border.y - 1)
         self.__fire = False
         self.__weapon = Weapon()("Blaster")
+        self.__hull = 100
+        self.__shield = 100
+        
+        self.h_bar = Bar(self.__hull, 100, title="Hull")
+        self.s_bar = Bar(self.__shield, 100, title="Shield")
 
         #self.__weapon_bay = WeaponBay()
         #self.__weapon_bay.add_weapon(wp)
@@ -160,6 +165,10 @@ class Spaceship(object):
         if self.__fire:
             self.__weapon.make_shot(Point(x=self.__pos.x + 1, y=self.__pos.y))
 
+        #!!!!
+        self.h_bar.update_value(self.__hull)
+        self.s_bar.update_value(self.__shield)
+
     @property
     def image(self):
         return self.__image
@@ -172,6 +181,49 @@ class Spaceship(object):
     def get_weapon_info(self):
         return "Weapon: {w} | [{c}/{m}".format(w=self.__weapon.type, c=self.__weapon.ammo, m=self.__weapon.max_ammo)
 
+    def get_health_info(self):
+        return (self.__hull, self.__armor)
+
+
+
+class Bar(object):
+    def __init__(self, value, max_value, title=None):
+        self.__title = title + ": " if title else None
+        self.__value = value
+        self.__max_value = max_value
+        self.__elems = 0 if self.__value <= 0 else round(self.__value * 10 / self.__max_value)
+        self.__start = "["
+        self.__end = "]"
+        self.__elem = " "
+        curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_RED)
+        curses.init_pair(4, curses.COLOR_WHITE, curses.COLOR_YELLOW)
+        curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_GREEN)
+        curses.init_pair(6, curses.COLOR_BLACK, curses.COLOR_BLACK)
+        self.__style = curses.A_BOLD
+
+    def update_value(self, val):
+        self.__value = 0 if val < 0 else val
+
+
+
+    def render(self, screen, pos):
+        if self.__title:
+            screen.addstr(pos.y, pos.x, self.__title, self.__style)
+            pos.x += len(self.__title)
+
+        screen.addstr(pos.y, pos.x, self.__start, self.__style)
+        for i in range(1, self.__elems + 1):
+            pos.x += 1
+            if i in (1, 2, 3): #RED
+                screen.addstr(pos.y, pos.x, self.__elem, curses.color_pair(3) | self.__style)
+            elif i in (4,5,6):
+                screen.addstr(pos.y, pos.x, self.__elem, curses.color_pair(4) | self.__style)
+            else:
+                screen.addstr(pos.y, pos.x, self.__elem, curses.color_pair(5) | self.__style)
+        pos.x += 1
+        screen.addstr(pos.y, pos.x, self.__end, self.__style)
+
+        return Point(x=pos.x, y=pos.y)
 
 
 class App(object):
@@ -233,12 +285,16 @@ class App(object):
                             (curses.color_pair(1) | curses.A_BOLD))
 
 
+        #!!!!
+        end = self.spaceship.h_bar.render(self.screen, Point(y=self.border.y - 1, x=2))
+        self.spaceship.s_bar.render(self.screen, Point(y=end.y, x=end.x + 2))
+
         #Render spaceship
         self.screen.addstr(self.spaceship.pos.y, self.spaceship.pos.x,
                            self.spaceship.image, curses.A_BOLD)
 
 
-        curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_RED)
         #Render cannons
         image, coords = self.spaceship._Spaceship__weapon.get_data()
         for pos in coords:
