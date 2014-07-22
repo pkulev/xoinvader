@@ -2,21 +2,13 @@ from utils import Point
 
 
 class WeaponBay(object):
-    class __Pylons(object):
-        """Aircraft weapon pylons data structure"""
-        def __init__(self, l, m, h):
-            self.light = l
-            self.medium = m
-            self.h = h
 
-        def get_all(self, struct=tuple):
-            return struct(l, m, h)
+    def __init__(self, light=None, medium=None, heavy=None):
 
-        def add(self, pylon, weapon):
-            pass
+        self.__pylons = {"light": light if light else None,
+                         "medium": medium if medium else None,
+                         "heavy": heavy if heavy else None}
 
-    def __init__(self, light, medium, heavy):
-        self.__pylons = __Pylons(light, medium, heavy)
         self.__cwg = self.__pylons.light
 
     #pos is the center pos?
@@ -25,8 +17,11 @@ class WeaponBay(object):
             if weapon.ammo == "inf" or self.weapon.ammo > 0:
                 weapon.make_shot(pos)
 
+
     def add_weapon(self, weapon, pylon):
         self.__pylons.add(weapon, pylon)
+
+
 
 class Weapon(object):
     def __init__(self, w_type=None, image=None, max_ammo=None, ammo=None, cooldown=None, damage=None, radius=None, dy=None):
@@ -60,13 +55,13 @@ class Weapon(object):
     @property
     def ammo(self):
         return 999 if self.__ammo == -1 else self.__ammo
-    
-    
+
+
     @property
     def max_ammo(self):
         return 999 if self.__ammo == -1 else self.__ammo
 
-    
+
     @property
     def type(self):
         return self.__type
@@ -74,6 +69,7 @@ class Weapon(object):
 
     def get_data(self):
         return (self.__image, self.__coords)
+
 
     def update(self):
         new_coords = []
