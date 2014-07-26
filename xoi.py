@@ -173,7 +173,7 @@ class App(object):
 
 
     def render(self):
-        self.screen.clear()
+        self.screen.erase()
         self.screen.border(0)
         self.screen.addstr(0, 2, "Score: {} ".format(0))
         self.screen.addstr(0, self.border.x // 2 - 4, "XOInvader", curses.A_BOLD)
