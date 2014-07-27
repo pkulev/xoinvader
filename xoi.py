@@ -6,6 +6,7 @@ import curses
 from collections import namedtuple
 
 
+from render import Renderer
 from weapon import Weapon
 from utils import Point, Event
 
@@ -134,6 +135,9 @@ class App(object):
     def __init__(self):
         curses.initscr()
         curses.start_color()
+        curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_RED)
+
         self.border = Point(x=80, y=24)
         self.field  = Point(x=self.border.x, y=self.border.y-1)
         self.screen = curses.newwin(self.border.y, self.border.x, 0, 0)
@@ -142,7 +146,12 @@ class App(object):
         curses.noecho()
         curses.cbreak()
         curses.curs_set(0)
+        self.renderer = Renderer()
         self.spaceship = Spaceship(self.field)
+        self.renderer.add_object(self.spaceship)
+
+
+
         self._objects = []
         self._objects.append(self.spaceship)
 
@@ -178,7 +187,6 @@ class App(object):
         self.screen.addstr(0, 2, "Score: {} ".format(0))
         self.screen.addstr(0, self.border.x // 2 - 4, "XOInvader", curses.A_BOLD)
 
-        curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
 
 
@@ -198,7 +206,6 @@ class App(object):
                            self.spaceship.image, curses.A_BOLD)
 
 
-        curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_RED)
         #Render cannons
         image, coords = self.spaceship._Spaceship__weapon.get_data()
         for pos in coords:
