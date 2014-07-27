@@ -100,10 +100,6 @@ class Bar(object):
         self.__elem = " "
         self.__style = curses.A_BOLD
 
-        curses.init_pair(LOW, curses.COLOR_WHITE, curses.COLOR_RED)
-        curses.init_pair(MEDIUM, curses.COLOR_WHITE, curses.COLOR_YELLOW)
-        curses.init_pair(HIGH, curses.COLOR_WHITE, curses.COLOR_GREEN)
-        curses.init_pair(BLANK, curses.COLOR_BLACK, curses.COLOR_BLACK)
 
 
     def update_value(self, val):
@@ -133,27 +129,34 @@ class Bar(object):
 
 class App(object):
     def __init__(self):
-        curses.initscr()
-        curses.start_color()
-        curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-        curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_RED)
 
         self.border = Point(x=80, y=24)
         self.field  = Point(x=self.border.x, y=self.border.y-1)
-        self.screen = curses.newwin(self.border.y, self.border.x, 0, 0)
-        self.screen.keypad(1)
-        self.screen.nodelay(1)
-        curses.noecho()
-        curses.cbreak()
-        curses.curs_set(0)
+        self.screen = self.create_window(x=self.border.x, y=self.border.y)
+
         self.renderer = Renderer()
+
         self.spaceship = Spaceship(self.field)
         self.renderer.add_object(self.spaceship)
 
 
+    def create_window(self, x, y, a=0, b=0):
+        curses.initscr()
+        curses.start_color()
+        curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_RED)
+        curses.init_pair(LOW, curses.COLOR_WHITE, curses.COLOR_RED)
+        curses.init_pair(MEDIUM, curses.COLOR_WHITE, curses.COLOR_YELLOW)
+        curses.init_pair(HIGH, curses.COLOR_WHITE, curses.COLOR_GREEN)
+        curses.init_pair(BLANK, curses.COLOR_BLACK, curses.COLOR_BLACK)
+        screen = curses.newwin(y, x, 0, 0)
+        screen.keypad(1)
+        screen.nodelay(1)
+        curses.noecho()
+        curses.cbreak()
+        curses.curs_set(0)
+        return screen
 
-        self._objects = []
-        self._objects.append(self.spaceship)
 
     def deinit(self):
         self.screen.nodelay(0)
