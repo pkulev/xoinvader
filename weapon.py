@@ -59,7 +59,7 @@ class Weapon(object):
 
     @property
     def max_ammo(self):
-        return 999 if self.__ammo == -1 else self.__ammo
+        return 999 if self.__ammo == -1 else self.__max_ammo
 
 
     @property
