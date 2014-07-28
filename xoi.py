@@ -12,6 +12,8 @@ from utils import Point, Event
 
 
 KEY = "KEY"
+K_Q = ord("q")
+K_E = ord("e")
 K_A = ord("a")
 K_D = ord("d")
 K_SPACE = ord(" ")
@@ -19,24 +21,57 @@ K_ESCAPE = 27
 #fix freezes [issue#1]
 KEYS = [K_A, K_D, K_SPACE, K_ESCAPE]
 
+class Surface(object):
+    """image is list of lists of char:
+        rocket
+        [
+         ["^"],     ^
+         ["|"],     |
+         ["*"] ]    *
+
+        ship
+        [
+         [" "," ","O"," "," "],           O
+         ["<","=","H","=",">"],         <=H=>
+         [" ","*"," ","*"," "] ]         * *
+    """
+
+    def __init__(self, image, style=None):
+        self.__image = image
+        self.__width = max([len(l) for l in image])
+        self.__height = len(self.__image)
+        self.__style = style
+
+
+    @property
+    def height(self):
+        return self.__height
+
+    @property
+    def width(self):
+        return self.__width
+
+
+    def get_image(self):
+        for y, row in enumerate(self.__image):
+            for x, image in enumerate(row):
+                yield (Point(x=x, y=y), image, self.__style)
+
 
 class Spaceship(object):
     def __init__(self, border):
-        self.__image = "<i>"
+        self.__image = Surface([['<','i','>']])
         self.__dx = 1
         self.__border = border
-        self.__pos = Point(self.__border.x // 2 - len(self.__image), self.__border.y - 1)
+        self.__pos = Point(self.__border.x // 2 - self.__image.width, self.__border.y - 1)
         self.__fire = False
-        self.__weapon = Weapon()("Blaster")
+        self.__weapons = [Weapon()("Blaster"), Weapon()("Laser")]
+        self.__weapon = self.__weapons[0]
         self.__hull = 100
         self.__shield = 100
-        
+
         self.h_bar = Bar(self.__hull, 100, title="Hull")
         self.s_bar = Bar(self.__shield, 100, title="Shield")
-
-        #self.__weapon_bay = WeaponBay()
-        #self.__weapon_bay.add_weapon(wp)
-        #self.__weapon_bay.remove_veapon(wp)
 
 
     def move_left(self):
@@ -49,12 +84,23 @@ class Spaceship(object):
     def toggle_fire(self):
         self.__fire = not self.__fire
 
+    def next_weapon(self):
+        ind = self.__weapons.index(self.__weapon)
+        if ind < len(self.__weapons) - 1:
+            self.__weapon = self.__weapons[ind+1]
+        else:
+            self.__weapon = self.__weapons[0]
+
+
+
+    def prev_weapon(self):
+        pass
 
     def update(self):
-        if self.__pos.x == self.__border.x - len(self.__image) - 1 and self.__dx > 0:
+        if self.__pos.x == self.__border.x - self.__image.width - 1 and self.__dx > 0:
             self.__pos.x = 0
         elif self.__pos.x == 1 and self.__dx < 0:
-            self.__pos.x = self.__border.x - len(self.__image)
+            self.__pos.x = self.__border.x - self.__image.width
 
         self.__pos.x += self.__dx
         self.__dx = 0
@@ -77,11 +123,14 @@ class Spaceship(object):
 
 
     def get_weapon_info(self):
-        return "Weapon: {w} | [{c}/{m}".format(w=self.__weapon.type, c=self.__weapon.ammo, m=self.__weapon.max_ammo)
+        return "Weapon: {w} | [{c}/{m}]".format(w=self.__weapon.type, c=self.__weapon.ammo, m=self.__weapon.max_ammo)
 
     def get_health_info(self):
         return (self.__hull, self.__shield)
 
+
+    def get_render_data(self):
+        return self.__pos, self.__image.get_image()
 
 
 LOW = 3
@@ -176,6 +225,10 @@ class App(object):
             self.spaceship.move_left()
         elif c == K_D:
             self.spaceship.move_right()
+        elif c == K_Q:
+            self.spaceship.next_weapon()
+        elif c == K_E:
+            self.spaceship.prev_weapon()
         elif c == K_SPACE:
             self.spaceship.toggle_fire()
 
@@ -192,7 +245,6 @@ class App(object):
 
 
 
-
         weapon_info = self.spaceship.get_weapon_info()
         self.screen.addstr(self.border.y - 1, self.border.x - len(weapon_info) - 2, weapon_info,
                             (curses.color_pair(1) | curses.A_BOLD))
@@ -204,9 +256,13 @@ class App(object):
         end = self.spaceship.h_bar.render(self.screen, Point(y=self.border.y - 1, x=2))
         self.spaceship.s_bar.render(self.screen, Point(y=end.y, x=end.x + 2))
 
+
+
+        self.renderer.render_all(self.screen)
+
         #Render spaceship
-        self.screen.addstr(self.spaceship.pos.y, self.spaceship.pos.x,
-                           self.spaceship.image, curses.A_BOLD)
+        #self.screen.addstr(self.spaceship.pos.y, self.spaceship.pos.x,
+        #                   self.spaceship.image, curses.A_BOLD)
 
 
         #Render cannons
