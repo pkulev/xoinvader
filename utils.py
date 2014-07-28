@@ -3,24 +3,27 @@ from collections import namedtuple
 
 class Point:
     def __init__(self, x, y):
-        self._x = x
-        self._y = y
+        self.__x = x
+        self.__y = y
+
+    def __repr__(self):
+        return "Point(x={}, y={})".format(self.__x, self.__y)
 
     @property
     def x(self):
-        return self._x
+        return self.__x
 
     @x.setter
     def x(self, val):
-        self._x = val
+        self.__x = val
 
     @property
     def y(self):
-        return self._y
+        return self.__y
 
     @y.setter
     def y(self, val):
-        self._y = val
+        self.__y = val
 
 
 Event = namedtuple("Event", ["type", "val"])
