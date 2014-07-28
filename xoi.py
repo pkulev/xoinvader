@@ -8,7 +8,7 @@ from collections import namedtuple
 
 from render import Renderer
 from weapon import Weapon
-from utils import Point, Event
+from utils import Point, Event, Surface
 
 
 KEY = "KEY"
@@ -21,46 +21,11 @@ K_ESCAPE = 27
 #fix freezes [issue#1]
 KEYS = [K_A, K_D, K_SPACE, K_ESCAPE]
 
-class Surface(object):
-    """image is list of lists of char:
-        rocket
-        [
-         ["^"],     ^
-         ["|"],     |
-         ["*"] ]    *
-
-        ship
-        [
-         [" "," ","O"," "," "],           O
-         ["<","=","H","=",">"],         <=H=>
-         [" ","*"," ","*"," "] ]         * *
-    """
-
-    def __init__(self, image, style=None):
-        self.__image = image
-        self.__width = max([len(l) for l in image])
-        self.__height = len(self.__image)
-        self.__style = style
-
-
-    @property
-    def height(self):
-        return self.__height
-
-    @property
-    def width(self):
-        return self.__width
-
-
-    def get_image(self):
-        for y, row in enumerate(self.__image):
-            for x, image in enumerate(row):
-                yield (Point(x=x, y=y), image, self.__style)
 
 
 class Spaceship(object):
     def __init__(self, border):
-        self.__image = Surface([['<','i','>']])
+        self.__image = Surface([['<','i','>'], [' ','W',' ']])
         self.__dx = 1
         self.__border = border
         self.__pos = Point(self.__border.x // 2 - self.__image.width, self.__border.y - 1)
@@ -94,7 +59,11 @@ class Spaceship(object):
 
 
     def prev_weapon(self):
-        pass
+        ind = self.__weapons.index(self.__weapon)
+        if ind == 0:
+            self.__weapon = self.__weapons[len(self.__weapons) - 1]
+        else:
+            self.__weapon = self.__weapons[ind - 1]
 
     def update(self):
         if self.__pos.x == self.__border.x - self.__image.width - 1 and self.__dx > 0:
@@ -123,7 +92,9 @@ class Spaceship(object):
 
 
     def get_weapon_info(self):
-        return "Weapon: {w} | [{c}/{m}]".format(w=self.__weapon.type, c=self.__weapon.ammo, m=self.__weapon.max_ammo)
+        return "Weapon: {w} | [{c}/{m}]".format(w=self.__weapon.type,
+                                                c=self.__weapon.ammo,
+                                                m=self.__weapon.max_ammo)
 
     def get_health_info(self):
         return (self.__hull, self.__shield)
@@ -259,10 +230,6 @@ class App(object):
 
 
         self.renderer.render_all(self.screen)
-
-        #Render spaceship
-        #self.screen.addstr(self.spaceship.pos.y, self.spaceship.pos.x,
-        #                   self.spaceship.image, curses.A_BOLD)
 
 
         #Render cannons
