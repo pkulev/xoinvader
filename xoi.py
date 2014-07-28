@@ -18,17 +18,17 @@ K_A = ord("a")
 K_D = ord("d")
 K_SPACE = ord(" ")
 K_ESCAPE = 27
-#fix freezes [issue#1]
-KEYS = [K_A, K_D, K_SPACE, K_ESCAPE]
-
 
 
 class Spaceship(object):
     def __init__(self, border):
-        self.__image = Surface([['<','i','>'], [' ','W',' ']])
+        self.__image = Surface([[' ','O',' '],
+                                ['/','H','\\'],
+                                [' ','*',' ']])
         self.__dx = 1
         self.__border = border
-        self.__pos = Point(self.__border.x // 2 - self.__image.width, self.__border.y - 1)
+        self.__pos = Point(self.__border.x // 2 - self.__image.width // 2,
+                           self.__border.y - self.__image.height)
         self.__fire = False
         self.__weapons = [Weapon()("Blaster"), Weapon()("Laser")]
         self.__weapon = self.__weapons[0]
@@ -64,6 +64,7 @@ class Spaceship(object):
             self.__weapon = self.__weapons[len(self.__weapons) - 1]
         else:
             self.__weapon = self.__weapons[ind - 1]
+
 
     def update(self):
         if self.__pos.x == self.__border.x - self.__image.width - 1 and self.__dx > 0:
