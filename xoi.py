@@ -30,7 +30,7 @@ class Spaceship(object):
         self.__pos = Point(self.__border.x // 2 - self.__image.width // 2,
                            self.__border.y - self.__image.height)
         self.__fire = False
-        self.__weapons = [Weapon()("Blaster"), Weapon()("Laser")]
+        self.__weapons = [Weapon()("Blaster"), Weapon()("Laser"), Weapon()("UM")]
         self.__weapon = self.__weapons[0]
         self.__hull = 100
         self.__shield = 100
@@ -77,7 +77,11 @@ class Spaceship(object):
 
         self.__weapon.update()
         if self.__fire:
-            self.__weapon.make_shot(Point(x=self.__pos.x + 1, y=self.__pos.y))
+            try:
+                self.__weapon.make_shot(Point(x=self.__pos.x + 1, y=self.__pos.y))
+            except ValueError as e:
+                self.next_weapon()
+
 
         #!!!!
         self.h_bar.update_value(self.__hull)
@@ -197,9 +201,9 @@ class App(object):
             self.spaceship.move_left()
         elif c == K_D:
             self.spaceship.move_right()
-        elif c == K_Q:
-            self.spaceship.next_weapon()
         elif c == K_E:
+            self.spaceship.next_weapon()
+        elif c == K_Q:
             self.spaceship.prev_weapon()
         elif c == K_SPACE:
             self.spaceship.toggle_fire()
