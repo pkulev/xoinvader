@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-__all__ = ['Event', 'Point', 'Surface']
+__all__ = ['Event', 'Point', 'Surface', 'Color']
 
 
 Event = namedtuple("Event", ["type", "val"])
@@ -70,3 +70,19 @@ class Surface(object):
         for y, row in enumerate(self.__image):
             for x, image in enumerate(row):
                 yield (Point(x=x, y=y), image, self.__style)
+
+
+class Color:
+    #user interface
+    ui_norm  = 1
+    ui_yellow = 2
+    #damage panel
+    dp_blank    = 3
+    dp_ok       = 4
+    dp_middle   = 5
+    dp_critical = 6
+    #weapons
+    blaster = 7
+    laser   = 8
+    um      = 9
+
