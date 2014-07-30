@@ -1,26 +1,17 @@
-from utils import Point
+from utils import Point, Surface
 
 
-class WeaponBay(object):
+class Weapon1(object):
+    def __init__(self, ammo=None, mapping=None):
+        self.__type = "__basic__"
+        self.__image = None
+        self.__max_ammo = None
+        self._ammo = ammo
 
-    def __init__(self, light=None, medium=None, heavy=None):
-
-        self.__pylons = {"light": light if light else None,
-                         "medium": medium if medium else None,
-                         "heavy": heavy if heavy else None}
-
-        self.__cwg = self.__pylons.light
-
-    #pos is the center pos?
-    def cwg_fire(self, pos):
-        for weapon in self.__cwg:
-            if weapon.ammo == "inf" or self.weapon.ammo > 0:
-                weapon.make_shot(pos)
-
-
-    def add_weapon(self, weapon, pylon):
-        self.__pylons.add(weapon, pylon)
-
+class Blaster(Weapon1):
+    def __init__(self, ammo=None, mapping=None):
+        super().__init__(ammo, mapping)
+        with open("log", "w") as l: l.write(str(self._ammo))
 
 
 class Weapon(object):
@@ -78,4 +69,6 @@ class Weapon(object):
                 new_coords.append(Point(x=i.x, y=i.y + self.__dy))
         self.__coords = new_coords[:]
 
+if __name__ == "__main__":
+    w = Blaster(5)
 

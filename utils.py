@@ -1,5 +1,7 @@
 from collections import namedtuple
 
+__all__ = ['Event', 'Point', 'Surface']
+
 
 Event = namedtuple("Event", ["type", "val"])
 
