@@ -117,9 +117,12 @@ class Spaceship(object):
 
 
 class DamagePanel(object):
-    def __init__(self, owner):
-        self.__values = namedtuple("info", ["hull", "shield"])(*owner.get_damage_info())
-        self.__max = owner.get_damage_max()
+    def __init__(self, owner, pos):
+        Info = namedtuple("info", ["hull", "shield"])
+        self.__values = Info(*owner.get_damage_info())
+        self.__max = Info(*owner.get_damage_max())
+        self.__pos = pos
+
 
         self.__persent = lambda val, max: round(val * 10 / max)
         self.__persents = lambda info, max: (self.__persent(info.hull, max.shield), self.__persent(info.hull, max.shield))
@@ -133,50 +136,17 @@ class DamagePanel(object):
 
     def __update_values(self):
         self.__values = owner.get_damage_info()
-        
+        self.__elems = self.__calculate_elems()
 
+    def __data_generator(self):
+        cur_x = self.__pos.x
+        for i in range(10):
+            yield (Point(x=cur_x, y=0), "|", None)
+            cur_x += 1
 
     def get_render_data(self):
-        pass
+        return self.__pos, self.__data_generator()
 
-
-class Bar(object):
-    def __init__(self, func, title=None):
-        self.__func = func
-        self.__title = title + ": " if title else None
-        self.__value = owner.get_display_data()
-        self.__max_value = max_value
-        self.__elems = 0 if self.__value <= 0 else round(self.__value * 10 / self.__max_value)
-        self.__start = "["
-        self.__end = "]"
-        self.__elem = " "
-        self.__style = curses.A_BOLD
-
-
-
-    def update_value(self, val):
-        self.__value = 0 if val < 0 else val
-
-
-
-    def render(self, screen, pos):
-        if self.__title:
-            screen.addstr(pos.y, pos.x, self.__title, self.__style)
-            pos.x += len(self.__title)
-
-        screen.addstr(pos.y, pos.x, self.__start, self.__style)
-        for i in range(1, self.__elems + 1):
-            pos.x += 1
-            if i in (1, 2, 3): #RED
-                screen.addstr(pos.y, pos.x, self.__elem, curses.color_pair(Color.dp_ok) | self.__style)
-            elif i in (4,5,6):
-                screen.addstr(pos.y, pos.x, self.__elem, curses.color_pair(Color.dp_middle) | self.__style)
-            else:
-                screen.addstr(pos.y, pos.x, self.__elem, curses.color_pair(Color.dp_critcal) | self.__style)
-        pos.x += 1
-        screen.addstr(pos.y, pos.x, self.__end, self.__style)
-
-        return Point(x=pos.x, y=pos.y)
 
 
 class App(object):
@@ -190,6 +160,10 @@ class App(object):
 
         self.spaceship = Spaceship(self.field)
         self.renderer.add_object(self.spaceship)
+
+        #gui
+        self.damagepanel = DamagePanel(self.spaceship, pos=Point(x=2, y=self.border.y-1))
+        self.renderer.add_object(self.damagepanel)
 
 
     def create_window(self, x, y, a=0, b=0):
