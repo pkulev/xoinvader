@@ -1,7 +1,8 @@
 from collections import namedtuple
 
-__all__ = ['Event', 'Point', 'Surface', 'Color', 'Layout']
 
+log_format = "[%(asctime)s] %(levelname)s: %(message)s"
+date_format = "%m/%d/%Y %I:%M:%S %p"
 
 Event = namedtuple("Event", ["type", "val"])
 
@@ -69,7 +70,7 @@ class Surface(object):
     def get_image(self):
         for y, row in enumerate(self.__image):
             for x, image in enumerate(row):
-                yield (Point(x=x, y=y), image, self.__style)
+                yield (Point(x=x, y=y), image, self.__style[y][x] if self.__style else None)
 
 
 class Color:
@@ -94,16 +95,19 @@ class Layout(object):
 
     def init_layout(self):
         self.__field["border"] = Point(x=80, y=24)
+        self.__field["spaceship"] = Point(x=self.__field["border"].x // 2,
+                                          y=self.__field["border"].y - 1)
 
         self.__gui["hbar"] = Point(x=2 , y=self.__field["border"].y - 1)
         self.__gui["sbar"] = Point(x=22, y=self.__field["border"].y - 1)
 
-
         return self
+
 
     @property
     def field(self):
         return self.__field
+
 
     @property
     def gui(self):
