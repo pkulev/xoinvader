@@ -8,7 +8,7 @@ from collections import namedtuple
 
 from render import Renderer
 from weapon import Weapon
-from utils import Point, Event, Surface, Color
+from utils import Point, Event, Surface, Color, Layout
 
 
 KEY = "KEY"
@@ -102,12 +102,23 @@ class Spaceship(object):
                                                 m=self.__weapon.max_ammo)
 
 
-    def get_damage_max(self):
-        return (self.__max_hull, self.__max_shield)
+
+    @property
+    def max_hull(self):
+        return self.__max_hull
 
 
-    def get_damage_info(self):
-        return (self.__hull, self.__shield)
+    @property
+    def max_shield(self):
+        return self.__max_shield
+
+
+    def get_hinfo(self):
+        return self.__hull
+
+
+    def get_sinfo(self):
+        return self.__shield
 
 
     def get_render_data(self):
@@ -116,41 +127,29 @@ class Spaceship(object):
 
 
 
-class DamagePanel(object):
-    def __init__(self, owner, pos):
-        Info = namedtuple("info", ["hull", "shield"])
-        self.__values = Info(*owner.get_damage_info())
-        self.__max = Info(*owner.get_damage_max())
+class Bar(object):
+    def __init__(self, title, pos, get_data, max_value):
+        self.__title = title
         self.__pos = pos
+        self.__get_data = get_data
+        self.__value = self.__get_data()
+        self.__max_value = max_value
 
+        self.__template = "{title}: [{elements}]"
+        self.__bar = self.__template.format(title=self.__title, elements=" "*10)
+        self.__image = Surface([[ch for ch in self.__bar]])
 
-        self.__persent = lambda val, max: round(val * 10 / max)
-        self.__persents = lambda info, max: (self.__persent(info.hull, max.shield), self.__persent(info.hull, max.shield))
-        self.__elems = self.__calculate_elems()
-
-        #parts
-        self.__start, self.__end, self.__element = "[", "]", " "
-
-    def __calculate_elems(self):
-        return self.__persents(self.__values, self.__max)
-
-    def __update_values(self):
-        self.__values = owner.get_damage_info()
-        self.__elems = self.__calculate_elems()
-
-    def __data_generator(self):
-        cur_x = self.__pos.x
-        for i in range(10):
-            yield (Point(x=cur_x, y=0), "|", None)
-            cur_x += 1
 
     def get_render_data(self):
-        return self.__pos, self.__data_generator()
-
+        return self.__pos, self.__image.get_image()
 
 
 class App(object):
     def __init__(self):
+        #TODO
+        #self.layout = Layout(conf=open("layout.cfg"))
+
+        self.layout = Layout().init_layout()
 
         self.border = Point(x=80, y=24)
         self.field  = Point(x=self.border.x, y=self.border.y-1)
@@ -162,8 +161,11 @@ class App(object):
         self.renderer.add_object(self.spaceship)
 
         #gui
-        self.damagepanel = DamagePanel(self.spaceship, pos=Point(x=2, y=self.border.y-1))
-        self.renderer.add_object(self.damagepanel)
+
+        self.hbar = Bar("Hull",   self.layout.gui["hbar"], self.spaceship.get_hinfo, self.spaceship.max_hull)
+        self.sbar = Bar("Shield", self.layout.gui["sbar"], self.spaceship.get_sinfo, self.spaceship.max_shield)
+        self.renderer.add_object(self.hbar)
+        self.renderer.add_object(self.sbar)
 
 
     def create_window(self, x, y, a=0, b=0):

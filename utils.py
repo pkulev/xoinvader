@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-__all__ = ['Event', 'Point', 'Surface', 'Color']
+__all__ = ['Event', 'Point', 'Surface', 'Color', 'Layout']
 
 
 Event = namedtuple("Event", ["type", "val"])
@@ -86,3 +86,25 @@ class Color:
     laser   = 8
     um      = 9
 
+
+class Layout(object):
+    def __init__(self, config=None):
+        self.__field = {}
+        self.__gui = {}
+
+    def init_layout(self):
+        self.__field["border"] = Point(x=80, y=24)
+
+        self.__gui["hbar"] = Point(x=2 , y=self.__field["border"].y - 1)
+        self.__gui["sbar"] = Point(x=22, y=self.__field["border"].y - 1)
+
+
+        return self
+
+    @property
+    def field(self):
+        return self.__field
+
+    @property
+    def gui(self):
+        return self.__gui
