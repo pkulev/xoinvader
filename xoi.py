@@ -4,6 +4,7 @@ import sys
 import time
 import curses
 from collections import namedtuple
+from itertools import cycle
 
 
 from render import Renderer
@@ -87,21 +88,10 @@ class Spaceship(object):
                 self.next_weapon()
 
 
-    #@property
-    #def image(self):
-    #    return self.__image
-
-
-    # @property
-    # def pos(self):
-    #     return self.__pos
-
-
     def get_weapon_info(self):
         return "Weapon: {w} | [{c}/{m}]".format(w=self.__weapon.type,
                                                 c=self.__weapon.ammo,
                                                 m=self.__weapon.max_ammo)
-
 
 
     @property
@@ -189,9 +179,6 @@ class Bar(object):
 
         return m
 
-    def testmap(self):
-        st = self.__get_style(34)
-        return [(ch, st) for ch in self.__bar]
 
     def update(self):
         self.__value = self.__get_data()
