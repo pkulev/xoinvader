@@ -21,14 +21,14 @@ K_ESCAPE = 27
 
 
 class Spaceship(object):
-    def __init__(self, border):
-        self.__image = Surface([[' ','O',' '],
-                                ['/','H','\\'],
-                                [' ','*',' ']])
+    def __init__(self, pos, border):
+        self.__image = Surface([[' ',' ','O',' ',' '],
+                                ['<','=','H','=','>'],
+                                [' ','*',' ','*',' ']])
         self.__dx = 1
+        self.__pos = Point(x=pos.x - self.__image.width // 2,
+                           y=pos.y - self.__image.height) 
         self.__border = border
-        self.__pos = Point(self.__border.x // 2 - self.__image.width // 2,
-                           self.__border.y - self.__image.height)
 
         self.__fire = False
         self.__weapons = [Weapon()("Blaster"), Weapon()("Laser"), Weapon()("UM")]
@@ -81,14 +81,15 @@ class Spaceship(object):
         self.__weapon.update()
         if self.__fire:
             try:
-                self.__weapon.make_shot(Point(x=self.__pos.x + 1, y=self.__pos.y))
+                self.__weapon.make_shot(Point(x=self.__pos.x + self.__image.width // 2,
+                                              y=self.__pos.y))
             except ValueError as e:
                 self.next_weapon()
 
 
-    @property
-    def image(self):
-        return self.__image
+    #@property
+    #def image(self):
+    #    return self.__image
 
 
     @property
@@ -135,9 +136,67 @@ class Bar(object):
         self.__value = self.__get_data()
         self.__max_value = max_value
 
-        self.__template = "{title}: [{elements}]"
-        self.__bar = self.__template.format(title=self.__title, elements=" "*10)
+        self.__bar = "{title}: [{elements}]".format(title=self.__title, elements=" "*10)
         self.__image = Surface([[ch for ch in self.__bar]])
+
+        self.gui_style = Color.ui_norm | curses.A_BOLD
+        self.status_style = {"crit" : Color.dp_critical | curses.A_BLINK | curses.A_BOLD,
+                             "dmgd" : Color.dp_middle   | curses.A_BOLD,
+                             "good" : Color.dp_ok       | curses.A_BOLD,
+                             "blank": Color.dp_blank}
+
+
+
+
+    def __get_style(self, num):
+        if num == -1:
+            return self.status_style["blank"]
+
+        if 0 <= num < 35:
+            return self.status_style["crit"]
+        elif 25 <= num < 70:
+            return self.status_style["dmgd"]
+        elif 70 <= num <= 100:
+            return self.status_style["good"]
+
+    def __generate_style_map(self):
+        num = self.__value * 10 // self.__max_value
+
+        elem_style = self.__get_style(num)
+        blank_style = self.__get_style(-1)
+        gui_style = self.gui_style
+
+        m = []
+        elem = 0
+        in_bar = False
+        for ch in self.__bar:
+            if ch == "[":
+                m.append((ch, gui_style))
+                in_bar = True
+            elif ch == " " and in_bar:
+                if elem < num:
+                    m.append((ch, elem_style))
+                else:
+                    m.append((ch, blank_style))
+                elem += 1
+
+            elif ch == "]":
+                in_bar = False
+                m.append((ch, gui_style))
+
+            else:
+                m.append((ch, gui_style))
+
+        return m
+
+    def testmap(self):
+        st = self.status_style["dmgd"]
+        return [(ch, curses.A_BLINK) for ch in self.__bar]
+
+    def update(self):
+        self.__value = self.__get_data()
+        stylemap = self.testmap() #self.__generate_style_map()
+        self.__image = Surface([[ch[0] for ch in stylemap]], [[st[1] for st in stylemap]])
 
 
     def get_render_data(self):
@@ -146,18 +205,15 @@ class Bar(object):
 
 class App(object):
     def __init__(self):
-        #TODO
-        #self.layout = Layout(conf=open("layout.cfg"))
-
         self.layout = Layout().init_layout()
 
-        self.border = Point(x=80, y=24)
+        self.border = self.layout.field["border"]
         self.field  = Point(x=self.border.x, y=self.border.y-1)
         self.screen = self.create_window(x=self.border.x, y=self.border.y)
 
         self.renderer = Renderer()
 
-        self.spaceship = Spaceship(self.field)
+        self.spaceship = Spaceship(self.layout.field["spaceship"], self.field)
         self.renderer.add_object(self.spaceship)
 
         #gui
@@ -187,7 +243,7 @@ class App(object):
         curses.init_pair(Color.laser, curses.COLOR_BLACK, curses.COLOR_RED)
         curses.init_pair(Color.um, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
 
-        screen = curses.newwin(y, x, 0, 0)
+        screen = curses.newwin(y, x, a, b)
         screen.keypad(1)
         screen.nodelay(1)
         curses.noecho()
@@ -224,18 +280,20 @@ class App(object):
 
     def update(self):
         self.spaceship.update()
+        self.hbar.update()
+        self.sbar.update()
 
 
     def render(self):
         self.screen.erase()
         self.screen.border(0)
         self.screen.addstr(0, 2, "Score: {} ".format(0))
-        self.screen.addstr(0, self.border.x // 2 - 4, "XOInvader", curses.A_BOLD)
+        self.screen.addstr(0, self.field.x // 2 - 4, "XOInvader", curses.A_BOLD)
 
 
 
         weapon_info = self.spaceship.get_weapon_info()
-        self.screen.addstr(self.border.y - 1, self.border.x - len(weapon_info) - 2, weapon_info,
+        self.screen.addstr(self.field.y, self.field.x - len(weapon_info) - 2, weapon_info,
                             (curses.color_pair(Color.ui_yellow) | curses.A_BOLD))
 
 

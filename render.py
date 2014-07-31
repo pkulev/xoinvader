@@ -27,11 +27,17 @@ class Renderer(object):
 
     def render_all(self, screen):
         log.debug("Rendering...")
+
         for obj in self.__objects:
             glob_pos, data_gen = obj.get_render_data()
             log.debug("Current object: {} \ng_pos: {}, d_gen: {}".format(obj, glob_pos, data_gen))
+
             for el in data_gen:
                 pos, image, style = el
                 log.debug("Pos: {}, char: {}, style: {}".format(pos, image, style))
-                screen.addch(glob_pos.y + pos.y, glob_pos.x + pos.x, image)
+
+                if style:
+                    screen.addch(glob_pos.y + pos.y, glob_pos.x + pos.x, image, style)
+                else:
+                    screen.addch(glob_pos.y + pos.y, glob_pos.x + pos.x, image)
         log.debug("Rendered succesfully")
