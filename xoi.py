@@ -36,8 +36,8 @@ class Spaceship(object):
 
         self.__max_hull= 100
         self.__max_shield = 100
-        self.__hull = 100
-        self.__shield = 100
+        self.__hull = 50
+        self.__shield = 50
 
 
 
@@ -92,9 +92,9 @@ class Spaceship(object):
     #    return self.__image
 
 
-    @property
-    def pos(self):
-        return self.__pos
+    # @property
+    # def pos(self):
+    #     return self.__pos
 
 
     def get_weapon_info(self):
@@ -140,10 +140,10 @@ class Bar(object):
         self.__image = Surface([[ch for ch in self.__bar]])
 
         self.gui_style = Color.ui_norm | curses.A_BOLD
-        self.status_style = {"crit" : Color.dp_critical | curses.A_BLINK | curses.A_BOLD,
-                             "dmgd" : Color.dp_middle   | curses.A_BOLD,
-                             "good" : Color.dp_ok       | curses.A_BOLD,
-                             "blank": Color.dp_blank}
+        self.status_style = {"crit" : curses.color_pair(Color.dp_critical) | curses.A_BOLD,
+                             "dmgd" : curses.color_pair(Color.dp_middle)   | curses.A_BOLD,
+                             "good" : curses.color_pair(Color.dp_ok)       | curses.A_BOLD,
+                             "blank": curses.color_pair(Color.dp_blank)}
 
 
 
@@ -152,17 +152,17 @@ class Bar(object):
         if num == -1:
             return self.status_style["blank"]
 
-        if 0 <= num < 35:
-            return self.status_style["crit"]
-        elif 25 <= num < 70:
-            return self.status_style["dmgd"]
-        elif 70 <= num <= 100:
+        if 70 <= num <= 100:
             return self.status_style["good"]
+        elif 35 <= num < 70:
+            return self.status_style["dmgd"]
+        elif 0 <= num < 35:
+            return self.status_style["crit"]
 
     def __generate_style_map(self):
         num = self.__value * 10 // self.__max_value
 
-        elem_style = self.__get_style(num)
+        elem_style = self.__get_style(self.__value)
         blank_style = self.__get_style(-1)
         gui_style = self.gui_style
 
@@ -190,12 +190,12 @@ class Bar(object):
         return m
 
     def testmap(self):
-        st = self.status_style["dmgd"]
-        return [(ch, curses.A_BLINK) for ch in self.__bar]
+        st = self.__get_style(34)
+        return [(ch, st) for ch in self.__bar]
 
     def update(self):
         self.__value = self.__get_data()
-        stylemap = self.testmap() #self.__generate_style_map()
+        stylemap = self.__generate_style_map()
         self.__image = Surface([[ch[0] for ch in stylemap]], [[st[1] for st in stylemap]])
 
 
@@ -220,6 +220,9 @@ class App(object):
 
         self.hbar = Bar("Hull",   self.layout.gui["hbar"], self.spaceship.get_hinfo, self.spaceship.max_hull)
         self.sbar = Bar("Shield", self.layout.gui["sbar"], self.spaceship.get_sinfo, self.spaceship.max_shield)
+        #temp... or not?
+        self.sbar.status_style["good"] = curses.color_pair(Color.sh_ok)  | curses.A_BOLD
+        self.sbar.status_style["dmgd"] = curses.color_pair(Color.sh_mid) | curses.A_BOLD
         self.renderer.add_object(self.hbar)
         self.renderer.add_object(self.sbar)
 
@@ -237,6 +240,8 @@ class App(object):
         curses.init_pair(Color.dp_ok, curses.COLOR_WHITE, curses.COLOR_GREEN)
         curses.init_pair(Color.dp_middle, curses.COLOR_WHITE, curses.COLOR_YELLOW)
         curses.init_pair(Color.dp_critical, curses.COLOR_WHITE, curses.COLOR_RED)
+        curses.init_pair(Color.sh_ok, curses.COLOR_WHITE, curses.COLOR_BLUE)
+        curses.init_pair(Color.sh_mid, curses.COLOR_WHITE, curses.COLOR_CYAN)
 
         #weapons
         curses.init_pair(Color.blaster, curses.COLOR_GREEN, curses.COLOR_BLACK)

@@ -82,10 +82,12 @@ class Color:
     dp_ok       = 4
     dp_middle   = 5
     dp_critical = 6
+    sh_ok       = 7
+    sh_mid      = 8
     #weapons
-    blaster = 7
-    laser   = 8
-    um      = 9
+    blaster = 9
+    laser   = 10
+    um      = 11
 
 
 class Layout(object):
