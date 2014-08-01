@@ -23,111 +23,111 @@ K_ESCAPE = 27
 
 class Spaceship(object):
     def __init__(self, pos, border):
-        self.__image = Surface([[' ',' ','O',' ',' '],
+        self._image = Surface([[' ',' ','O',' ',' '],
                                 ['<','=','H','=','>'],
                                 [' ','*',' ','*',' ']])
-        self.__dx = 1
-        self.__pos = Point(x=pos.x - self.__image.width // 2,
-                           y=pos.y - self.__image.height) 
-        self.__border = border
+        self._dx = 1
+        self._pos = Point(x=pos.x - self._image.width // 2,
+                          y=pos.y - self._image.height)
+        self._border = border
 
-        self.__fire = False
-        self.__weapons = [Weapon()("Blaster"), Weapon()("Laser"), Weapon()("UM")]
-        self.__weapon = self.__weapons[0]
+        self._fire = False
+        self._weapons = [Weapon()("Blaster"), Weapon()("Laser"), Weapon()("UM")]
+        self._weapon = self._weapons[0]
 
-        self.__max_hull= 100
-        self.__max_shield = 100
-        self.__hull = 50
-        self.__shield = 50
+        self._max_hull= 100
+        self._max_shield = 100
+        self._hull = 50
+        self._shield = 50
 
 
 
     def move_left(self):
-        self.__dx = -1
+        self._dx = -1
 
 
     def move_right(self):
-        self.__dx = 1
+        self._dx = 1
 
 
     def toggle_fire(self):
-        self.__fire = not self.__fire
+        self._fire = not self._fire
 
 
     def next_weapon(self):
-        ind = self.__weapons.index(self.__weapon)
-        if ind < len(self.__weapons) - 1:
-            self.__weapon = self.__weapons[ind+1]
+        ind = self.__weapons.index(self._weapon)
+        if ind < len(self._weapons) - 1:
+            self._weapon = self._weapons[ind+1]
         else:
-            self.__weapon = self.__weapons[0]
+            self._weapon = self._weapons[0]
 
 
     def prev_weapon(self):
-        ind = self.__weapons.index(self.__weapon)
+        ind = self._weapons.index(self._weapon)
         if ind == 0:
-            self.__weapon = self.__weapons[len(self.__weapons) - 1]
+            self._weapon = self._weapons[len(self._weapons) - 1]
         else:
-            self.__weapon = self.__weapons[ind - 1]
+            self._weapon = self._weapons[ind - 1]
 
 
     def update(self):
-        if self.__pos.x == self.__border.x - self.__image.width - 1 and self.__dx > 0:
-            self.__pos.x = 0
-        elif self.__pos.x == 1 and self.__dx < 0:
-            self.__pos.x = self.__border.x - self.__image.width
+        if self._pos.x == self._border.x - self._image.width - 1 and self._dx > 0:
+            self._pos.x = 0
+        elif self._pos.x == 1 and self._dx < 0:
+            self._pos.x = self._border.x - self._image.width
 
-        self.__pos.x += self.__dx
-        self.__dx = 0
+        self._pos.x += self._dx
+        self._dx = 0
 
-        self.__weapon.update()
-        if self.__fire:
+        self._weapon.update()
+        if self._fire:
             try:
-                self.__weapon.make_shot(Point(x=self.__pos.x + self.__image.width // 2,
-                                              y=self.__pos.y))
+                self._weapon.make_shot(Point(x=self._pos.x + self._image.width // 2,
+                                             y=self._pos.y))
             except ValueError as e:
                 self.next_weapon()
 
 
     def get_weapon_info(self):
-        return "Weapon: {w} | [{c}/{m}]".format(w=self.__weapon.type,
-                                                c=self.__weapon.ammo,
-                                                m=self.__weapon.max_ammo)
+        return "Weapon: {w} | [{c}/{m}]".format(w=self._weapon.type,
+                                                c=self._weapon.ammo,
+                                                m=self._weapon.max_ammo)
 
 
     @property
     def max_hull(self):
-        return self.__max_hull
+        return self._max_hull
 
 
     @property
     def max_shield(self):
-        return self.__max_shield
+        return self._max_shield
 
 
     def get_hinfo(self):
-        return self.__hull
+        return self._hull
 
 
     def get_sinfo(self):
-        return self.__shield
+        return self._shield
 
 
     def get_render_data(self):
-        return self.__pos, self.__image.get_image()
+        return self._pos, self._image.get_image()
 
 
 
 
 class Bar(object):
     def __init__(self, title, pos, get_data, max_value):
-        self.__title = title
-        self.__pos = pos
-        self.__get_data = get_data
-        self.__value = self.__get_data()
-        self.__max_value = max_value
+        self._title = title
+        self._pos = pos
+        self._get_data = get_data
+        self._value = self._get_data()
+        self._max_value = max_value
 
-        self.__bar = "{title}: [{elements}]".format(title=self.__title, elements=" "*10)
-        self.__image = Surface([[ch for ch in self.__bar]])
+        self._bar = "{title}: [{elements}]".format(title=self._title, elements=" "*10)
+        self._image = Surface([[ch for ch in self._bar]])
 
         self.gui_style = Color.ui_norm | curses.A_BOLD
         self.status_style = {"crit" : curses.color_pair(Color.dp_critical) | curses.A_BOLD,
@@ -138,7 +138,7 @@ class Bar(object):
 
 
 
-    def __get_style(self, num):
+    def _get_style(self, num):
         if num == -1:
             return self.status_style["blank"]
 
@@ -149,17 +149,17 @@ class Bar(object):
         elif 0 <= num < 35:
             return self.status_style["crit"]
 
-    def __generate_style_map(self):
-        num = self.__value * 10 // self.__max_value
+    def _generate_style_map(self):
+        num = self._value * 10 // self._max_value
 
-        elem_style = self.__get_style(self.__value)
-        blank_style = self.__get_style(-1)
+        elem_style = self._get_style(self._value)
+        blank_style = self._get_style(-1)
         gui_style = self.gui_style
 
         m = []
         elem = 0
         in_bar = False
-        for ch in self.__bar:
+        for ch in self._bar:
             if ch == "[":
                 m.append((ch, gui_style))
                 in_bar = True
@@ -169,11 +169,9 @@ class Bar(object):
                 else:
                     m.append((ch, blank_style))
                 elem += 1
-
             elif ch == "]":
                 in_bar = False
                 m.append((ch, gui_style))
-
             else:
                 m.append((ch, gui_style))
 
@@ -181,13 +179,13 @@ class Bar(object):
 
 
     def update(self):
-        self.__value = self.__get_data()
-        stylemap = self.__generate_style_map()
-        self.__image = Surface([[ch[0] for ch in stylemap]], [[st[1] for st in stylemap]])
+        self._value = self._get_data()
+        stylemap = self._generate_style_map()
+        self._image = Surface([[ch[0] for ch in stylemap]], [[st[1] for st in stylemap]])
 
 
     def get_render_data(self):
-        return self.__pos, self.__image.get_image()
+        return self._pos, self._image.get_image()
 
 
 class App(object):
@@ -293,7 +291,7 @@ class App(object):
 
 
         #Render cannons
-        image, coords = self.spaceship._Spaceship__weapon.get_data()
+        image, coords = self.spaceship._weapon.get_data()
         for pos in coords:
             self.screen.addstr(pos.y, pos.x, image, curses.color_pair(Color.laser) | curses.A_BOLD)
 
