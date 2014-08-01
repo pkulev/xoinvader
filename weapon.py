@@ -3,9 +3,9 @@ from utils import Point, Surface
 
 class Weapon1(object):
     def __init__(self, ammo=None, mapping=None):
-        self.__type = "__basic__"
-        self.__image = None
-        self.__max_ammo = None
+        self._type = "__basic__"
+        self._image = None
+        self._max_ammo = None
         self._ammo = ammo
 
 class Blaster(Weapon1):
@@ -16,16 +16,16 @@ class Blaster(Weapon1):
 
 class Weapon(object):
     def __init__(self, w_type=None, image=None, max_ammo=None, ammo=None, cooldown=None, damage=None, radius=None, dy=None):
-        self.__type = w_type
-        self.__image = image
-        self.__max_ammo = max_ammo
-        self.__ammo = ammo
-        self.__cooldown = cooldown
-        self.__damage = damage
-        self.__radius = radius
-        self.__dy = dy
+        self._type = w_type
+        self._image = image
+        self._max_ammo = max_ammo
+        self._ammo = ammo
+        self._cooldown = cooldown
+        self._damage = damage
+        self._radius = radius
+        self._dy = dy
 
-        self.__coords = []
+        self._coords = []
 
 
     def __call__(self, w_type):
@@ -37,37 +37,37 @@ class Weapon(object):
 
 
     def make_shot(self, pos):
-        if self.__ammo == -1 or self.__ammo > 0:
-            self.__coords.append(Point(x=pos.x, y=pos.y - 1))
-        if self.__ammo > 0: self.__ammo -= 1
-        if self.__ammo == 0: raise ValueError("No ammo!")
+        if self._ammo == -1 or self._ammo > 0:
+            self._coords.append(Point(x=pos.x, y=pos.y - 1))
+        if self._ammo > 0: self._ammo -= 1
+        if self._ammo == 0: raise ValueError("No ammo!")
 
 
     @property
     def ammo(self):
-        return 999 if self.__ammo == -1 else self.__ammo
+        return 999 if self._ammo == -1 else self._ammo
 
 
     @property
     def max_ammo(self):
-        return 999 if self.__ammo == -1 else self.__max_ammo
+        return 999 if self._ammo == -1 else self._max_ammo
 
 
     @property
     def type(self):
-        return self.__type
+        return self._type
 
 
     def get_data(self):
-        return (self.__image, self.__coords)
+        return (self._image, self._coords)
 
 
     def update(self):
         new_coords = []
-        for i in self.__coords:
-            if i.y + self.__dy > 0:
-                new_coords.append(Point(x=i.x, y=i.y + self.__dy))
-        self.__coords = new_coords[:]
+        for i in self._coords:
+            if i.y + self._dy > 0:
+                new_coords.append(Point(x=i.x, y=i.y + self._dy))
+        self._coords = new_coords[:]
 
 if __name__ == "__main__":
     w = Blaster(5)
