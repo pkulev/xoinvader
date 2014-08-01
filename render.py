@@ -12,23 +12,23 @@ log = logging.getLogger(__name__)
 
 class Renderer(object):
     def __init__(self):
-        self.__objects = []
+        self._objects = []
 
 
     def add_object(self, obj):
-        self.__objects.append(obj)
-        log.debug("add object {} \nObjects: {}".format(obj, self.__objects))
+        self._objects.append(obj)
+        log.debug("add object {} \nObjects: {}".format(obj, self._objects))
 
 
     def remove_object(self, obj):
-        self.__objects.remove(obj)
+        self._objects.remove(obj)
         log.debug("del object {}".format(obj))
 
 
     def render_all(self, screen):
         log.debug("Rendering...")
 
-        for obj in self.__objects:
+        for obj in self._objects:
             glob_pos, data_gen = obj.get_render_data()
             log.debug("Current object: {} \ng_pos: {}, d_gen: {}".format(obj, glob_pos, data_gen))
 
