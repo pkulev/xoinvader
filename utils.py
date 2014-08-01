@@ -9,31 +9,31 @@ Event = namedtuple("Event", ["type", "val"])
 
 class Point:
     def __init__(self, x, y):
-        self.__x = x
-        self.__y = y
+        self._x = x
+        self._y = y
 
     def __repr__(self):
-        return "Point(x={}, y={})".format(self.__x, self.__y)
+        return "Point(x={}, y={})".format(self._x, self._y)
 
 
     @property
     def x(self):
-        return self.__x
+        return self._x
 
 
     @x.setter
     def x(self, val):
-        self.__x = val
+        self._x = val
 
 
     @property
     def y(self):
-        return self.__y
+        return self._y
 
 
     @y.setter
     def y(self, val):
-        self.__y = val
+        self._y = val
 
 
 class Surface(object):
@@ -52,25 +52,25 @@ class Surface(object):
     """
 
     def __init__(self, image, style=None):
-        self.__image = image
-        self.__width = max([len(l) for l in image])
-        self.__height = len(self.__image)
-        self.__style = style
+        self._image = image
+        self._width = max([len(l) for l in self._image])
+        self._height = len(self._image)
+        self._style = style
 
 
     @property
     def height(self):
-        return self.__height
+        return self._height
 
     @property
     def width(self):
-        return self.__width
+        return self._width
 
 
     def get_image(self):
-        for y, row in enumerate(self.__image):
+        for y, row in enumerate(self._image):
             for x, image in enumerate(row):
-                yield (Point(x=x, y=y), image, self.__style[y][x] if self.__style else None)
+                yield (Point(x=x, y=y), image, self._style[y][x] if self._style else None)
 
 
 class Color:
@@ -92,25 +92,25 @@ class Color:
 
 class Layout(object):
     def __init__(self, config=None):
-        self.__field = {}
-        self.__gui = {}
+        self._field = {}
+        self._gui = {}
 
     def init_layout(self):
-        self.__field["border"] = Point(x=80, y=24)
-        self.__field["spaceship"] = Point(x=self.__field["border"].x // 2,
-                                          y=self.__field["border"].y - 1)
+        self._field["border"] = Point(x=80, y=24)
+        self._field["spaceship"] = Point(x=self._field["border"].x // 2,
+                                         y=self._field["border"].y - 1)
 
-        self.__gui["hbar"] = Point(x=2 , y=self.__field["border"].y - 1)
-        self.__gui["sbar"] = Point(x=22, y=self.__field["border"].y - 1)
+        self._gui["hbar"] = Point(x=2 , y=self._field["border"].y - 1)
+        self._gui["sbar"] = Point(x=22, y=self._field["border"].y - 1)
 
         return self
 
 
     @property
     def field(self):
-        return self.__field
+        return self._field
 
 
     @property
     def gui(self):
-        return self.__gui
+        return self._gui
