@@ -4,11 +4,12 @@ import sys
 import time
 import curses
 from collections import namedtuple
+from itertools import cycle
 
 
 from render import Renderer
 from weapon import Weapon
-from utils import Point, Event, Surface
+from utils import Point, Event, Surface, Color, Layout
 
 
 KEY = "KEY"
@@ -21,160 +22,218 @@ K_ESCAPE = 27
 
 
 class Spaceship(object):
-    def __init__(self, border):
-        self.__image = Surface([[' ','O',' '],
-                                ['/','H','\\'],
-                                [' ','*',' ']])
-        self.__dx = 1
-        self.__border = border
-        self.__pos = Point(self.__border.x // 2 - self.__image.width // 2,
-                           self.__border.y - self.__image.height)
-        self.__fire = False
-        self.__weapons = [Weapon()("Blaster"), Weapon()("Laser"), Weapon()("UM")]
-        self.__weapon = self.__weapons[0]
-        self.__hull = 100
-        self.__shield = 100
+    def __init__(self, pos, border):
+        self._image = Surface([[' ',' ','O',' ',' '],
+                                ['<','=','H','=','>'],
+                                [' ','*',' ','*',' ']])
+        self._dx = 1
+        self._pos = Point(x=pos.x - self._image.width // 2,
+                          y=pos.y - self._image.height)
+        self._border = border
 
-        self.h_bar = Bar(self.__hull, 100, title="Hull")
-        self.s_bar = Bar(self.__shield, 100, title="Shield")
+        self._fire = False
+        self._weapons = [Weapon()("Blaster"), Weapon()("Laser"), Weapon()("UM")]
+        self._weapon = self._weapons[0]
+
+        self._max_hull= 100
+        self._max_shield = 100
+        self._hull = 50
+        self._shield = 50
+
 
 
     def move_left(self):
-        self.__dx = -1
+        self._dx = -1
 
 
     def move_right(self):
-        self.__dx = 1
+        self._dx = 1
+
 
     def toggle_fire(self):
-        self.__fire = not self.__fire
+        self._fire = not self._fire
+
 
     def next_weapon(self):
-        ind = self.__weapons.index(self.__weapon)
-        if ind < len(self.__weapons) - 1:
-            self.__weapon = self.__weapons[ind+1]
+        ind = self.__weapons.index(self._weapon)
+        if ind < len(self._weapons) - 1:
+            self._weapon = self._weapons[ind+1]
         else:
-            self.__weapon = self.__weapons[0]
-
+            self._weapon = self._weapons[0]
 
 
     def prev_weapon(self):
-        ind = self.__weapons.index(self.__weapon)
+        ind = self._weapons.index(self._weapon)
         if ind == 0:
-            self.__weapon = self.__weapons[len(self.__weapons) - 1]
+            self._weapon = self._weapons[len(self._weapons) - 1]
         else:
-            self.__weapon = self.__weapons[ind - 1]
+            self._weapon = self._weapons[ind - 1]
 
 
     def update(self):
-        if self.__pos.x == self.__border.x - self.__image.width - 1 and self.__dx > 0:
-            self.__pos.x = 0
-        elif self.__pos.x == 1 and self.__dx < 0:
-            self.__pos.x = self.__border.x - self.__image.width
+        if self._pos.x == self._border.x - self._image.width - 1 and self._dx > 0:
+            self._pos.x = 0
+        elif self._pos.x == 1 and self._dx < 0:
+            self._pos.x = self._border.x - self._image.width
 
-        self.__pos.x += self.__dx
-        self.__dx = 0
+        self._pos.x += self._dx
+        self._dx = 0
 
-        self.__weapon.update()
-        if self.__fire:
+        self._weapon.update()
+        if self._fire:
             try:
-                self.__weapon.make_shot(Point(x=self.__pos.x + 1, y=self.__pos.y))
+                self._weapon.make_shot(Point(x=self._pos.x + self._image.width // 2,
+                                             y=self._pos.y))
             except ValueError as e:
                 self.next_weapon()
 
 
-        #!!!!
-        self.h_bar.update_value(self.__hull)
-        self.s_bar.update_value(self.__shield)
-
-    @property
-    def image(self):
-        return self.__image
-
-    @property
-    def pos(self):
-        return self.__pos
-
-
     def get_weapon_info(self):
-        return "Weapon: {w} | [{c}/{m}]".format(w=self.__weapon.type,
-                                                c=self.__weapon.ammo,
-                                                m=self.__weapon.max_ammo)
+        return "Weapon: {w} | [{c}/{m}]".format(w=self._weapon.type,
+                                                c=self._weapon.ammo,
+                                                m=self._weapon.max_ammo)
 
-    def get_health_info(self):
-        return (self.__hull, self.__shield)
+
+    @property
+    def max_hull(self):
+        return self._max_hull
+
+
+    @property
+    def max_shield(self):
+        return self._max_shield
+
+
+    def get_hinfo(self):
+        return self._hull
+
+
+    def get_sinfo(self):
+        return self._shield
 
 
     def get_render_data(self):
-        return self.__pos, self.__image.get_image()
+        return self._pos, self._image.get_image()
 
-
-LOW = 3
-MEDIUM = 4
-HIGH = 5
-BLANK = 6
-
-class Bar(object):
-    def __init__(self, value, max_value, title=None):
-        self.__title = title + ": " if title else None
-        self.__value = value
-        self.__max_value = max_value
-        self.__elems = 0 if self.__value <= 0 else round(self.__value * 10 / self.__max_value)
-        self.__start = "["
-        self.__end = "]"
-        self.__elem = " "
-        self.__style = curses.A_BOLD
 
 
 
-    def update_value(self, val):
-        self.__value = 0 if val < 0 else val
+class Bar(object):
+    def __init__(self, title, pos, get_data, max_value):
+        self._title = title
+        self._pos = pos
+        self._get_data = get_data
+        self._value = self._get_data()
+        self._max_value = max_value
+
+        self._bar = "{title}: [{elements}]".format(title=self._title, elements=" "*10)
+        self._image = Surface([[ch for ch in self._bar]])
+
+        self.gui_style = Color.ui_norm | curses.A_BOLD
+        self.status_style = {"crit" : curses.color_pair(Color.dp_critical) | curses.A_BOLD,
+                             "dmgd" : curses.color_pair(Color.dp_middle)   | curses.A_BOLD,
+                             "good" : curses.color_pair(Color.dp_ok)       | curses.A_BOLD,
+                             "blank": curses.color_pair(Color.dp_blank)}
 
 
 
-    def render(self, screen, pos):
-        if self.__title:
-            screen.addstr(pos.y, pos.x, self.__title, self.__style)
-            pos.x += len(self.__title)
 
-        screen.addstr(pos.y, pos.x, self.__start, self.__style)
-        for i in range(1, self.__elems + 1):
-            pos.x += 1
-            if i in (1, 2, 3): #RED
-                screen.addstr(pos.y, pos.x, self.__elem, curses.color_pair(LOW) | self.__style)
-            elif i in (4,5,6):
-                screen.addstr(pos.y, pos.x, self.__elem, curses.color_pair(MEDIUM) | self.__style)
+    def _get_style(self, num):
+        if num == -1:
+            return self.status_style["blank"]
+
+        if 70 <= num <= 100:
+            return self.status_style["good"]
+        elif 35 <= num < 70:
+            return self.status_style["dmgd"]
+        elif 0 <= num < 35:
+            return self.status_style["crit"]
+
+    def _generate_style_map(self):
+        num = self._value * 10 // self._max_value
+
+        elem_style = self._get_style(self._value)
+        blank_style = self._get_style(-1)
+        gui_style = self.gui_style
+
+        m = []
+        elem = 0
+        in_bar = False
+        for ch in self._bar:
+            if ch == "[":
+                m.append((ch, gui_style))
+                in_bar = True
+            elif ch == " " and in_bar:
+                if elem < num:
+                    m.append((ch, elem_style))
+                else:
+                    m.append((ch, blank_style))
+                elem += 1
+            elif ch == "]":
+                in_bar = False
+                m.append((ch, gui_style))
             else:
-                screen.addstr(pos.y, pos.x, self.__elem, curses.color_pair(HIGH) | self.__style)
-        pos.x += 1
-        screen.addstr(pos.y, pos.x, self.__end, self.__style)
+                m.append((ch, gui_style))
 
-        return Point(x=pos.x, y=pos.y)
+        return m
+
+
+    def update(self):
+        self._value = self._get_data()
+        stylemap = self._generate_style_map()
+        self._image = Surface([[ch[0] for ch in stylemap]], [[st[1] for st in stylemap]])
+
+
+    def get_render_data(self):
+        return self._pos, self._image.get_image()
 
 
 class App(object):
     def __init__(self):
+        self.layout = Layout().init_layout()
 
-        self.border = Point(x=80, y=24)
+        self.border = self.layout.field["border"]
         self.field  = Point(x=self.border.x, y=self.border.y-1)
         self.screen = self.create_window(x=self.border.x, y=self.border.y)
 
         self.renderer = Renderer()
 
-        self.spaceship = Spaceship(self.field)
+        self.spaceship = Spaceship(self.layout.field["spaceship"], self.field)
         self.renderer.add_object(self.spaceship)
+
+        #gui
+
+        self.hbar = Bar("Hull",   self.layout.gui["hbar"], self.spaceship.get_hinfo, self.spaceship.max_hull)
+        self.sbar = Bar("Shield", self.layout.gui["sbar"], self.spaceship.get_sinfo, self.spaceship.max_shield)
+        #temp... or not?
+        self.sbar.status_style["good"] = curses.color_pair(Color.sh_ok)  | curses.A_BOLD
+        self.sbar.status_style["dmgd"] = curses.color_pair(Color.sh_mid) | curses.A_BOLD
+        self.renderer.add_object(self.hbar)
+        self.renderer.add_object(self.sbar)
 
 
     def create_window(self, x, y, a=0, b=0):
         curses.initscr()
         curses.start_color()
-        curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-        curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_RED)
-        curses.init_pair(LOW, curses.COLOR_WHITE, curses.COLOR_RED)
-        curses.init_pair(MEDIUM, curses.COLOR_WHITE, curses.COLOR_YELLOW)
-        curses.init_pair(HIGH, curses.COLOR_WHITE, curses.COLOR_GREEN)
-        curses.init_pair(BLANK, curses.COLOR_BLACK, curses.COLOR_BLACK)
-        screen = curses.newwin(y, x, 0, 0)
+
+        #user interface
+        curses.init_pair(Color.ui_norm, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(Color.ui_yellow, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+
+        #damage panel
+        curses.init_pair(Color.dp_blank, curses.COLOR_BLACK, curses.COLOR_BLACK)
+        curses.init_pair(Color.dp_ok, curses.COLOR_WHITE, curses.COLOR_GREEN)
+        curses.init_pair(Color.dp_middle, curses.COLOR_WHITE, curses.COLOR_YELLOW)
+        curses.init_pair(Color.dp_critical, curses.COLOR_WHITE, curses.COLOR_RED)
+        curses.init_pair(Color.sh_ok, curses.COLOR_WHITE, curses.COLOR_BLUE)
+        curses.init_pair(Color.sh_mid, curses.COLOR_WHITE, curses.COLOR_CYAN)
+
+        #weapons
+        curses.init_pair(Color.blaster, curses.COLOR_GREEN, curses.COLOR_BLACK)
+        curses.init_pair(Color.laser, curses.COLOR_BLACK, curses.COLOR_RED)
+        curses.init_pair(Color.um, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+
+        screen = curses.newwin(y, x, a, b)
         screen.keypad(1)
         screen.nodelay(1)
         curses.noecho()
@@ -211,36 +270,30 @@ class App(object):
 
     def update(self):
         self.spaceship.update()
+        self.hbar.update()
+        self.sbar.update()
 
 
     def render(self):
         self.screen.erase()
         self.screen.border(0)
         self.screen.addstr(0, 2, "Score: {} ".format(0))
-        self.screen.addstr(0, self.border.x // 2 - 4, "XOInvader", curses.A_BOLD)
+        self.screen.addstr(0, self.field.x // 2 - 4, "XOInvader", curses.A_BOLD)
 
 
 
         weapon_info = self.spaceship.get_weapon_info()
-        self.screen.addstr(self.border.y - 1, self.border.x - len(weapon_info) - 2, weapon_info,
-                            (curses.color_pair(1) | curses.A_BOLD))
-
-
-
-        #!!!!
-        hull, shield = self.spaceship.get_health_info()
-        end = self.spaceship.h_bar.render(self.screen, Point(y=self.border.y - 1, x=2))
-        self.spaceship.s_bar.render(self.screen, Point(y=end.y, x=end.x + 2))
-
+        self.screen.addstr(self.field.y, self.field.x - len(weapon_info) - 2, weapon_info,
+                            (curses.color_pair(Color.ui_yellow) | curses.A_BOLD))
 
 
         self.renderer.render_all(self.screen)
 
 
         #Render cannons
-        image, coords = self.spaceship._Spaceship__weapon.get_data()
+        image, coords = self.spaceship._weapon.get_data()
         for pos in coords:
-            self.screen.addstr(pos.y, pos.x, image, curses.color_pair(2) | curses.A_BOLD)
+            self.screen.addstr(pos.y, pos.x, image, curses.color_pair(Color.laser) | curses.A_BOLD)
 
         self.screen.refresh()
         time.sleep(0.03)
