@@ -1,14 +1,8 @@
-import logging
+from utils import create_logger
 
-from utils import log_format, date_format
 
-logging.basicConfig(filename="render.log",
-                    filemode="w",
-                    format=log_format,
-                    datefmt=date_format,
-                    level=logging.DEBUG)
+log = create_logger(__name__, "render.log")
 
-log = logging.getLogger(__name__)
 
 class Renderer(object):
     def __init__(self):

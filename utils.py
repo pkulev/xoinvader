@@ -1,9 +1,20 @@
+import logging
+
 from collections import namedtuple
-from itertools import chain
 
 
 log_format = "[%(asctime)s] %(levelname)s: %(message)s"
 date_format = "%m/%d/%Y %I:%M:%S %p"
+
+
+def create_logger(lname, fname, fmode="w", level=logging.DEBUG):
+    logging.basicConfig(filename=fname,
+                        filemode=fmode,
+                        format=log_format,
+                        datefmt=date_format,
+                        level=level)
+    return logging.getLogger(lname)
+
 
 Event = namedtuple("Event", ["type", "val"])
 
@@ -119,9 +130,15 @@ class Layout(object):
 
 
 class InfList(list):
+    """Infinite list container"""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._index = 0
+
+
+    def current(self):
+        return self[self._index]
 
 
     def next(self):
@@ -132,10 +149,3 @@ class InfList(list):
     def prev(self):
         self._index = self._index - 1 if self._index > 0 else len(self)-1
         return self[self._index]
-
-
-if __name__ == "__main__":
-    c1 = InfList([1,2,3])
-    print(c1)
-    for _ in range(4):
-        print(c1.next())

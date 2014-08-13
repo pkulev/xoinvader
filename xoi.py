@@ -9,7 +9,7 @@ from itertools import cycle
 
 from render import Renderer
 from weapon import Weapon
-from utils import Point, Event, Surface, Color, Layout
+from utils import Point, Event, Surface, Color, Layout, InfList
 
 
 KEY = "KEY"
@@ -32,9 +32,8 @@ class Spaceship(object):
         self._border = border
 
         self._fire = False
-        self._weapons = [Weapon()("Blaster"), Weapon()("Laser"), Weapon()("UM")]
-        self._weapon = self._weapons[0]
-
+        self._weapons = InfList([Weapon()("Blaster"), Weapon()("Laser"), Weapon()("UM")])
+        self._weapon = self._weapons.current()
         self._max_hull= 100
         self._max_shield = 100
         self._hull = 50
@@ -55,19 +54,11 @@ class Spaceship(object):
 
 
     def next_weapon(self):
-        ind = self.__weapons.index(self._weapon)
-        if ind < len(self._weapons) - 1:
-            self._weapon = self._weapons[ind+1]
-        else:
-            self._weapon = self._weapons[0]
+            self._weapon = self._weapons.next()
 
 
     def prev_weapon(self):
-        ind = self._weapons.index(self._weapon)
-        if ind == 0:
-            self._weapon = self._weapons[len(self._weapons) - 1]
-        else:
-            self._weapon = self._weapons[ind - 1]
+            self._weapon = self._weapons.prev()
 
 
     def update(self):
