@@ -1,4 +1,5 @@
 from collections import namedtuple
+from itertools import chain
 
 __all__ = ['Event', 'Point', 'Surface']
 
@@ -70,3 +71,25 @@ class Surface(object):
         for y, row in enumerate(self.__image):
             for x, image in enumerate(row):
                 yield (Point(x=x, y=y), image, self.__style)
+
+
+class InfList(list):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._index = 0
+
+
+    def next(self):
+        self._index = self._index + 1 if self._index < len(self)-1 else 0
+        return self[self._index]
+
+    def prev(self):
+        self._index = self._index - 1 if self._index > 0 else len(self)-1
+        return self[self._index]
+
+if __name__ == "__main__":
+    c1 = InfList([1,2,3])
+    print(c1)
+    for _ in range(4):
+        print(c1.next())
+
