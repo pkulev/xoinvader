@@ -7,7 +7,7 @@ from collections import namedtuple
 from itertools import cycle
 
 
-from render import Renderer
+from render import Renderer, Renderable
 from weapon import Weapon
 from utils import Point, Event, Surface, Color, Layout, InfList
 
@@ -21,11 +21,11 @@ K_SPACE = ord(" ")
 K_ESCAPE = 27
 
 
-class Spaceship(object):
+class Spaceship(Renderable):
     def __init__(self, pos, border):
         self._image = Surface([[' ',' ','O',' ',' '],
-                                ['<','=','H','=','>'],
-                                [' ','*',' ','*',' ']])
+                               ['<','=','H','=','>'],
+                               [' ','*',' ','*',' ']])
         self._dx = 1
         self._pos = Point(x=pos.x - self._image.width // 2,
                           y=pos.y - self._image.height)
@@ -109,7 +109,7 @@ class Spaceship(object):
 
 
 
-class Bar(object):
+class Bar(Renderable):
     def __init__(self, title, pos, get_data, max_value):
         self._title = title
         self._pos = pos

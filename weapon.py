@@ -1,17 +1,52 @@
-from utils import Point, Surface
+import configparser
+
+from abc import ABCMeta, abstractmethod
+
+from utils import Point, Surface, create_logger
 
 
-class Weapon1(object):
-    def __init__(self, ammo=None, mapping=None):
+
+log = create_logger(__name__, "weapon.log")
+config_file = "weapons.cfg"
+config = configparser.SafeConfigParser(allow_no_value=True,
+        interpolation=configparser.ExtendedInterpolation())
+config.read(config_file)
+
+class IWeapon(object, metaclass=ABCMeta):
+    @abstractmethod
+    def make_shoot(self):
+        pass
+
+
+def _load_from_config(weapon, config):
+    section = 'Laser'#weapon.__name__
+    params = ("ammo", "max_ammo", "cooldown", "damage", "radius", "dx", "dy")
+    return weapon(
+            **{var : config.get(section, var) for var in params} )
+
+
+class Weapon1(IWeapon):
+    def __init__(self, ammo, max_ammo, cooldown, damage, radius, dy, dx):
         self._type = "__basic__"
         self._image = None
-        self._max_ammo = None
+        self._max_ammo = max_ammo
         self._ammo = ammo
+        self._cooldown = cooldown
+        self._damage = damage
+        self._radius = radius
+        self._dy = dy
+        self._dx = dx
+
+
+    def make_shoot(self):
+        log.debug("BANG!")
+
+
 
 class Blaster(Weapon1):
-    def __init__(self, ammo=None, mapping=None):
-        super().__init__(ammo, mapping)
-        with open("log", "w") as l: l.write(str(self._ammo))
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        log.debug(str(self._ammo))
 
 
 class Weapon(object):
@@ -70,5 +105,6 @@ class Weapon(object):
         self._coords = new_coords[:]
 
 if __name__ == "__main__":
-    w = Blaster(5)
+    from pprint import pprint
+    pprint(vars(_load_from_config(Blaster, config)))
 

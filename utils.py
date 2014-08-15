@@ -63,8 +63,8 @@ class Surface(object):
          [" ","*"," ","*"," "] ]         * *
     """
 
-    def __init__(self, image, style=None):
-        self._image = image
+    def __init__(self, image, style=None, orientation='up'):
+        self._image = image if orientation == 'up' else image[::-1]
         self._width = max([len(l) for l in self._image])
         self._height = len(self._image)
         self._style = style
@@ -87,7 +87,7 @@ class Surface(object):
 
 class Color:
     #user interface
-    ui_norm  = 1
+    ui_norm   = 1
     ui_yellow = 2
     #damage panel
     dp_blank    = 3

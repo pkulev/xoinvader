@@ -1,7 +1,15 @@
+from abc import ABCMeta, abstractmethod
+
 from utils import create_logger
 
 
 log = create_logger(__name__, "render.log")
+
+
+class Renderable(object, metaclass=ABCMeta):
+    @abstractmethod
+    def get_render_data(self):
+        pass
 
 
 class Renderer(object):
