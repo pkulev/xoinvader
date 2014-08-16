@@ -142,10 +142,20 @@ class InfList(list):
 
 
     def next(self):
-        self._index = self._index + 1 if self._index < len(self)-1 else 0
+        self._index = (self._index + 1) % len(self)
         return self[self._index]
 
 
     def prev(self):
-        self._index = self._index - 1 if self._index > 0 else len(self)-1
+        self._index = (self._index - 1) % len(self)
         return self[self._index]
+
+
+if __name__ == "__main__":
+    l = InfList([1,2,3,4,5])
+    print(l.current())
+    for _ in range(10):
+        print(l.next())
+    print("prevs:")
+    for _ in range(10):
+        print(l.prev())
