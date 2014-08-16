@@ -1,9 +1,9 @@
 import configparser
 
 from abc import ABCMeta, abstractmethod
+from pprint import pprint
 
 from utils import Point, Surface, create_logger
-
 
 
 log = create_logger(__name__, "weapon.log")
@@ -12,6 +12,7 @@ config = configparser.SafeConfigParser(allow_no_value=True,
         interpolation=configparser.ExtendedInterpolation())
 config.read(config_file)
 
+
 class IWeapon(object, metaclass=ABCMeta):
     @abstractmethod
     def make_shoot(self):
@@ -19,38 +20,65 @@ class IWeapon(object, metaclass=ABCMeta):
 
 
 def _load_from_config(weapon, config):
-    section = 'Laser'#weapon.__name__
-    params = ("ammo", "max_ammo", "cooldown", "damage", "radius", "dx", "dy")
-    return weapon(
-            **{var : config.get(section, var) for var in params} )
+    section = weapon.__name__
+    params = ("ammo", "max_ammo", "cooldown", "damage", "radius", "dy")
+    return weapon(**{var : config.get(section, var) for var in params})
 
 
 class Weapon1(IWeapon):
-    def __init__(self, ammo, max_ammo, cooldown, damage, radius, dy, dx):
+    def __init__(self, ammo, max_ammo, cooldown, damage, radius, dy):
         self._type = "__basic__"
         self._image = None
-        self._max_ammo = max_ammo
-        self._ammo = ammo
-        self._cooldown = cooldown
-        self._damage = damage
-        self._radius = radius
-        self._dy = dy
-        self._dx = dx
+        self._ammo = int(ammo) if ammo.isdigit() else ammo
+        self._max_ammo = int(max_ammo) if max_ammo.isdigit() else max_ammo
+        self._cooldown = int(cooldown)
+        self._damage = int(damage)
+        self._radius = int(radius)
+        self._dy = int(dy)
 
 
     def make_shoot(self):
         log.debug("BANG!")
 
 
+    @property
+    def ammo(self):
+        return 999 if self._ammo == "infinite" else self._ammo
+
+    @property
+    def max_ammo(self):
+        return 999 if self._max_ammo == "infinite" else self._max_ammo
+
 
 class Blaster(Weapon1):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        log.debug(str(self._ammo))
+        self._image = Surface([["^"]])
+
+        log.debug(str(vars(self)))
+
+
+class Laser(Weapon1):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._image = Surface([["|"]])
+
+        log.debug(str(vars(self)))
+
+
+class UM(Weapon1):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._image = Surface([["^"],
+                               ["|"],
+                               ["*"]])
+
+        log.debug(str(vars(self)))
 
 
 class Weapon(object):
-    def __init__(self, w_type=None, image=None, max_ammo=None, ammo=None, cooldown=None, damage=None, radius=None, dy=None):
+    def __init__(self, w_type=None, image=None, max_ammo=None, ammo=None,
+            cooldown=None, damage=None, radius=None, dy=None):
         self._type = w_type
         self._image = image
         self._max_ammo = max_ammo
@@ -107,4 +135,6 @@ class Weapon(object):
 if __name__ == "__main__":
     from pprint import pprint
     pprint(vars(_load_from_config(Blaster, config)))
-
+    _load_from_config(Blaster, config).make_shoot()
+    _load_from_config(Laser, config)
+    _load_from_config(UM, config)
