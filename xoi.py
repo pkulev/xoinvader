@@ -8,7 +8,7 @@ from itertools import cycle
 
 
 from render import Renderer, Renderable
-from weapon import Weapon
+from weapon import Blaster
 from utils import Point, Event, Surface, Color, Layout, InfList
 
 
@@ -22,7 +22,7 @@ K_ESCAPE = 27
 
 
 class Spaceship(Renderable):
-    def __init__(self, pos, border):
+    def __init__(self, pos, border, owner):
         self._image = Surface([[' ',' ','O',' ',' '],
                                ['<','=','H','=','>'],
                                [' ','*',' ','*',' ']])
@@ -30,10 +30,13 @@ class Spaceship(Renderable):
         self._pos = Point(x=pos.x - self._image.width // 2,
                           y=pos.y - self._image.height)
         self._border = border
+        self._owner = owner
 
         self._fire = False
-        self._weapons = InfList([Weapon()("Blaster"), Weapon()("Laser"), Weapon()("UM")])
+        self._weapons = InfList([Blaster()])
+        for weapon in self._weapons: self._owner.renderer.add_object(weapon)
         self._weapon = self._weapons.current()
+
         self._max_hull= 100
         self._max_shield = 100
         self._hull = 50
@@ -69,8 +72,9 @@ class Spaceship(Renderable):
 
         self._pos.x += self._dx
         self._dx = 0
-
-        self._weapon.update()
+        
+        for weapon in self._weapons:
+            weapon.update()
         if self._fire:
             try:
                 self._weapon.make_shot(Point(x=self._pos.x + self._image.width // 2,
@@ -189,7 +193,7 @@ class App(object):
 
         self.renderer = Renderer()
 
-        self.spaceship = Spaceship(self.layout.field["spaceship"], self.field)
+        self.spaceship = Spaceship(self.layout.field["spaceship"], self.field, self)
         self.renderer.add_object(self.spaceship)
 
         #gui
@@ -282,9 +286,9 @@ class App(object):
 
 
         #Render cannons
-        image, coords = self.spaceship._weapon.get_data()
-        for pos in coords:
-            self.screen.addstr(pos.y, pos.x, image, curses.color_pair(Color.laser) | curses.A_BOLD)
+        #image, coords = self.spaceship._weapon.get_data()
+        #for pos in coords:
+        #    self.screen.addstr(pos.y, pos.x, image, curses.color_pair(Color.laser) | curses.A_BOLD)
 
         self.screen.refresh()
         time.sleep(0.03)
