@@ -9,6 +9,15 @@ log = create_logger(__name__, "render.log")
 class Renderable(object, metaclass=ABCMeta):
     @abstractmethod
     def get_render_data(self):
+        """Renderable.get_render_data(None) -> (gpos_list, surface_generator)
+
+        Every renderable object must return tuple consist of:
+        * gpos_list: list of every Surface's global positions (List of Points)
+          Example: [Point(x=5, y=5), Point(x=10, y=10)]
+
+        * Surface_generator: generator which yields tuple (lpos, image, style)
+          Example: (Point(x=5, y=5), "*", curses.A_BOLD)
+        """
         pass
 
 
