@@ -9,13 +9,13 @@ log = create_logger(__name__, "render.log")
 class Renderable(object, metaclass=ABCMeta):
     @abstractmethod
     def get_render_data(self):
-        """Renderable.get_render_data(None) -> (gpos_list, surface_generator)
+        """Renderable.get_render_data(None) -> (gpos_list, data_gen)
 
         Every renderable object must return tuple consist of:
         * gpos_list: list of every Surface's global positions (List of Points)
           Example: [Point(x=5, y=5), Point(x=10, y=10)]
 
-        * Surface_generator: generator which yields tuple (lpos, image, style)
+        * data_gen: generator which yields tuple (lpos, image, style)
           Example: (Point(x=5, y=5), "*", curses.A_BOLD)
         """
         pass
@@ -40,16 +40,18 @@ class Renderer(object):
         log.debug("Rendering...")
 
         for obj in self._objects:
-            glob_pos, data_gen = obj.get_render_data()
-            log.debug("Current object: {} \ng_pos: {}, d_gen: {}".format(obj, glob_pos, data_gen))
+            gpos_list, data_gen = obj.get_render_data()
+            log.debug("Current object: {} \ng_pos: {}, d_gen: {}".format(obj, gpos_list, data_gen))
 #FIX
-            for global_pos in glob_pos:
-                for el in data_gen:
-                    pos, image, style = el
-                    log.debug("Pos: {}, char: {}, style: {}".format(pos, image, style))
+            for gpos in gpos_list:
+                for data in data_gen:
+                    lpos, image, style = data
+                    cpos = gpos + lpos
+                    log.debug("Coords [global: {}; local: {}; sum: {}]".format(gpos, lpos, cpos))
+                    log.debug("char: {}, style: {}".format(image, style))
 
                     if style:
-                        screen.addch(glob_pos.y + pos.y, glob_pos.x + pos.x, image, style)
+                        screen.addch(cpos.y, cpos.x, image, style)
                     else:
-                        screen.addch(glob_pos.y + pos.y, glob_pos.x + pos.x, image)
+                        screen.addch(cpos.y, cpos.x, image)
         log.debug("Rendered succesfully")

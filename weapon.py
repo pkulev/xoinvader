@@ -1,7 +1,6 @@
 import configparser
 
 from abc import ABCMeta, abstractmethod
-from pprint import pprint
 
 from utils import Point, Surface, create_logger
 
@@ -16,10 +15,13 @@ config.read(config_file)
 class IWeapon(object, metaclass=ABCMeta):
     @abstractmethod
     def make_shot(self):
+        """Make shot, if can't - raise Value Error"""
         pass
+
 
     @abstractmethod
     def update(self):
+        """update coords list"""
         pass
 
 
@@ -54,7 +56,7 @@ class Weapon(IWeapon):
 
 
     def get_render_data(self):
-        return (self._image, self._coords)
+        return (self._coords, self._image.get_image())
 
     get_data = get_render_data
 

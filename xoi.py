@@ -72,7 +72,7 @@ class Spaceship(Renderable):
 
         self._pos.x += self._dx
         self._dx = 0
-        
+
         for weapon in self._weapons:
             weapon.update()
         if self._fire:
@@ -108,7 +108,7 @@ class Spaceship(Renderable):
 
 
     def get_render_data(self):
-        return self._pos, self._image.get_image()
+        return [self._pos], self._image.get_image()
 
 
 
@@ -124,7 +124,7 @@ class Bar(Renderable):
         self._bar = "{title}: [{elements}]".format(title=self._title, elements=" "*10)
         self._image = Surface([[ch for ch in self._bar]])
 
-        self.gui_style = Color.ui_norm | curses.A_BOLD
+        self.gui_style = curses.color_pair(Color.ui_norm) | curses.A_BOLD
         self.status_style = {"crit" : curses.color_pair(Color.dp_critical) | curses.A_BOLD,
                              "dmgd" : curses.color_pair(Color.dp_middle)   | curses.A_BOLD,
                              "good" : curses.color_pair(Color.dp_ok)       | curses.A_BOLD,
@@ -180,7 +180,7 @@ class Bar(Renderable):
 
 
     def get_render_data(self):
-        return self._pos, self._image.get_image()
+        return [self._pos], self._image.get_image()
 
 
 class App(object):
