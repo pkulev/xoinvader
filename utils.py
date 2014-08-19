@@ -28,6 +28,13 @@ class Point:
         return "Point(x={}, y={})".format(self._x, self._y)
 
 
+    __str__ = __repr__
+
+
+    def __add__(self, other):
+        return Point(x=self.x + other.x, y=self.y + other.y)
+
+
     @property
     def x(self):
         return self._x
@@ -149,13 +156,3 @@ class InfList(list):
     def prev(self):
         self._index = (self._index - 1) % len(self)
         return self[self._index]
-
-
-if __name__ == "__main__":
-    l = InfList([1,2,3,4,5])
-    print(l.current())
-    for _ in range(10):
-        print(l.next())
-    print("prevs:")
-    for _ in range(10):
-        print(l.prev())
