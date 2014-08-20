@@ -8,7 +8,7 @@ from itertools import cycle
 
 
 from render import Renderer, Renderable
-from weapon import Blaster
+from weapon import Blaster, Laser, UM
 from utils import Point, Event, Surface, Color, Layout, InfList
 
 
@@ -33,7 +33,7 @@ class Spaceship(Renderable):
         self._owner = owner
 
         self._fire = False
-        self._weapons = InfList([Blaster()])
+        self._weapons = InfList([Blaster(), Laser(), UM()])
         for weapon in self._weapons: self._owner.renderer.add_object(weapon)
         self._weapon = self._weapons.current()
 
@@ -190,6 +190,7 @@ class App(object):
         self.border = self.layout.field["border"]
         self.field  = Point(x=self.border.x, y=self.border.y-1)
         self.screen = self.create_window(x=self.border.x, y=self.border.y)
+        #utils.
 
         self.renderer = Renderer()
 
@@ -284,11 +285,6 @@ class App(object):
 
         self.renderer.render_all(self.screen)
 
-
-        #Render cannons
-        #image, coords = self.spaceship._weapon.get_data()
-        #for pos in coords:
-        #    self.screen.addstr(pos.y, pos.x, image, curses.color_pair(Color.laser) | curses.A_BOLD)
 
         self.screen.refresh()
         time.sleep(0.03)

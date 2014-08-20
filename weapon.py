@@ -84,32 +84,25 @@ class Weapon(IWeapon):
         self._coords = new_coords[:]
 
 
+import curses
 class Blaster(Weapon):
-    def __init__(self, *args, **kwargs):
-        log.debug(str(_load_from_config(self.__class__, config)))
+    def __init__(self):
         super().__init__(**_load_from_config(self.__class__, config))
-        self._image = Surface([["^"]])
-
-        log.debug(str(vars(self)))
+        self._image = Surface([["^"]], style=[[curses.A_BOLD]])
 
 
 class Laser(Weapon):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
+        super().__init__(**_load_from_config(self.__class__, config))
         self._image = Surface([["|"]])
-
-        log.debug(str(vars(self)))
 
 
 class UM(Weapon):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
+        super().__init__(**_load_from_config(self.__class__, config))
         self._image = Surface([["^"],
                                ["|"],
-                               ["*"]])
-
-        log.debug(str(vars(self)))
-
+                               ["*"]], style = [[curses.A_BOLD] for _ in range(3)])
 
 
 if __name__ == "__main__":
