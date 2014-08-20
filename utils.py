@@ -1,4 +1,6 @@
 import logging
+import time
+import threading
 
 from collections import namedtuple
 
@@ -17,6 +19,19 @@ def create_logger(lname, fname, fmode="w", level=logging.DEBUG):
 
 
 Event = namedtuple("Event", ["type", "val"])
+
+
+class Timer(threading.Thread):
+    def __init__(self, t, func, args=(), kwargs={}):
+        threading.Thread.__init__(self)
+        self.t = t
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+
+    def run(self):
+        time.sleep(self.t)
+        self.func()
 
 
 class Point:
@@ -156,3 +171,13 @@ class InfList(list):
     def prev(self):
         self._index = (self._index - 1) % len(self)
         return self[self._index]
+
+
+if __name__ == "__main__":
+    t1 = Timer(5, lambda : print("WOLOLO"))
+    t2 = Timer(2, lambda : print(2))
+    t3 = Timer(4, lambda : print(4))
+
+    for t in (t1, t2, t3):
+        t.start()
+
