@@ -42,9 +42,9 @@ class Renderer(object):
         for obj in self._objects:
             gpos_list, data_gen = obj.get_render_data()
             log.debug("Current object: {} \ng_pos: {}, d_gen: {}".format(obj, gpos_list, data_gen))
-#FIX
-            for gpos in gpos_list:
-                for data in data_gen:
+
+            for data in data_gen:
+                for gpos in gpos_list:
                     lpos, image, style = data
                     cpos = gpos + lpos
                     log.debug("Coords [global: {}; local: {}; sum: {}]".format(gpos, lpos, cpos))
