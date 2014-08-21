@@ -2,7 +2,7 @@ import configparser
 
 from abc import ABCMeta, abstractmethod
 
-from utils import Point, Surface, create_logger
+from utils import Point, Surface, Timer, create_logger
 
 
 log = create_logger(__name__, "weapon.log")
@@ -42,18 +42,25 @@ class Weapon(IWeapon):
         self._radius   = int(radius)
         self._dy       = int(dy)
 
+        #Experimental
+        self.ready = True
+
         self._coords = []
 
 
     def make_shot(self, pos):
+        if not self.ready:
+            return
+
         if self._ammo == "infinite":
             self._coords.append(Point(x=pos.x, y=pos.y-1))
         elif self._ammo > 0:
             self._coords.append(Point(x=pos.x, y=pos.y-1))
             self._ammo -= 1
-
+        
+        self.ready = False
         if self._ammo == 0: raise ValueError("No ammo!")
-
+        self.timer.start()
 
     def get_render_data(self):
         return (self._coords, self._image.get_image())

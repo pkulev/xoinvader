@@ -22,16 +22,23 @@ Event = namedtuple("Event", ["type", "val"])
 
 
 class Timer(threading.Thread):
-    def __init__(self, t, func, args=(), kwargs={}):
+    def __init__(self, count, function, args=(), kwargs={}):
         threading.Thread.__init__(self)
-        self.t = t
-        self.func = func
+        self.count = count
+        self.function = function
         self.args = args
         self.kwargs = kwargs
+        self.event = threading.Event()
+
 
     def run(self):
-        time.sleep(self.t)
-        self.func()
+        while not self.event.is_set():
+            time.sleep(self.count)
+            self.function(*self.args, **self.kwargs)
+
+
+    def stop(self):
+        self.event.set()
 
 
 class Point:
@@ -174,10 +181,15 @@ class InfList(list):
 
 
 if __name__ == "__main__":
-    t1 = Timer(5, lambda : print("WOLOLO"))
-    t2 = Timer(2, lambda : print(2))
-    t3 = Timer(4, lambda : print(4))
+    def foo():
+        print("OLOLO")
+
+    t1 = Timer(5, foo)
+    t2 = Timer(2, foo)
+    t3 = Timer(4, foo)
 
     for t in (t1, t2, t3):
         t.start()
-
+    t1.stop()
+    t2.stop()
+    t3.stop()
