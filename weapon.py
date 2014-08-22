@@ -58,9 +58,9 @@ class Weapon(IWeapon):
             self._coords.append(Point(x=pos.x, y=pos.y-1))
             self._ammo -= 1
         
-        self.ready = False
+#        self.ready = False
         if self._ammo == 0: raise ValueError("No ammo!")
-        self.timer.start()
+#        self.timer.start()
 
     def get_render_data(self):
         return (self._coords, self._image.get_image())
