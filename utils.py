@@ -33,13 +33,15 @@ class Timer(threading.Thread):
 
     def run(self):
         while not self.event.is_set():
-            time.sleep(self.count)
+            self.event.wait(self.count)
             self.function(*self.args, **self.kwargs)
 
 
     def stop(self):
         self.event.set()
 
+    def reset(self):
+        return Timer(self.count, self.function, self.args, self.kwargs)
 
 class Point:
     def __init__(self, x, y):
@@ -193,3 +195,7 @@ if __name__ == "__main__":
     t1.stop()
     t2.stop()
     t3.stop()
+
+    t1.start()
+    time.sleep(3)
+    t1.stop()

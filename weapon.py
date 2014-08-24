@@ -37,15 +37,23 @@ class Weapon(IWeapon):
         self._image    = None
         self._ammo     = int(ammo) if ammo.isdigit() else ammo
         self._max_ammo = int(max_ammo) if max_ammo.isdigit() else max_ammo
-        self._cooldown = int(cooldown)
+        self._cooldown = float(cooldown)
         self._damage   = int(damage)
         self._radius   = int(radius)
         self._dy       = int(dy)
 
         #Experimental
         self.ready = True
+        self.timer = Timer(self._cooldown, self._prepare_weapon)
 
         self._coords = []
+
+    def __del__(self):
+        self.timer.cancel()
+
+    def _prepare_weapon(self):
+        #play sound
+        self.ready = True
 
 
     def make_shot(self, pos):
@@ -57,10 +65,12 @@ class Weapon(IWeapon):
         elif self._ammo > 0:
             self._coords.append(Point(x=pos.x, y=pos.y-1))
             self._ammo -= 1
-        
-#        self.ready = False
         if self._ammo == 0: raise ValueError("No ammo!")
-#        self.timer.start()
+
+        self.ready = False
+        self.timer = self.timer.reset()
+        self.timer.start()
+
 
     def get_render_data(self):
         return (self._coords, self._image.get_image())
