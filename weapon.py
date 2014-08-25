@@ -2,7 +2,7 @@ import configparser
 
 from abc import ABCMeta, abstractmethod
 
-from utils import Point, Surface, Timer, create_logger
+from utils import Point, Surface, create_logger
 
 
 log = create_logger(__name__, "weapon.log")
@@ -41,15 +41,12 @@ class Weapon(IWeapon):
         self._damage   = int(damage)
         self._radius   = int(radius)
         self._dy       = int(dy)
+        self._current_cooldown = 0
 
         #Experimental
         self.ready = True
-        self.timer = Timer(self._cooldown, self._prepare_weapon)
 
         self._coords = []
-
-    def __del__(self):
-        self.timer.cancel()
 
     def _prepare_weapon(self):
         #play sound
@@ -68,8 +65,7 @@ class Weapon(IWeapon):
         if self._ammo == 0: raise ValueError("No ammo!")
 
         self.ready = False
-        self.timer = self.timer.reset()
-        self.timer.start()
+        self._current_cooldown = self._cooldown
 
 
     def get_render_data(self):
@@ -99,6 +95,9 @@ class Weapon(IWeapon):
             if i.y - self._dy > 0:
                 new_coords.append(Point(x=i.x, y=i.y - self._dy))
         self._coords = new_coords[:]
+        self._current_cooldown -= 1
+        if self._current_cooldown <= 0:
+            self.ready = True
 
 
 import curses

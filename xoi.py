@@ -55,6 +55,9 @@ class Spaceship(Renderable):
     def toggle_fire(self):
         self._fire = not self._fire
 
+    def fire(self):
+        self._fire = True
+
 
     def next_weapon(self):
             self._weapon = self._weapons.next()
@@ -79,6 +82,7 @@ class Spaceship(Renderable):
             try:
                 self._weapon.make_shot(Point(x=self._pos.x + self._image.width // 2,
                                              y=self._pos.y))
+                self._fire = False
             except ValueError as e:
                 self.next_weapon()
 
@@ -261,7 +265,7 @@ class App(object):
         elif c == K_Q:
             self.spaceship.prev_weapon()
         elif c == K_SPACE:
-            self.spaceship.toggle_fire()
+            self.spaceship.fire()
 
 
     def update(self):
