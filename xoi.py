@@ -11,6 +11,11 @@ from render import Renderer, Renderable
 from weapon import Blaster, Laser, UM
 from utils import Point, Event, Surface, Color, Layout, InfList
 
+from utils import create_logger
+
+
+log = create_logger("main_log", "main_app.log")
+
 
 KEY = "KEY"
 K_Q = ord("q")
@@ -293,18 +298,25 @@ class App(object):
 
 
         self.screen.refresh()
-        time.sleep(0.03)
 
     def loop(self):
-        start_time = time.perf_counter()
         while True:
+            start_time = time.perf_counter()
+
             self.events()
             self.update()
             self.render()
-        finish_time = time.perf_counter()
-        delta = finish_time - start_time
-        if delta < MILLISECONDS_PER_FRAME:
+
+            finish_time = time.perf_counter()
+            delta = finish_time - start_time
+            if delta <= MILLISECONDS_PER_FRAME:
                 time.sleep((MILLISECONDS_PER_FRAME - delta) / 1000.0)
+            else:
+                message = '''
+Main loop iteration took longer than expected!
+Took: {0}
+Expected: {1}'''.format(delta, MILLISECONDS_PER_FRAME)
+                log.warning(message)
 
 def main():
     app = App()
