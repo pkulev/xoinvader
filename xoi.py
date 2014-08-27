@@ -11,6 +11,11 @@ from render import Renderer, Renderable
 from weapon import Blaster, Laser, UM
 from utils import Point, Event, Surface, Color, Layout, InfList
 
+from utils import create_logger
+
+
+log = create_logger("main_log", "main_app.log")
+
 
 KEY = "KEY"
 K_Q = ord("q")
@@ -19,6 +24,8 @@ K_A = ord("a")
 K_D = ord("d")
 K_SPACE = ord(" ")
 K_ESCAPE = 27
+
+MILLISECONDS_PER_FRAME = 16
 
 
 class Spaceship(Renderable):
@@ -55,6 +62,9 @@ class Spaceship(Renderable):
     def toggle_fire(self):
         self._fire = not self._fire
 
+    def fire(self):
+        self._fire = True
+
 
     def next_weapon(self):
             self._weapon = self._weapons.next()
@@ -79,6 +89,7 @@ class Spaceship(Renderable):
             try:
                 self._weapon.make_shot(Point(x=self._pos.x + self._image.width // 2,
                                              y=self._pos.y))
+                self._fire = False
             except ValueError as e:
                 self.next_weapon()
 
@@ -261,7 +272,7 @@ class App(object):
         elif c == K_Q:
             self.spaceship.prev_weapon()
         elif c == K_SPACE:
-            self.spaceship.toggle_fire()
+            self.spaceship.fire()
 
 
     def update(self):
@@ -287,13 +298,25 @@ class App(object):
 
 
         self.screen.refresh()
-        time.sleep(0.03)
 
     def loop(self):
         while True:
+            start_time = time.perf_counter()
+
             self.events()
             self.update()
             self.render()
+
+            finish_time = time.perf_counter()
+            delta = finish_time - start_time
+            if delta <= MILLISECONDS_PER_FRAME:
+                time.sleep((MILLISECONDS_PER_FRAME - delta) / 1000.0)
+            else:
+                message = '''
+Main loop iteration took longer than expected!
+Took: {0}
+Expected: {1}'''.format(delta, MILLISECONDS_PER_FRAME)
+                log.warning(message)
 
 def main():
     app = App()
