@@ -20,6 +20,8 @@ K_D = ord("d")
 K_SPACE = ord(" ")
 K_ESCAPE = 27
 
+MILLISECONDS_PER_FRAME = 16
+
 
 class Spaceship(Renderable):
     def __init__(self, pos, border, owner):
@@ -294,10 +296,15 @@ class App(object):
         time.sleep(0.03)
 
     def loop(self):
+        start_time = time.perf_counter()
         while True:
             self.events()
             self.update()
             self.render()
+        finish_time = time.perf_counter()
+        delta = finish_time - start_time
+        if delta < MILLISECONDS_PER_FRAME:
+                time.sleep((MILLISECONDS_PER_FRAME - delta) / 1000.0)
 
 def main():
     app = App()
