@@ -107,6 +107,12 @@ class Blaster(Weapon):
         self._image = Surface([["^"]], style=[[curses.A_BOLD]])
 
 
+class EBlaster(Weapon):
+    def __init__(self):
+        super().__init__(**_load_from_config(self.__class__, config))
+        self._image = Surface([[":"]])
+
+
 class Laser(Weapon):
     def __init__(self):
         super().__init__(**_load_from_config(self.__class__, config))

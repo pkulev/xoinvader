@@ -21,28 +21,6 @@ def create_logger(lname, fname, fmode="w", level=logging.DEBUG):
 Event = namedtuple("Event", ["type", "val"])
 
 
-class Timer(threading.Thread):
-    def __init__(self, count, function, args=(), kwargs={}):
-        threading.Thread.__init__(self)
-        self.count = count
-        self.function = function
-        self.args = args
-        self.kwargs = kwargs
-        self.event = threading.Event()
-
-
-    def run(self):
-        while not self.event.is_set():
-            self.event.wait(self.count)
-            self.function(*self.args, **self.kwargs)
-
-
-    def stop(self):
-        self.event.set()
-
-    def reset(self):
-        return Timer(self.count, self.function, self.args, self.kwargs)
-
 class Point:
     def __init__(self, x, y):
         self._x = x
@@ -140,12 +118,14 @@ class Layout(object):
 
 
     def init_layout(self):
-        self._field["border"] = Point(x=80, y=24)
+        self._field["border"] = Point(x=90, y=34)
         self._field["spaceship"] = Point(x=self._field["border"].x // 2,
                                          y=self._field["border"].y - 1)
 
         self._gui["hbar"] = Point(x=2 , y=self._field["border"].y - 1)
         self._gui["sbar"] = Point(x=22, y=self._field["border"].y - 1)
+        self._gui["wbar"] = Point(x=self._field["border"].x - 14,
+                                  y=self._field["border"].y - 1)
 
         return self
 
@@ -180,22 +160,3 @@ class InfList(list):
     def prev(self):
         self._index = (self._index - 1) % len(self)
         return self[self._index]
-
-
-if __name__ == "__main__":
-    def foo():
-        print("OLOLO")
-
-    t1 = Timer(5, foo)
-    t2 = Timer(2, foo)
-    t3 = Timer(4, foo)
-
-    for t in (t1, t2, t3):
-        t.start()
-    t1.stop()
-    t2.stop()
-    t3.stop()
-
-    t1.start()
-    time.sleep(3)
-    t1.stop()

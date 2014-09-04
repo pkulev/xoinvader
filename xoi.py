@@ -4,17 +4,13 @@ import sys
 import time
 import curses
 from collections import namedtuple
-from itertools import cycle
-
 
 from render import Renderer, Renderable
-from weapon import Blaster, Laser, UM
-from utils import Point, Event, Surface, Color, Layout, InfList
-
-from utils import create_logger
+from weapon import Blaster, EBlaster, Laser, UM
+from utils import Point, Event, Surface, Color, Layout, InfList, create_logger
 
 
-log = create_logger("main_log", "main_app.log")
+log = create_logger(__name__, "main_app.log")
 
 
 KEY = "KEY"
@@ -22,10 +18,55 @@ K_Q = ord("q")
 K_E = ord("e")
 K_A = ord("a")
 K_D = ord("d")
+K_R = ord("r")
 K_SPACE = ord(" ")
 K_ESCAPE = 27
 
 MILLISECONDS_PER_FRAME = 16
+
+class Ship(Renderable):
+    pass
+
+class Enemy(Ship):
+    def __init__(self, pos, border, owner): #owner is Level object?
+        self._image = Surface([['*', ' ', '*'],
+                               [' ', '*', ' '],
+                               ['*', ' ', '*']])
+        self._dx = -1
+        self._pos = Point(x=pos.x // 2, y=pos.y + self._image.height)
+        self._border = border
+        self._owner = owner
+
+        self._fire = True
+        self._weapon = EBlaster()
+        self._owner.renderer.add_object(self._weapon)
+
+        self._max_hull = 30
+        self._max_shield = 0
+        self._hull = 30
+        self._max_hull = 0
+
+
+    def move_left(self):
+        self._dx = -1
+    
+    def move_right(self):
+        self._dx = 1
+
+    def update(self):
+        if self._pos.x == self._border.x - self._image.width - 1 and self._dx > 0:
+            self._pos.x = self._border.x - self._image.width - 1
+        elif self._pos.x == 1 and self._dx < 0:
+            self._pos.x = 0
+
+
+        self._weapon.update()
+
+        if self._fire:
+            self._weapon.make_shot(self._pos)
+
+    def get_render_data(self):
+        return ([self._pos], self._image.get_image())
 
 
 class Spaceship(Renderable):
@@ -46,8 +87,8 @@ class Spaceship(Renderable):
 
         self._max_hull= 100
         self._max_shield = 100
-        self._hull = 50
-        self._shield = 50
+        self._hull = 100
+        self._shield = 100
 
 
 
@@ -61,9 +102,6 @@ class Spaceship(Renderable):
 
     def toggle_fire(self):
         self._fire = not self._fire
-
-    def fire(self):
-        self._fire = True
 
 
     def next_weapon(self):
@@ -89,9 +127,10 @@ class Spaceship(Renderable):
             try:
                 self._weapon.make_shot(Point(x=self._pos.x + self._image.width // 2,
                                              y=self._pos.y))
-                self._fire = False
             except ValueError as e:
                 self.next_weapon()
+
+        self.refresh_shield()
 
 
     def get_weapon_info(self):
@@ -121,11 +160,29 @@ class Spaceship(Renderable):
     def get_render_data(self):
         return [self._pos], self._image.get_image()
 
+    def take_damage(self, damage):
+        if self._shield < damage:
+            rest_damage = damage - self._shield
+            self._shield = 0
+            self._hull -= rest_damage
+        else:
+            self._shield -= damage
+        if self._hull < 0:
+            self._hull = 0
 
+    def refresh_shield(self, amount=None):
+        if self._shield == self._max_shield:
+            return
+        
+        a = amount if amount else 1  
+        if self._shield + a > self._max_shield:
+            self._shield = self._max_shield
+        else:
+            self._shield += a
 
 
 class Bar(Renderable):
-    def __init__(self, title, pos, get_data, max_value):
+    def __init__(self, title, pos, get_data, max_value, update_all=False):
         self._title = title
         self._pos = pos
         self._get_data = get_data
@@ -208,16 +265,34 @@ class App(object):
         self.spaceship = Spaceship(self.layout.field["spaceship"], self.field, self)
         self.renderer.add_object(self.spaceship)
 
+        self.enemy = Enemy(Point(x=15, y=3), self.field, self)
+        self.renderer.add_object(self.enemy)
         #gui
 
-        self.hbar = Bar("Hull",   self.layout.gui["hbar"], self.spaceship.get_hinfo, self.spaceship.max_hull)
-        self.sbar = Bar("Shield", self.layout.gui["sbar"], self.spaceship.get_sinfo, self.spaceship.max_shield)
+        self.hbar = Bar("Hull", 
+                        self.layout.gui["hbar"], 
+                        self.spaceship.get_hinfo, 
+                        self.spaceship.max_hull)
+
+        self.sbar = Bar("Shield", 
+                        self.layout.gui["sbar"], 
+                        self.spaceship.get_sinfo, 
+                        self.spaceship.max_shield)
+
         #temp... or not?
-        self.sbar.status_style["good"] = curses.color_pair(Color.sh_ok)  | curses.A_BOLD
-        self.sbar.status_style["dmgd"] = curses.color_pair(Color.sh_mid) | curses.A_BOLD
+        self.sbar.status_style["good"] = curses.color_pair(Color.sh_ok)  \
+                                       | curses.A_BOLD
+
+        self.sbar.status_style["dmgd"] = curses.color_pair(Color.sh_mid) \
+                                       | curses.A_BOLD
+
+        #self.wbar = Bar("", self.layout.gui["wbar"], self.spaceship.get_winfo, self.spaceship.
+
         self.renderer.add_object(self.hbar)
         self.renderer.add_object(self.sbar)
 
+
+        
 
     def create_window(self, x, y, a=0, b=0):
         curses.initscr()
@@ -272,11 +347,14 @@ class App(object):
         elif c == K_Q:
             self.spaceship.prev_weapon()
         elif c == K_SPACE:
-            self.spaceship.fire()
+            self.spaceship.toggle_fire()
+        elif c == K_R:
+            self.spaceship.take_damage(5)
 
 
     def update(self):
         self.spaceship.update()
+        self.enemy.update()
         self.hbar.update()
         self.sbar.update()
 
