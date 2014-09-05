@@ -37,7 +37,7 @@ class Enemy(Ship):
         self._border = border
         self._owner = owner
 
-        self._fire = True
+        self._fire = False#True
         self._weapon = EBlaster()
         self._owner.renderer.add_object(self._weapon)
 
@@ -156,6 +156,8 @@ class Spaceship(Renderable):
     def get_sinfo(self):
         return self._shield
 
+    def get_winfo(self):
+        return self._weapon.ammo
 
     def get_render_data(self):
         return [self._pos], self._image.get_image()
@@ -286,11 +288,11 @@ class App(object):
         self.sbar.status_style["dmgd"] = curses.color_pair(Color.sh_mid) \
                                        | curses.A_BOLD
 
-        #self.wbar = Bar("", self.layout.gui["wbar"], self.spaceship.get_winfo, self.spaceship.
+        self.wbar = Bar("", self.layout.gui["wbar"], self.spaceship.get_winfo, 999)
 
         self.renderer.add_object(self.hbar)
         self.renderer.add_object(self.sbar)
-
+        self.renderer.add_object(self.wbar)
 
         
 
@@ -357,6 +359,7 @@ class App(object):
         self.enemy.update()
         self.hbar.update()
         self.sbar.update()
+        self.wbar.update()
 
 
     def render(self):
@@ -368,7 +371,7 @@ class App(object):
 
 
         weapon_info = self.spaceship.get_weapon_info()
-        self.screen.addstr(self.field.y, self.field.x - len(weapon_info) - 2, weapon_info,
+        self.screen.addstr(self.layout.gui["winfo"].y, self.layout.gui["winfo"].x, weapon_info,
                             (curses.color_pair(Color.ui_yellow) | curses.A_BOLD))
 
 

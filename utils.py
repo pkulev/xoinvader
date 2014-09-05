@@ -122,10 +122,12 @@ class Layout(object):
         self._field["spaceship"] = Point(x=self._field["border"].x // 2,
                                          y=self._field["border"].y - 1)
 
-        self._gui["hbar"] = Point(x=2 , y=self._field["border"].y - 1)
-        self._gui["sbar"] = Point(x=22, y=self._field["border"].y - 1)
-        self._gui["wbar"] = Point(x=self._field["border"].x - 14,
-                                  y=self._field["border"].y - 1)
+        self._gui["hbar"]  = Point(x=2 , y=self._field["border"].y - 1)
+        self._gui["sbar"]  = Point(x=22, y=self._field["border"].y - 1)
+        self._gui["winfo"] = Point(x=self._gui["sbar"].x + 22,
+                                   y=self._field["border"].y -1)
+        self._gui["wbar"]  = Point(x=self._field["border"].x - 18,
+                                   y=self._field["border"].y - 1)
 
         return self
 
