@@ -2,10 +2,9 @@ import configparser
 
 from abc import ABCMeta, abstractmethod
 
-from utils import Point, Surface, create_logger
+from utils import Point, Surface
 
 
-log = create_logger(__name__, "weapon.log")
 config_file = "weapons.cfg"
 config = configparser.SafeConfigParser(allow_no_value=True,
         interpolation=configparser.ExtendedInterpolation())
@@ -41,16 +40,18 @@ class Weapon(IWeapon):
         self._damage   = int(damage)
         self._radius   = int(radius)
         self._dy       = int(dy)
-        self._current_cooldown = 0
+        self._current_cooldown = self._cooldown
 
         #Experimental
         self.ready = True
 
         self._coords = []
 
+
     def _prepare_weapon(self):
         #play sound
         self.ready = True
+        self._current_cooldown = self._cooldown
 
 
     def make_shot(self, pos):
@@ -58,20 +59,22 @@ class Weapon(IWeapon):
             return
 
         if self._ammo == "infinite":
-            self._coords.append(Point(x=pos.x, y=pos.y-1))
+            self._coords.append(pos)
         elif self._ammo > 0:
-            self._coords.append(Point(x=pos.x, y=pos.y-1))
+            self._coords.append(pos)
             self._ammo -= 1
         if self._ammo == 0: raise ValueError("No ammo!")
 
         self.ready = False
-        self._current_cooldown = self._cooldown
+        self._current_cooldown = 0
 
 
     def get_render_data(self):
         return (self._coords, self._image.get_image())
 
-    get_data = get_render_data
+
+    def remove_obsolete(self, pos):
+        self._coords.remove(pos)
 
 
     @property
@@ -85,6 +88,16 @@ class Weapon(IWeapon):
 
 
     @property
+    def cooldown(self):
+        return self._cooldown
+
+
+    @property
+    def current_cooldown(self):
+        return self._current_cooldown
+
+
+    @property
     def type(self):
         return self.__class__.__name__
 
@@ -92,12 +105,11 @@ class Weapon(IWeapon):
     def update(self):
         new_coords = []
         for i in self._coords:
-            if i.y - self._dy > 0:
-                new_coords.append(Point(x=i.x, y=i.y - self._dy))
+            new_coords.append(Point(x=i.x, y=i.y - self._dy))
         self._coords = new_coords[:]
-        self._current_cooldown -= 1
-        if self._current_cooldown <= 0:
-            self.ready = True
+        self._current_cooldown += 1
+        if self._current_cooldown >= self._cooldown:
+            self._prepare_weapon()
 
 
 import curses
@@ -116,7 +128,7 @@ class EBlaster(Weapon):
 class Laser(Weapon):
     def __init__(self):
         super().__init__(**_load_from_config(self.__class__, config))
-        self._image = Surface([["|"]])
+        self._image = Surface([["|"]], style=[[curses.A_BOLD]])
 
 
 class UM(Weapon):
@@ -125,12 +137,3 @@ class UM(Weapon):
         self._image = Surface([["^"],
                                ["|"],
                                ["*"]], style = [[curses.A_BOLD] for _ in range(3)])
-
-
-if __name__ == "__main__":
-    from pprint import pprint
-   # pprint(vars(_load_from_config(Blaster, config)))
-   # _load_from_config(Blaster, config).make_shoot()
-   # _load_from_config(Laser, config)
-   # _load_from_config(UM, config)
-    Blaster()

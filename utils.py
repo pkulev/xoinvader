@@ -1,6 +1,5 @@
 import logging
 import time
-import threading
 
 from collections import namedtuple
 
@@ -9,7 +8,7 @@ log_format = "[%(asctime)s] %(levelname)s: %(message)s"
 date_format = "%m/%d/%Y %I:%M:%S %p"
 
 
-def create_logger(lname, fname, fmode="w", level=logging.DEBUG):
+def create_logger(lname, fname, fmode="w", level=logging.INFO):
     logging.basicConfig(filename=fname,
                         filemode=fmode,
                         format=log_format,
@@ -83,6 +82,7 @@ class Surface(object):
     def height(self):
         return self._height
 
+
     @property
     def width(self):
         return self._width
@@ -105,10 +105,13 @@ class Color:
     dp_critical = 6
     sh_ok       = 7
     sh_mid      = 8
+    #weapon panel
+    wc_norm = 9
+
     #weapons
-    blaster = 9
-    laser   = 10
-    um      = 11
+    blaster = 10
+    laser   = 11
+    um      = 12
 
 
 class Layout(object):

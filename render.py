@@ -1,10 +1,5 @@
 from abc import ABCMeta, abstractmethod
 
-from utils import create_logger
-
-
-log = create_logger(__name__, "render.log")
-
 
 class Renderable(object, metaclass=ABCMeta):
     @abstractmethod
@@ -21,37 +16,47 @@ class Renderable(object, metaclass=ABCMeta):
         pass
 
 
+    def remove_obsolete(self, pos):
+        """Renderable.remove_obsolete(Point(int, int)) -> None
+
+        Every renderable object must remove old bullets that places behind
+        border (field for rendering).
+
+        If object will never change its coordinates it may not implement this
+        method.
+        """
+        pass
+
+
 class Renderer(object):
-    def __init__(self):
+    def __init__(self, border):
         self._objects = []
+        self._border = border
 
 
     def add_object(self, obj):
         self._objects.append(obj)
-        log.debug("add object {} \nObjects: {}".format(obj, self._objects))
 
 
     def remove_object(self, obj):
         self._objects.remove(obj)
-        log.debug("del object {}".format(obj))
 
 
     def render_all(self, screen):
-        log.debug("Rendering...")
-
         for obj in self._objects:
             gpos_list, data_gen = obj.get_render_data()
-            log.debug("Current object: {} \ng_pos: {}, d_gen: {}".format(obj, gpos_list, data_gen))
 
             for data in data_gen:
                 for gpos in gpos_list:
                     lpos, image, style = data
                     cpos = gpos + lpos
-                    log.debug("Coords [global: {}; local: {}; sum: {}]".format(gpos, lpos, cpos))
-                    log.debug("char: {}, style: {}".format(image, style))
+
+                    if (cpos.x >= self._border.x or cpos.y >= self._border.y) or \
+                       (cpos.x <= 0 or cpos.y <= 0):
+                        obj.remove_obsolete(gpos)
+                        continue
 
                     if style:
                         screen.addch(cpos.y, cpos.x, image, style)
                     else:
                         screen.addch(cpos.y, cpos.x, image)
-        log.debug("Rendered succesfully")

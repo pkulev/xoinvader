@@ -7,10 +7,7 @@ from collections import namedtuple
 
 from render import Renderer, Renderable
 from weapon import Blaster, EBlaster, Laser, UM
-from utils import Point, Event, Surface, Color, Layout, InfList, create_logger
-
-
-log = create_logger(__name__, "main_app.log")
+from utils import Point, Event, Surface, Color, Layout, InfList
 
 
 KEY = "KEY"
@@ -37,7 +34,7 @@ class Enemy(Ship):
         self._border = border
         self._owner = owner
 
-        self._fire = False#True
+        self._fire = True
         self._weapon = EBlaster()
         self._owner.renderer.add_object(self._weapon)
 
@@ -49,7 +46,7 @@ class Enemy(Ship):
 
     def move_left(self):
         self._dx = -1
-    
+
     def move_right(self):
         self._dx = 1
 
@@ -63,7 +60,7 @@ class Enemy(Ship):
         self._weapon.update()
 
         if self._fire:
-            self._weapon.make_shot(self._pos)
+            self._weapon.make_shot(Point(x=self._pos.x + 1, y=self._pos.y))
 
     def get_render_data(self):
         return ([self._pos], self._image.get_image())
@@ -126,7 +123,7 @@ class Spaceship(Renderable):
         if self._fire:
             try:
                 self._weapon.make_shot(Point(x=self._pos.x + self._image.width // 2,
-                                             y=self._pos.y))
+                                             y=self._pos.y-1))
             except ValueError as e:
                 self.next_weapon()
 
@@ -148,16 +145,18 @@ class Spaceship(Renderable):
     def max_shield(self):
         return self._max_shield
 
+    def get_full_hinfo(self):
+        return self._hull, self._max_hull
 
-    def get_hinfo(self):
-        return self._hull
+    def get_full_sinfo(self):
+        return self._shield, self._max_shield
 
+    def get_full_winfo(self):
+        return self._weapon.ammo, self._weapon.max_ammo
 
-    def get_sinfo(self):
-        return self._shield
+    def get_full_wcinfo(self):
+        return self._weapon.current_cooldown, self._weapon.cooldown
 
-    def get_winfo(self):
-        return self._weapon.ammo
 
     def get_render_data(self):
         return [self._pos], self._image.get_image()
@@ -175,21 +174,45 @@ class Spaceship(Renderable):
     def refresh_shield(self, amount=None):
         if self._shield == self._max_shield:
             return
-        
-        a = amount if amount else 1  
+
+        a = amount if amount else 1
         if self._shield + a > self._max_shield:
             self._shield = self._max_shield
         else:
             self._shield += a
 
 
+class WeaponWidget(Renderable):
+    def __init__(self, pos, get_data):
+        self._pos = pos
+        self._get_data = get_data
+        self._data = self._get_data()
+        self._image = self._make_image()
+
+    def _make_image(self):
+        return Surface([[ch for ch in self._data]],
+                       [[curses.color_pair(Color.ui_yellow)
+                       | curses.A_BOLD for _ in range(len(self._data))]])
+
+
+
+    def update(self):
+        self._data = self._get_data()
+        self._image = self._make_image()
+        open("lol.log", "w").write(str(self._data))
+
+    def get_render_data(self):
+        return [self._pos], self._image.get_image()
+
+
 class Bar(Renderable):
-    def __init__(self, title, pos, get_data, max_value, update_all=False):
+    def __init__(self, title, pos, get_data, update_all=False):
         self._title = title
         self._pos = pos
         self._get_data = get_data
-        self._value = self._get_data()
-        self._max_value = max_value
+        self._value = self._get_data()[0]
+        self._max_value = self._get_data()[1]
+        self._update_all = update_all
 
         self._bar = "{title}: [{elements}]".format(title=self._title, elements=" "*10)
         self._image = Surface([[ch for ch in self._bar]])
@@ -217,7 +240,8 @@ class Bar(Renderable):
     def _generate_style_map(self):
         num = self._value * 10 // self._max_value
 
-        elem_style = self._get_style(self._value)
+        num_percent = self._value * 100 // self._max_value
+        elem_style = self._get_style(num_percent)
         blank_style = self._get_style(-1)
         gui_style = self.gui_style
 
@@ -244,7 +268,9 @@ class Bar(Renderable):
 
 
     def update(self):
-        self._value = self._get_data()
+        self._value = self._get_data()[0]
+        if self._update_all:
+            self._max_value = self._get_data()[1]
         stylemap = self._generate_style_map()
         self._image = Surface([[ch[0] for ch in stylemap]], [[st[1] for st in stylemap]])
 
@@ -260,9 +286,8 @@ class App(object):
         self.border = self.layout.field["border"]
         self.field  = Point(x=self.border.x, y=self.border.y-1)
         self.screen = self.create_window(x=self.border.x, y=self.border.y)
-        #utils.
 
-        self.renderer = Renderer()
+        self.renderer = Renderer(self.border)
 
         self.spaceship = Spaceship(self.layout.field["spaceship"], self.field, self)
         self.renderer.add_object(self.spaceship)
@@ -271,30 +296,39 @@ class App(object):
         self.renderer.add_object(self.enemy)
         #gui
 
-        self.hbar = Bar("Hull", 
-                        self.layout.gui["hbar"], 
-                        self.spaceship.get_hinfo, 
-                        self.spaceship.max_hull)
+        self.hbar = Bar("Hull",
+                        self.layout.gui["hbar"],
+                        self.spaceship.get_full_hinfo)
 
-        self.sbar = Bar("Shield", 
-                        self.layout.gui["sbar"], 
-                        self.spaceship.get_sinfo, 
-                        self.spaceship.max_shield)
+        self.sbar = Bar("Shield",
+                        self.layout.gui["sbar"],
+                        self.spaceship.get_full_sinfo)
 
-        #temp... or not?
         self.sbar.status_style["good"] = curses.color_pair(Color.sh_ok)  \
                                        | curses.A_BOLD
 
         self.sbar.status_style["dmgd"] = curses.color_pair(Color.sh_mid) \
                                        | curses.A_BOLD
 
-        self.wbar = Bar("", self.layout.gui["wbar"], self.spaceship.get_winfo, 999)
+        self.wbar = Bar("", self.layout.gui["wbar"],
+                            self.spaceship.get_full_wcinfo,
+                            update_all=True)
 
-        self.renderer.add_object(self.hbar)
-        self.renderer.add_object(self.sbar)
-        self.renderer.add_object(self.wbar)
+        self.wbar.status_style["good"] = curses.color_pair(Color.dp_ok) \
+                                       | curses.A_BOLD
 
-        
+        self.wbar.status_style["dmgd"] = curses.color_pair(Color.dp_ok) \
+                                       | curses.A_BOLD
+
+        self.wbar.status_style["crit"] = curses.color_pair(Color.dp_ok) \
+                                           | curses.A_BOLD
+
+        self.winfo = WeaponWidget(self.layout.gui["winfo"],
+                                  self.spaceship.get_weapon_info)
+
+        self.gui = [self.hbar, self.sbar, self.wbar, self.winfo]
+        for e in self.gui: self.renderer.add_object(e)
+
 
     def create_window(self, x, y, a=0, b=0):
         curses.initscr()
@@ -312,6 +346,7 @@ class App(object):
         curses.init_pair(Color.sh_ok, curses.COLOR_WHITE, curses.COLOR_BLUE)
         curses.init_pair(Color.sh_mid, curses.COLOR_WHITE, curses.COLOR_CYAN)
 
+        curses.init_pair(Color.wc_norm, curses.COLOR_BLACK, curses.COLOR_YELLOW)
         #weapons
         curses.init_pair(Color.blaster, curses.COLOR_GREEN, curses.COLOR_BLACK)
         curses.init_pair(Color.laser, curses.COLOR_BLACK, curses.COLOR_RED)
@@ -357,9 +392,7 @@ class App(object):
     def update(self):
         self.spaceship.update()
         self.enemy.update()
-        self.hbar.update()
-        self.sbar.update()
-        self.wbar.update()
+        for e in self.gui: e.update()
 
 
     def render(self):
@@ -368,15 +401,7 @@ class App(object):
         self.screen.addstr(0, 2, "Score: {} ".format(0))
         self.screen.addstr(0, self.field.x // 2 - 4, "XOInvader", curses.A_BOLD)
 
-
-
-        weapon_info = self.spaceship.get_weapon_info()
-        self.screen.addstr(self.layout.gui["winfo"].y, self.layout.gui["winfo"].x, weapon_info,
-                            (curses.color_pair(Color.ui_yellow) | curses.A_BOLD))
-
-
         self.renderer.render_all(self.screen)
-
 
         self.screen.refresh()
 
@@ -392,13 +417,7 @@ class App(object):
             delta = finish_time - start_time
             if delta <= MILLISECONDS_PER_FRAME:
                 time.sleep((MILLISECONDS_PER_FRAME - delta) / 1000.0)
-            else:
-                message = '''
-Main loop iteration took longer than expected!
-Took: {0}
-Expected: {1}'''.format(delta, MILLISECONDS_PER_FRAME)
-                log.warning(message)
-
+            #else: log
 def main():
     app = App()
     app.loop()
