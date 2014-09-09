@@ -304,24 +304,15 @@ class App(object):
                         self.layout.gui["sbar"],
                         self.spaceship.get_full_sinfo)
 
-        self.sbar.status_style["good"] = curses.color_pair(Color.sh_ok)  \
-                                       | curses.A_BOLD
-
-        self.sbar.status_style["dmgd"] = curses.color_pair(Color.sh_mid) \
-                                       | curses.A_BOLD
+        self.sbar.status_style["good"] = style.gui["sh_ok"]
+        self.sbar.status_style["dmgd"] = style.gui["sh_mid"]
 
         self.wbar = Bar("", self.layout.gui["wbar"],
                             self.spaceship.get_full_wcinfo,
                             update_all=True)
 
-        self.wbar.status_style["good"] = curses.color_pair(Color.dp_ok) \
-                                       | curses.A_BOLD
-
-        self.wbar.status_style["dmgd"] = curses.color_pair(Color.dp_ok) \
-                                       | curses.A_BOLD
-
-        self.wbar.status_style["crit"] = curses.color_pair(Color.dp_ok) \
-                                           | curses.A_BOLD
+        for s in ["good", "dmgd", "crit"]:
+            self.wbar.status_style[s] = style.gui["dp_ok"]
 
         self.winfo = WeaponWidget(self.layout.gui["winfo"],
                                   self.spaceship.get_weapon_info)
