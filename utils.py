@@ -105,13 +105,38 @@ class Color:
     dp_critical = 6
     sh_ok       = 7
     sh_mid      = 8
-    #weapon panel
-    wc_norm = 9
 
     #weapons
-    blaster = 10
-    laser   = 11
-    um      = 12
+    blaster = 9
+    laser   = 10
+    um      = 11
+
+
+class Style(object):
+    def __init__(self):
+        self._gui = {}
+        self._obj = {}
+
+    def init_styles(self, curses):
+        self._gui["normal"] = curses.color_pair(Color.ui_norm) | curses.A_BOLD
+        self._gui["yellow"] = curses.color_pair(Color.ui_yellow) | curses.A_BOLD
+
+        self._gui["dp_blank"]    = curses.color_pair(Color.dp_blank) | curses.A_BOLD
+        self._gui["dp_ok"]       = curses.color_pair(Color.dp_ok) | curses.A_BOLD
+        self._gui["dp_middle"]   = curses.color_pair(Color.dp_middle) | curses.A_BOLD
+        self._gui["dp_critical"] = curses.color_pair(Color.dp_critical) | curses.A_BOLD
+        self._gui["sh_ok"]       = curses.color_pair(Color.sh_ok) | curses.A_BOLD
+        self._gui["sh_mid"]      = curses.color_pair(Color.sh_mid) | curses.A_BOLD
+
+
+    @property
+    def gui(self):
+        return self._gui
+
+
+    @property
+    def obj(self):
+        return self._obj
 
 
 class Layout(object):

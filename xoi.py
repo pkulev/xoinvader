@@ -7,7 +7,7 @@ from collections import namedtuple
 
 from render import Renderer, Renderable
 from weapon import Blaster, EBlaster, Laser, UM
-from utils import Point, Event, Surface, Color, Layout, InfList
+from utils import Point, Event, Surface, Color, Style, Layout, InfList
 
 
 KEY = "KEY"
@@ -20,7 +20,7 @@ K_SPACE = ord(" ")
 K_ESCAPE = 27
 
 MILLISECONDS_PER_FRAME = 16
-
+style = Style()
 class Ship(Renderable):
     pass
 
@@ -217,13 +217,12 @@ class Bar(Renderable):
         self._bar = "{title}: [{elements}]".format(title=self._title, elements=" "*10)
         self._image = Surface([[ch for ch in self._bar]])
 
-        self.gui_style = curses.color_pair(Color.ui_norm) | curses.A_BOLD
-        self.status_style = {"crit" : curses.color_pair(Color.dp_critical) | curses.A_BOLD,
-                             "dmgd" : curses.color_pair(Color.dp_middle)   | curses.A_BOLD,
-                             "good" : curses.color_pair(Color.dp_ok)       | curses.A_BOLD,
-                             "blank": curses.color_pair(Color.dp_blank)}
-
-
+        self.gui_style = style.gui["normal"]
+        self.status_style = {"crit" : style.gui["dp_critical"],
+                             "dmgd" : style.gui["dp_middle"],
+                             "good" : style.gui["dp_ok"],
+                             "blank": style.gui["dp_blank"]
+                             }
 
 
     def _get_style(self, num):
@@ -286,6 +285,7 @@ class App(object):
         self.border = self.layout.field["border"]
         self.field  = Point(x=self.border.x, y=self.border.y-1)
         self.screen = self.create_window(x=self.border.x, y=self.border.y)
+        style.init_styles(curses)
 
         self.renderer = Renderer(self.border)
 
@@ -346,7 +346,6 @@ class App(object):
         curses.init_pair(Color.sh_ok, curses.COLOR_WHITE, curses.COLOR_BLUE)
         curses.init_pair(Color.sh_mid, curses.COLOR_WHITE, curses.COLOR_CYAN)
 
-        curses.init_pair(Color.wc_norm, curses.COLOR_BLACK, curses.COLOR_YELLOW)
         #weapons
         curses.init_pair(Color.blaster, curses.COLOR_GREEN, curses.COLOR_BLACK)
         curses.init_pair(Color.laser, curses.COLOR_BLACK, curses.COLOR_RED)
