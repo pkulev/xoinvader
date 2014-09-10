@@ -21,6 +21,7 @@ K_ESCAPE = 27
 
 MILLISECONDS_PER_FRAME = 16
 style = Style()
+
 class Ship(Renderable):
     pass
 

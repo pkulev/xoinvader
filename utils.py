@@ -118,15 +118,15 @@ class Style(object):
         self._obj = {}
 
     def init_styles(self, curses):
-        self._gui["normal"] = curses.color_pair(Color.ui_norm) | curses.A_BOLD
+        self._gui["normal"] = curses.color_pair(Color.ui_norm)   | curses.A_BOLD
         self._gui["yellow"] = curses.color_pair(Color.ui_yellow) | curses.A_BOLD
 
-        self._gui["dp_blank"]    = curses.color_pair(Color.dp_blank) | curses.A_BOLD
-        self._gui["dp_ok"]       = curses.color_pair(Color.dp_ok) | curses.A_BOLD
-        self._gui["dp_middle"]   = curses.color_pair(Color.dp_middle) | curses.A_BOLD
+        self._gui["dp_blank"]    = curses.color_pair(Color.dp_blank)    | curses.A_BOLD
+        self._gui["dp_ok"]       = curses.color_pair(Color.dp_ok)       | curses.A_BOLD
+        self._gui["dp_middle"]   = curses.color_pair(Color.dp_middle)   | curses.A_BOLD
         self._gui["dp_critical"] = curses.color_pair(Color.dp_critical) | curses.A_BOLD
-        self._gui["sh_ok"]       = curses.color_pair(Color.sh_ok) | curses.A_BOLD
-        self._gui["sh_mid"]      = curses.color_pair(Color.sh_mid) | curses.A_BOLD
+        self._gui["sh_ok"]       = curses.color_pair(Color.sh_ok)       | curses.A_BOLD
+        self._gui["sh_mid"]      = curses.color_pair(Color.sh_mid)      | curses.A_BOLD
 
 
     @property
