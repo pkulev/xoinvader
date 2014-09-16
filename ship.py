@@ -52,6 +52,10 @@ class Ship(Renderable):
     def move_right(self):
         self._dx = 1
 
+    def add_weapon(self, weapon):
+        self._weapon = weapon
+        self._owner.render.add_object(self._weapon)
+
 
     def update(self):
         if self._pos.x == self._border.x - self._image.width - 1 and self._dx > 0:
@@ -68,7 +72,7 @@ class Ship(Renderable):
 
     def get_render_data(self):
         return ([self._pos], self._image.get_image())
-
+    
 
 class GenericXEnemy(Ship):
     def __init__(self, pos, border, owner):
@@ -81,12 +85,14 @@ class GenericXEnemy(Ship):
         self._owner.renderer.add_object(self._weapon)
 
 
-class Playership(Renderable):
+class Playership(Ship):
     def __init__(self, pos, border, owner):
+        super().__init__(pos, border, owner)
+
         self._image = Surface([[' ',' ','O',' ',' '],
                                ['<','=','H','=','>'],
                                [' ','*',' ','*',' ']])
-        self._dx = 1
+
         self._pos = Point(x=pos.x - self._image.width // 2,
                           y=pos.y - self._image.height)
         self._border = border
@@ -97,12 +103,6 @@ class Playership(Renderable):
         for weapon in self._weapons: self._owner.renderer.add_object(weapon)
         self._weapon = self._weapons.current()
         self._wbay = Point(x=self._image.width // 2, y=-1)
-
-        self._max_hull= 100
-        self._max_shield = 100
-        self._hull = 100
-        self._shield = 100
-
 
 
     def move_left(self):
