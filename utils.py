@@ -147,7 +147,7 @@ class Layout(object):
 
     def init_layout(self):
         self._field["border"] = Point(x=90, y=34)
-        self._field["spaceship"] = Point(x=self._field["border"].x // 2,
+        self._field["playership"] = Point(x=self._field["border"].x // 2,
                                          y=self._field["border"].y - 1)
 
         self._gui["hbar"]  = Point(x=2 , y=self._field["border"].y - 1)

@@ -5,9 +5,9 @@ import time
 import curses
 from collections import namedtuple
 
+from ship import GenericXEnemy, Playership
 from render import Renderer, Renderable
-from weapon import Blaster, EBlaster, Laser, UM
-from utils import Point, Event, Surface, Color, Style, Layout, InfList
+from utils import Point, Event, Surface, Color, Style, Layout
 
 
 KEY = "KEY"
@@ -21,166 +21,6 @@ K_ESCAPE = 27
 
 MILLISECONDS_PER_FRAME = 16
 style = Style()
-
-class Ship(Renderable):
-    pass
-
-class Enemy(Ship):
-    def __init__(self, pos, border, owner): #owner is Level object?
-        self._image = Surface([['*', ' ', '*'],
-                               [' ', '*', ' '],
-                               ['*', ' ', '*']])
-        self._dx = -1
-        self._pos = Point(x=pos.x // 2, y=pos.y + self._image.height)
-        self._border = border
-        self._owner = owner
-
-        self._fire = True
-        self._weapon = EBlaster()
-        self._owner.renderer.add_object(self._weapon)
-
-        self._max_hull = 30
-        self._max_shield = 0
-        self._hull = 30
-        self._max_hull = 0
-
-
-    def move_left(self):
-        self._dx = -1
-
-    def move_right(self):
-        self._dx = 1
-
-    def update(self):
-        if self._pos.x == self._border.x - self._image.width - 1 and self._dx > 0:
-            self._pos.x = self._border.x - self._image.width - 1
-        elif self._pos.x == 1 and self._dx < 0:
-            self._pos.x = 0
-
-
-        self._weapon.update()
-
-        if self._fire:
-            self._weapon.make_shot(Point(x=self._pos.x + 1, y=self._pos.y))
-
-    def get_render_data(self):
-        return ([self._pos], self._image.get_image())
-
-
-class Spaceship(Renderable):
-    def __init__(self, pos, border, owner):
-        self._image = Surface([[' ',' ','O',' ',' '],
-                               ['<','=','H','=','>'],
-                               [' ','*',' ','*',' ']])
-        self._dx = 1
-        self._pos = Point(x=pos.x - self._image.width // 2,
-                          y=pos.y - self._image.height)
-        self._border = border
-        self._owner = owner
-
-        self._fire = False
-        self._weapons = InfList([Blaster(), Laser(), UM()])
-        for weapon in self._weapons: self._owner.renderer.add_object(weapon)
-        self._weapon = self._weapons.current()
-
-        self._max_hull= 100
-        self._max_shield = 100
-        self._hull = 100
-        self._shield = 100
-
-
-
-    def move_left(self):
-        self._dx = -1
-
-
-    def move_right(self):
-        self._dx = 1
-
-
-    def toggle_fire(self):
-        self._fire = not self._fire
-
-
-    def next_weapon(self):
-            self._weapon = self._weapons.next()
-
-
-    def prev_weapon(self):
-            self._weapon = self._weapons.prev()
-
-
-    def update(self):
-        if self._pos.x == self._border.x - self._image.width - 1 and self._dx > 0:
-            self._pos.x = 0
-        elif self._pos.x == 1 and self._dx < 0:
-            self._pos.x = self._border.x - self._image.width
-
-        self._pos.x += self._dx
-        self._dx = 0
-
-        for weapon in self._weapons:
-            weapon.update()
-        if self._fire:
-            try:
-                self._weapon.make_shot(Point(x=self._pos.x + self._image.width // 2,
-                                             y=self._pos.y-1))
-            except ValueError as e:
-                self.next_weapon()
-
-        self.refresh_shield()
-
-
-    def get_weapon_info(self):
-        return "Weapon: {w} | [{c}/{m}]".format(w=self._weapon.type,
-                                                c=self._weapon.ammo,
-                                                m=self._weapon.max_ammo)
-
-
-    @property
-    def max_hull(self):
-        return self._max_hull
-
-
-    @property
-    def max_shield(self):
-        return self._max_shield
-
-    def get_full_hinfo(self):
-        return self._hull, self._max_hull
-
-    def get_full_sinfo(self):
-        return self._shield, self._max_shield
-
-    def get_full_winfo(self):
-        return self._weapon.ammo, self._weapon.max_ammo
-
-    def get_full_wcinfo(self):
-        return self._weapon.current_cooldown, self._weapon.cooldown
-
-
-    def get_render_data(self):
-        return [self._pos], self._image.get_image()
-
-    def take_damage(self, damage):
-        if self._shield < damage:
-            rest_damage = damage - self._shield
-            self._shield = 0
-            self._hull -= rest_damage
-        else:
-            self._shield -= damage
-        if self._hull < 0:
-            self._hull = 0
-
-    def refresh_shield(self, amount=None):
-        if self._shield == self._max_shield:
-            return
-
-        a = amount if amount else 1
-        if self._shield + a > self._max_shield:
-            self._shield = self._max_shield
-        else:
-            self._shield += a
 
 
 class WeaponWidget(Renderable):
@@ -204,7 +44,6 @@ class WeaponWidget(Renderable):
 
     def get_render_data(self):
         return [self._pos], self._image.get_image()
-
 
 class Bar(Renderable):
     def __init__(self, title, pos, get_data, update_all=False):
@@ -290,33 +129,33 @@ class App(object):
 
         self.renderer = Renderer(self.border)
 
-        self.spaceship = Spaceship(self.layout.field["spaceship"], self.field, self)
-        self.renderer.add_object(self.spaceship)
+        self.playership = Playership(self.layout.field["playership"], self.field, self)
+        self.renderer.add_object(self.playership)
 
-        self.enemy = Enemy(Point(x=15, y=3), self.field, self)
+        self.enemy = GenericXEnemy(Point(x=15, y=3), self.field, self)
         self.renderer.add_object(self.enemy)
         #gui
 
         self.hbar = Bar("Hull",
                         self.layout.gui["hbar"],
-                        self.spaceship.get_full_hinfo)
+                        self.playership.get_full_hinfo)
 
         self.sbar = Bar("Shield",
                         self.layout.gui["sbar"],
-                        self.spaceship.get_full_sinfo)
+                        self.playership.get_full_sinfo)
 
         self.sbar.status_style["good"] = style.gui["sh_ok"]
         self.sbar.status_style["dmgd"] = style.gui["sh_mid"]
 
         self.wbar = Bar("", self.layout.gui["wbar"],
-                            self.spaceship.get_full_wcinfo,
+                            self.playership.get_full_wcinfo,
                             update_all=True)
 
         for s in ["good", "dmgd", "crit"]:
             self.wbar.status_style[s] = style.gui["dp_ok"]
 
         self.winfo = WeaponWidget(self.layout.gui["winfo"],
-                                  self.spaceship.get_weapon_info)
+                                  self.playership.get_weapon_info)
 
         self.gui = [self.hbar, self.sbar, self.wbar, self.winfo]
         for e in self.gui: self.renderer.add_object(e)
@@ -367,21 +206,21 @@ class App(object):
             self.deinit()
             sys.exit(1)
         elif c == K_A:
-            self.spaceship.move_left()
+            self.playership.move_left()
         elif c == K_D:
-            self.spaceship.move_right()
+            self.playership.move_right()
         elif c == K_E:
-            self.spaceship.next_weapon()
+            self.playership.next_weapon()
         elif c == K_Q:
-            self.spaceship.prev_weapon()
+            self.playership.prev_weapon()
         elif c == K_SPACE:
-            self.spaceship.toggle_fire()
+            self.playership.toggle_fire()
         elif c == K_R:
-            self.spaceship.take_damage(5)
+            self.playership.take_damage(5)
 
 
     def update(self):
-        self.spaceship.update()
+        self.playership.update()
         self.enemy.update()
         for e in self.gui: e.update()
 
