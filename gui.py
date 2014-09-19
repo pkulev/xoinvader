@@ -1,5 +1,7 @@
 from render import Renderable
-from utils import Surface
+from utils import Surface, style
+
+s = style
 
 class WeaponWidget(Renderable):
     def __init__(self, pos, get_data):
@@ -33,7 +35,7 @@ class Bar(Renderable):
         self._bar = "{title}: [{elements}]".format(title=self._title, elements=" "*10)
         self._image = Surface([[ch for ch in self._bar]])
 
-        self.gui_style = style.gui["normal"]
+        self.gui_style = s.gui["normal"]
         self.status_style = {"crit" : style.gui["dp_critical"],
                              "dmgd" : style.gui["dp_middle"],
                              "good" : style.gui["dp_ok"],

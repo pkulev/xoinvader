@@ -137,7 +137,7 @@ class Style(object):
     @property
     def obj(self):
         return self._obj
-
+style = Style()
 
 class Layout(object):
     def __init__(self, config=None):

@@ -86,6 +86,7 @@ class GenericXEnemy(Ship):
 
 
 class Playership(Ship):
+
     def __init__(self, pos, border, owner):
         super().__init__(pos, border, owner)
 
@@ -104,26 +105,20 @@ class Playership(Ship):
         self._weapon = self._weapons.current()
         self._wbay = Point(x=self._image.width // 2, y=-1)
 
-
     def move_left(self):
         self._dx = -1
-
 
     def move_right(self):
         self._dx = 1
 
-
     def toggle_fire(self):
         self._fire = not self._fire
 
-
     def next_weapon(self):
-            self._weapon = self._weapons.next()
-
+        self._weapon = self._weapons.next()
 
     def prev_weapon(self):
-            self._weapon = self._weapons.prev()
-
+        self._weapon = self._weapons.prev()
 
     def update(self):
         if self._pos.x == self._border.x - self._image.width - 1 and self._dx > 0:

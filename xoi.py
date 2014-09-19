@@ -8,7 +8,7 @@ from collections import namedtuple
 from gui import WeaponWidget, Bar
 from ship import GenericXEnemy, Playership
 from render import Renderer, Renderable
-from utils import Point, Event, Surface, Color, Style, Layout
+from utils import Point, Event, Surface, Color, style, Layout
 
 
 KEY = "KEY"
@@ -21,7 +21,6 @@ K_SPACE = ord(" ")
 K_ESCAPE = 27
 
 MILLISECONDS_PER_FRAME = 16
-style = Style()
 
 
 class App(object):
