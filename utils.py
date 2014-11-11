@@ -114,60 +114,58 @@ class Color:
 
 class Style(object):
     def __init__(self):
-        self._gui = {}
-        self._obj = {}
+        self._style = {
+                "gui" : {},
+                "obj" : {},
+                }
 
     def init_styles(self, curses):
-        self._gui["normal"] = curses.color_pair(Color.ui_norm)   | curses.A_BOLD
-        self._gui["yellow"] = curses.color_pair(Color.ui_yellow) | curses.A_BOLD
+        self.gui["normal"] = curses.color_pair(Color.ui_norm)   | curses.A_BOLD
+        self.gui["yellow"] = curses.color_pair(Color.ui_yellow) | curses.A_BOLD
 
-        self._gui["dp_blank"]    = curses.color_pair(Color.dp_blank)    | curses.A_BOLD
-        self._gui["dp_ok"]       = curses.color_pair(Color.dp_ok)       | curses.A_BOLD
-        self._gui["dp_middle"]   = curses.color_pair(Color.dp_middle)   | curses.A_BOLD
-        self._gui["dp_critical"] = curses.color_pair(Color.dp_critical) | curses.A_BOLD
-        self._gui["sh_ok"]       = curses.color_pair(Color.sh_ok)       | curses.A_BOLD
-        self._gui["sh_mid"]      = curses.color_pair(Color.sh_mid)      | curses.A_BOLD
+        self.gui["dp_blank"]    = curses.color_pair(Color.dp_blank)    | curses.A_BOLD
+        self.gui["dp_ok"]       = curses.color_pair(Color.dp_ok)       | curses.A_BOLD
+        self.gui["dp_middle"]   = curses.color_pair(Color.dp_middle)   | curses.A_BOLD
+        self.gui["dp_critical"] = curses.color_pair(Color.dp_critical) | curses.A_BOLD
+        self.gui["sh_ok"]       = curses.color_pair(Color.sh_ok)       | curses.A_BOLD
+        self.gui["sh_mid"]      = curses.color_pair(Color.sh_mid)      | curses.A_BOLD
 
+    def __getattr__(self, name):
+        return self._style[name]
 
-    @property
-    def gui(self):
-        return self._gui
-
-
-    @property
-    def obj(self):
-        return self._obj
 style = Style()
+
+
+class LayoutItem(dict):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def __getattr__(self, name):
+        return self[name]
+
 
 class Layout(object):
     def __init__(self, config=None):
-        self._field = {}
-        self._gui = {}
-
+        self._layout = {
+                        "field" : {},
+                        "gui" : {},
+                        }
 
     def init_layout(self):
-        self._field["border"] = Point(x=90, y=34)
-        self._field["playership"] = Point(x=self._field["border"].x // 2,
-                                         y=self._field["border"].y - 1)
+        self.field["border"] = Point(x=90, y=34)
+        self.field["playership"] = Point(x=self.field["border"].x // 2,
+                                         y=self.field["border"].y - 1)
 
-        self._gui["hbar"]  = Point(x=2 , y=self._field["border"].y - 1)
-        self._gui["sbar"]  = Point(x=22, y=self._field["border"].y - 1)
-        self._gui["winfo"] = Point(x=self._gui["sbar"].x + 22,
-                                   y=self._field["border"].y -1)
-        self._gui["wbar"]  = Point(x=self._field["border"].x - 18,
-                                   y=self._field["border"].y - 1)
-
+        self.gui["hbar"]  = Point(x=2 , y=self.field["border"].y - 1)
+        self.gui["sbar"]  = Point(x=22, y=self.field["border"].y - 1)
+        self.gui["winfo"] = Point(x=self.gui["sbar"].x + 22,
+                                   y=self.field["border"].y -1)
+        self.gui["wbar"]  = Point(x=self.field["border"].x - 18,
+                                   y=self.field["border"].y - 1)
         return self
 
-
-    @property
-    def field(self):
-        return self._field
-
-
-    @property
-    def gui(self):
-        return self._gui
+    def __getattr__(self, name):
+        return self._layout[name]
 
 
 class InfList(list):
@@ -177,15 +175,12 @@ class InfList(list):
         super().__init__(*args, **kwargs)
         self._index = 0
 
-
     def current(self):
         return self[self._index]
-
 
     def next(self):
         self._index = (self._index + 1) % len(self)
         return self[self._index]
-
 
     def prev(self):
         self._index = (self._index - 1) % len(self)

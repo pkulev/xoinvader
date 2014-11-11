@@ -83,7 +83,7 @@ class GenericXEnemy(Ship):
 
         self._weapon = EBlaster()
         self._owner.renderer.add_object(self._weapon)
-
+        self._fire = True
 
 class Playership(Ship):
 
