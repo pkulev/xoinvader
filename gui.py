@@ -1,10 +1,14 @@
+""" This is module docstring """
+
 from render import Renderable
 from utils import Surface, style
 
-s = style
 
 class WeaponWidget(Renderable):
+    """this is class docstring stub """
     def __init__(self, pos, get_data):
+        """This is init docstring """
+
         self._pos = pos
         self._get_data = get_data
         self._data = self._get_data()
@@ -35,12 +39,11 @@ class Bar(Renderable):
         self._bar = "{title}: [{elements}]".format(title=self._title, elements=" "*10)
         self._image = Surface([[ch for ch in self._bar]])
 
-        self.gui_style = s.gui["normal"]
+        self.gui_style = style.gui["normal"]
         self.status_style = {"crit" : style.gui["dp_critical"],
                              "dmgd" : style.gui["dp_middle"],
                              "good" : style.gui["dp_ok"],
-                             "blank": style.gui["dp_blank"]
-                             }
+                             "blank": style.gui["dp_blank"]}
 
 
     def _get_style(self, num):
@@ -62,26 +65,26 @@ class Bar(Renderable):
         blank_style = self._get_style(-1)
         gui_style = self.gui_style
 
-        m = []
+        style_map = []
         elem = 0
         in_bar = False
-        for ch in self._bar:
-            if ch == "[":
-                m.append((ch, gui_style))
+        for char in self._bar:
+            if char == "[":
+                style_map.append((char, gui_style))
                 in_bar = True
-            elif ch == " " and in_bar:
+            elif char == " " and in_bar:
                 if elem < num:
-                    m.append((ch, elem_style))
+                    style_map.append((char, elem_style))
                 else:
-                    m.append((ch, blank_style))
+                    style_map.append((char, blank_style))
                 elem += 1
-            elif ch == "]":
+            elif char == "]":
                 in_bar = False
-                m.append((ch, gui_style))
+                style_map.append((char, gui_style))
             else:
-                m.append((ch, gui_style))
+                style_map.append((char, gui_style))
 
-        return m
+        return style_map
 
 
     def update(self):
