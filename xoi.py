@@ -7,8 +7,9 @@ from collections import namedtuple
 
 from gui import WeaponWidget, Bar
 from ship import GenericXEnemy, Playership
-from render import Renderer, Renderable
 from utils import Point, Event, Surface, Color, style, Layout
+from render import Renderer, Renderable
+from common import Settings
 
 
 KEY = "KEY"
@@ -24,46 +25,49 @@ MILLISECONDS_PER_FRAME = 16
 
 
 class App(object):
+    
+    settings = Settings()
+    
     def __init__(self):
-        self.layout = Layout().init_layout()
+        self.settings.layout = Layout().init_layout()
+        self.settings.border = self.settings.layout.field["border"]
+        self.settings.field  = Point(x=self.settings.border.x, y=self.settings.border.y-1)
 
-        self.border = self.layout.field["border"]
-        self.field  = Point(x=self.border.x, y=self.border.y-1)
-        self.screen = self.create_window(x=self.border.x, y=self.border.y)
+        self.screen = self.create_window(x=self.settings.border.x, y=self.settings.border.y)
         style.init_styles(curses)
 
-        self.renderer = Renderer(self.border)
+        self.settings.renderer = Renderer(self.settings.border)
 
-        self.playership = Playership(self.layout.field["playership"], self.field, self)
-        self.renderer.add_object(self.playership)
+        self.playership = Playership(self.settings.layout.field["playership"], self.settings.field, self.settings)
+        self.settings.renderer.add_object(self.playership)
 
-        self.enemy = GenericXEnemy(Point(x=15, y=3), self.field, self)
-        self.renderer.add_object(self.enemy)
+        self.enemy = GenericXEnemy(Point(x=15, y=3), self.settings.field, self.settings)
+        self.settings.renderer.add_object(self.enemy)
         #gui
 
         self.hbar = Bar("Hull",
-                        self.layout.gui["hbar"],
+                        self.settings.layout.gui["hbar"],
                         self.playership.get_full_hinfo)
 
         self.sbar = Bar("Shield",
-                        self.layout.gui["sbar"],
+                        self.settings.layout.gui["sbar"],
                         self.playership.get_full_sinfo)
 
         self.sbar.status_style["good"] = style.gui["sh_ok"]
         self.sbar.status_style["dmgd"] = style.gui["sh_mid"]
 
-        self.wbar = Bar("", self.layout.gui["wbar"],
+        self.wbar = Bar("", self.settings.layout.gui["wbar"],
                             self.playership.get_full_wcinfo,
                             update_all=True)
 
         for s in ["good", "dmgd", "crit"]:
             self.wbar.status_style[s] = style.gui["dp_ok"]
 
-        self.winfo = WeaponWidget(self.layout.gui["winfo"],
+        self.winfo = WeaponWidget(self.settings.layout.gui["winfo"],
                                   self.playership.get_weapon_info)
 
         self.gui = [self.hbar, self.sbar, self.wbar, self.winfo]
-        for e in self.gui: self.renderer.add_object(e)
+        for e in self.gui: self.settings.renderer.add_object(e)
 
 
     def create_window(self, x, y, a=0, b=0):
@@ -129,14 +133,13 @@ class App(object):
         self.enemy.update()
         for e in self.gui: e.update()
 
-
     def render(self):
         self.screen.erase()
         self.screen.border(0)
         self.screen.addstr(0, 2, "Score: {} ".format(0))
-        self.screen.addstr(0, self.field.x // 2 - 4, "XOInvader", curses.A_BOLD)
+        self.screen.addstr(0, self.settings.field.x // 2 - 4, "XOInvader", curses.A_BOLD)
 
-        self.renderer.render_all(self.screen)
+        self.settings.renderer.render_all(self.screen)
 
         self.screen.refresh()
 

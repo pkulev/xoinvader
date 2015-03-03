@@ -11,12 +11,12 @@ CONFIG.read(config_file)
 
 
 class Ship(Renderable):
-    def __init__(self, pos, border, owner):
+    def __init__(self, pos, border, settings):
         self._image = None
 
         self._pos = pos
         self._border = border
-        self._owner = owner
+        self._settings = settings
 
         self._dx = None
         self._fire = False
@@ -54,7 +54,7 @@ class Ship(Renderable):
 
     def add_weapon(self, weapon):
         self._weapon = weapon
-        self._owner.render.add_object(self._weapon)
+        self._settings.renderer.add_object(self._weapon)
 
 
     def update(self):
@@ -75,20 +75,20 @@ class Ship(Renderable):
     
 
 class GenericXEnemy(Ship):
-    def __init__(self, pos, border, owner):
-        super().__init__(pos, border, owner)
+    def __init__(self, pos, border, settings):
+        super().__init__(pos, border, settings)
         self._image = Surface([['x', '^', 'x'],
                                [' ', 'X', ' '],
                                [' ', '*', ' ']])
 
         self._weapon = EBlaster()
-        self._owner.renderer.add_object(self._weapon)
+        self._settings.renderer.add_object(self._weapon)
         self._fire = True
 
 class Playership(Ship):
 
-    def __init__(self, pos, border, owner):
-        super().__init__(pos, border, owner)
+    def __init__(self, pos, border, settings):
+        super().__init__(pos, border, settings)
 
         self._image = Surface([[' ',' ','O',' ',' '],
                                ['<','=','H','=','>'],
@@ -97,11 +97,11 @@ class Playership(Ship):
         self._pos = Point(x=pos.x - self._image.width // 2,
                           y=pos.y - self._image.height)
         self._border = border
-        self._owner = owner
+        self._settings = settings
 
         self._fire = False
         self._weapons = InfList([Blaster(), Laser(), UM()])
-        for weapon in self._weapons: self._owner.renderer.add_object(weapon)
+        for weapon in self._weapons: self._settings.renderer.add_object(weapon)
         self._weapon = self._weapons.current()
         self._wbay = Point(x=self._image.width // 2, y=-1)
 
