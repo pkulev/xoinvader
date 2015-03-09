@@ -86,14 +86,14 @@ class _Color(object):
             # User interface colors
             "ui_norm",
             "ui_yellow",
-        # Damage panel colors
+            # Damage panel colors
             "dp_blank",
             "dp_ok",
             "dp_middle",
             "dp_critical",
             "sh_ok",
             "sh_mid",
-        # Weapon's gauge colors
+            # Weapon's gauge colors
             "blaster",
             "laser",
             "um",
