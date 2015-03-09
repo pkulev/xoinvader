@@ -1,12 +1,12 @@
-import configparser
+from configparser import SafeConfigParser, ExtendedInterpolation
 
 from render import Renderable
 from weapon import Blaster, Laser, UM, EBlaster
 from utils import Point, Surface, InfList
 
 config_file = "ships.cfg"
-CONFIG = configparser.SafeConfigParser(allow_no_value=True,
-        interpolation=configparser.ExtendedInterpolation())
+CONFIG = SafeConfigParser(allow_no_value=True,
+                          interpolation=ExtendedInterpolation())
 CONFIG.read(config_file)
 
 

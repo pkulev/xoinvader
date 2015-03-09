@@ -1,13 +1,12 @@
-import configparser
-
 from abc import ABCMeta, abstractmethod
+from configparser import SafeConfigParser, ExtendedInterpolation
 
 from utils import Point, Surface
 
 
 config_file = "weapons.cfg"
-config = configparser.SafeConfigParser(allow_no_value=True,
-        interpolation=configparser.ExtendedInterpolation())
+config = SafeConfigParser(allow_no_value=True,
+                          interpolation=ExtendedInterpolation())
 config.read(config_file)
 
 

@@ -2,7 +2,7 @@
 
 """Main XOInvader module, that is entry point to game.
 
-Prepare nvironment for starting game and start it."""
+Prepare environment for starting game and start it."""
 
 import sys
 import time
@@ -10,7 +10,7 @@ import curses
 
 from gui import WeaponWidget, Bar
 from ship import GenericXEnemy, Playership
-from utils import Point, Color, style, Layout
+from utils import Point, style, Layout
 from render import Renderer
 from common import Settings
 from curses_utils import create_curses_window, deinit_curses
@@ -74,15 +74,15 @@ class App(object):
                         self.playership.get_full_wcinfo,
                         update_all=True)
 
-        for s in ["good", "dmgd", "crit"]:
-            self.wbar.status_style[s] = style.gui["dp_ok"]
+        for state in ["good", "dmgd", "crit"]:
+            self.wbar.status_style[state] = style.gui["dp_ok"]
 
         self.winfo = WeaponWidget(self.settings.layout.gui["winfo"],
                                   self.playership.get_weapon_info)
 
         self.gui = [self.hbar, self.sbar, self.wbar, self.winfo]
-        for e in self.gui:
-            self.settings.renderer.add_object(e)
+        for gui_object in self.gui:
+            self.settings.renderer.add_object(gui_object)
 
 
 
@@ -90,21 +90,21 @@ class App(object):
     def events(self):
         """Handle events and give command to playership."""
 
-        c = self.screen.getch()
-        if c == K_ESCAPE:
+        key = self.screen.getch()
+        if key == K_ESCAPE:
             deinit_curses(self.screen)
             sys.exit(1)
-        elif c == K_A:
+        elif key == K_A:
             self.playership.move_left()
-        elif c == K_D:
+        elif key == K_D:
             self.playership.move_right()
-        elif c == K_E:
+        elif key == K_E:
             self.playership.next_weapon()
-        elif c == K_Q:
+        elif key == K_Q:
             self.playership.prev_weapon()
-        elif c == K_SPACE:
+        elif key == K_SPACE:
             self.playership.toggle_fire()
-        elif c == K_R:
+        elif key == K_R:
             self.playership.take_damage(5)
 
 
@@ -112,8 +112,8 @@ class App(object):
         """Update all object's state."""
         self.playership.update()
         self.enemy.update()
-        for el in self.gui:
-            el.update()
+        for gui_object in self.gui:
+            gui_object.update()
 
     def render(self):
         """Render GUI and renderable objects to screen."""

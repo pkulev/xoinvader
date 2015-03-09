@@ -100,7 +100,6 @@ class _Color(object):
         ]
         self._color_map = dict(zip(self._color_names,
                                range(1, len(self._color_names) + 1)))
-        open("ololo.log", 'w').write(str(self._color_map))
 
     def __getattr__(self, name):
         return self._color_map[name]
