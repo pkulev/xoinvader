@@ -1,8 +1,6 @@
 import time
 import logging
 
-from collections import namedtuple
-
 
 log_format = "[%(asctime)s] %(levelname)s: %(message)s"
 date_format = "%m/%d/%Y %I:%M:%S %p"
@@ -17,9 +15,6 @@ def create_logger(lname, fname, fmode="w", level=logging.INFO):
     return logging.getLogger(lname)
 
 
-Event = namedtuple("Event", ["type", "val"])
-
-
 class Point:
     def __init__(self, x, y):
         self._x = x
@@ -28,28 +23,22 @@ class Point:
     def __repr__(self):
         return "Point(x={}, y={})".format(self._x, self._y)
 
-
     __str__ = __repr__
-
 
     def __add__(self, other):
         return Point(x=self.x + other.x, y=self.y + other.y)
-
 
     @property
     def x(self):
         return self._x
 
-
     @x.setter
     def x(self, val):
         self._x = val
 
-
     @property
     def y(self):
         return self._y
-
 
     @y.setter
     def y(self, val):
@@ -77,16 +66,13 @@ class Surface(object):
         self._height = len(self._image)
         self._style = style
 
-
     @property
     def height(self):
         return self._height
 
-
     @property
     def width(self):
         return self._width
-
 
     def get_image(self):
         for y, row in enumerate(self._image):
@@ -94,30 +80,40 @@ class Surface(object):
                 yield (Point(x=x, y=y), image, self._style[y][x] if self._style else None)
 
 
-class Color:
-    #user interface
-    ui_norm   = 1
-    ui_yellow = 2
-    #damage panel
-    dp_blank    = 3
-    dp_ok       = 4
-    dp_middle   = 5
-    dp_critical = 6
-    sh_ok       = 7
-    sh_mid      = 8
+class _Color(object):
+    def __init__(self):
+        self._color_names = [
+            # User interface colors
+            "ui_norm",
+            "ui_yellow",
+        # Damage panel colors
+            "dp_blank",
+            "dp_ok",
+            "dp_middle",
+            "dp_critical",
+            "sh_ok",
+            "sh_mid",
+        # Weapon's gauge colors
+            "blaster",
+            "laser",
+            "um",
+        ]
+        self._color_map = dict(zip(self._color_names,
+                               range(1, len(self._color_names) + 1)))
+        open("ololo.log", 'w').write(str(self._color_map))
 
-    #weapons
-    blaster = 9
-    laser   = 10
-    um      = 11
+    def __getattr__(self, name):
+        return self._color_map[name]
+
+Color = _Color()
 
 
 class Style(object):
     def __init__(self):
         self._style = {
-                "gui" : {},
-                "obj" : {},
-                }
+            "gui" : {},
+            "obj" : {},
+        }
 
     def init_styles(self, curses):
         self.gui["normal"] = curses.color_pair(Color.ui_norm)   | curses.A_BOLD
