@@ -212,7 +212,7 @@ class Timer(object):
         self._func()
 
         
-class Timers(object):
+class TimerManager(object):
     """Manage timers, check if ready, fire function if ready."""
 
     def __init__(self):
