@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from configparser import SafeConfigParser, ExtendedInterpolation
 
-from utils import Point, Surface
+from .utils import Point, Surface
 
 
 config_file = "weapons.cfg"

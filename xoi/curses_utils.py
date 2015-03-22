@@ -1,7 +1,7 @@
 """Create and destroy curses windows."""
 
 import curses
-from utils import Color
+from .utils import Color
 
 def create_curses_window(ncols, nlines, begin_x=0, begin_y=0):
     """Initialize curses, colors, make and return window."""
