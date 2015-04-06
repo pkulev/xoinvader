@@ -2,7 +2,10 @@
     Module for common shared objects.
 """
 
+
 class Settings(object):
+    """Container for storing all game settings"""
+
     def __init__(self):
         self._settings = {}
 

@@ -1,7 +1,8 @@
 """Create and destroy curses windows."""
 
 import curses
-from utils import Color
+from .utils import Color
+
 
 def create_curses_window(ncols, nlines, begin_x=0, begin_y=0):
     """Initialize curses, colors, make and return window."""
@@ -9,11 +10,11 @@ def create_curses_window(ncols, nlines, begin_x=0, begin_y=0):
     curses.initscr()
     curses.start_color()
 
-    #user interface
+    # User interface
     curses.init_pair(Color.ui_norm, curses.COLOR_WHITE, curses.COLOR_BLACK)
     curses.init_pair(Color.ui_yellow, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
-    #damage panel
+    # Damage panel
     curses.init_pair(Color.dp_blank, curses.COLOR_BLACK, curses.COLOR_BLACK)
     curses.init_pair(Color.dp_ok, curses.COLOR_WHITE, curses.COLOR_GREEN)
     curses.init_pair(Color.dp_middle, curses.COLOR_WHITE, curses.COLOR_YELLOW)
@@ -21,7 +22,7 @@ def create_curses_window(ncols, nlines, begin_x=0, begin_y=0):
     curses.init_pair(Color.sh_ok, curses.COLOR_WHITE, curses.COLOR_BLUE)
     curses.init_pair(Color.sh_mid, curses.COLOR_WHITE, curses.COLOR_CYAN)
 
-    #weapons
+    # Weapons
     curses.init_pair(Color.blaster, curses.COLOR_GREEN, curses.COLOR_BLACK)
     curses.init_pair(Color.laser, curses.COLOR_BLACK, curses.COLOR_RED)
     curses.init_pair(Color.um, curses.COLOR_MAGENTA, curses.COLOR_BLACK)

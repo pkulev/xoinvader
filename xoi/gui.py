@@ -1,7 +1,7 @@
 """ This is module docstring """
 
-from render import Renderable
-from utils import Surface, style
+from .render import Renderable
+from .utils import Surface, style
 
 
 class WeaponWidget(Renderable):

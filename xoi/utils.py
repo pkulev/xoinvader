@@ -181,46 +181,28 @@ class InfList(list):
         self._index = (self._index - 1) % len(self)
         return self[self._index]
 
-    
+
 class Timer(object):
-    """Store end time and function to call when time is up."""
+    """Simple timer, calls callback when time's up. Doesn't have own loop."""
 
     def __init__(self, end_time, func):
         self._end = float(end_time)
         self._func = func
         self._start = time.perf_counter()
         self._current = self._start
-        
-    def tick(self):
+
+    def _tick(self):
         """Refresh counter."""
         self._current = time.perf_counter()
-        
-    def isReady(self):
-        """If time's up - return True, False otherwise."""
-        if self._current - self._start >= self._end:
-            return True
-        else:
-            return False
 
+    def _timeIsUp(self):
+        """Return True if time's up, false otherwise."""
+        return self._current - self._start >= self._end
+        
+    def update(self):
+        """Public method for using in loops."""
+        self._tick()
+        
     def fireFunction(self):
         """Call stored callback."""
         self._func()
-
-        
-class TimerManager(object):
-    """Manage timers, check if ready, fire function if ready."""
-
-    def __init__(self):
-        self._timers = []
-
-    def addTimer(self, end_time, func):
-        """Add new timer to manage."""
-        self._timers.append(Timer(end_time, func))
-
-    def update(self):
-        """Update all timers and check them for readiness."""
-        for timer in self._timers[:]:
-            timer.tick()
-            if timer.isReady():
-                timer.fireFunction()
-                self._timers.remove(timer)

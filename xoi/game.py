@@ -8,12 +8,12 @@ import sys
 import time
 import curses
 
-from gui import WeaponWidget, Bar
-from ship import GenericXEnemy, Playership
-from utils import Point, style, Layout
-from render import Renderer
-from common import Settings
-from curses_utils import create_curses_window, deinit_curses
+from .gui import WeaponWidget, Bar
+from .ship import GenericXEnemy, Playership
+from .utils import Point, style, Layout
+from .render import Renderer
+from .common import Settings
+from .curses_utils import create_curses_window, deinit_curses
 
 
 KEY = "KEY"
