@@ -190,10 +190,12 @@ class Timer(object):
         self._func = func
         self._start = time.perf_counter()
         self._current = self._start
+        self._running = False
 
     def _tick(self):
         """Refresh counter."""
-        self._current = time.perf_counter()
+        if self._running:
+            self._current = time.perf_counter()
 
     def _timeIsUp(self):
         """Return True if time's up, false otherwise."""
@@ -202,7 +204,21 @@ class Timer(object):
     def update(self):
         """Public method for using in loops."""
         self._tick()
+        if self._timeIsUp() and self._running:
+            self._func()
+            self.stop()
         
     def fireFunction(self):
         """Call stored callback."""
         self._func()
+
+    def reset(self):
+        self._start = time.perf_counter()
+        self._current = self._start
+        self.start()
+        
+    def start(self):
+        self._running = True
+
+    def stop(self):
+        self._running = False
