@@ -4,7 +4,8 @@ import unittest
 
 if __name__ == "__main__.py":
     test_names = [
-        "test_utils",
+#        "test_utils",
+	"test_common",
     ]
 
     suite = unittest.defaultTestLoader.loadTestsFromNames(test_names)

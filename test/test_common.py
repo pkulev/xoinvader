@@ -1,7 +1,7 @@
 import sys
 import unittest
 
-from ...xoi import common
+from ..xoi import utils
 
 
 class TestSettings(unittest.TestCase):

@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
 
-from xoi.game import App
+from xoinvader.game import App
 app = App()
 app.loop()
