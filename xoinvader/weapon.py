@@ -1,21 +1,20 @@
 from abc import ABCMeta, abstractmethod
 from configparser import SafeConfigParser, ExtendedInterpolation
 
-from .utils import Point, Surface
+from .utils import Point, Surface, Timer
 
 
 config_file = "weapons.cfg"
 config = SafeConfigParser(allow_no_value=True,
                           interpolation=ExtendedInterpolation())
 config.read(config_file)
-
+LOG = open("weapon.log", "w")
 
 class IWeapon(object, metaclass=ABCMeta):
     @abstractmethod
     def make_shot(self):
         """Make shot, if can't - raise Value Error"""
         pass
-
 
     @abstractmethod
     def update(self):
@@ -43,9 +42,15 @@ class Weapon(IWeapon):
 
         #Experimental
         self.ready = True
-
+        self._timer = Timer(self._cooldown, self._ready_callback)
         self._coords = []
 
+    def _ready_callback(self):
+        """Calls by timer when weapon is ready to fire."""
+        # TODO: Play sound
+        self._timer.reset()
+        self.ready = True
+        # self._current_cooldown = self._cooldown
 
     def _prepare_weapon(self):
         #play sound
@@ -65,7 +70,8 @@ class Weapon(IWeapon):
         if self._ammo == 0: raise ValueError("No ammo!")
 
         self.ready = False
-        self._current_cooldown = 0
+        #self._current_cooldown = 0
+        self._timer.start()
 
 
     def get_render_data(self):
@@ -93,8 +99,8 @@ class Weapon(IWeapon):
 
     @property
     def current_cooldown(self):
-        return self._current_cooldown
-
+        #return self._current_cooldown
+        return self.cooldown if self.ready else round(self._timer.getCurrentTime())
 
     @property
     def type(self):
@@ -106,9 +112,12 @@ class Weapon(IWeapon):
         for i in self._coords:
             new_coords.append(Point(x=i.x, y=i.y - self._dy))
         self._coords = new_coords[:]
-        self._current_cooldown += 1
-        if self._current_cooldown >= self._cooldown:
-            self._prepare_weapon()
+#        self._current_cooldown += 1
+        self._timer.update()
+        LOG.write(str(self.__class__.__name__) + " : " + "  --  ".join([str(i) for i in [self.current_cooldown, self._cooldown]]) + "\n")
+        #        if self._current_cooldown >= self._cooldown:
+        #            self._prepare_weapon()
+
 
 
 import curses

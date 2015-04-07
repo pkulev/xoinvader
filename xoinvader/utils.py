@@ -200,7 +200,13 @@ class Timer(object):
     def _timeIsUp(self):
         """Return True if time's up, false otherwise."""
         return self._current - self._start >= self._end
-        
+
+    def getCurrentTime(self):
+        return self._current - self._start
+
+    def getRemainingTime(self):
+        return self._end - self.getCurrentTime()
+
     def update(self):
         """Public method for using in loops."""
         self._tick()
