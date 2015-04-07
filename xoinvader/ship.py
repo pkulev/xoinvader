@@ -168,14 +168,11 @@ class Playership(Ship):
     def get_full_wcinfo(self):
         return self._weapon.current_cooldown, self._weapon.cooldown
 
-
     def get_render_data(self):
         return [self._pos], self._image.get_image()
 
-
     def get_renderable_objects(self):
         return self._weapons
-
 
     def take_damage(self, damage):
         if self._shield < damage:
@@ -186,7 +183,6 @@ class Playership(Ship):
             self._shield -= damage
         if self._hull < 0:
             self._hull = 0
-
 
     def refresh_shield(self, amount=None):
         if self._shield == self._max_shield:
