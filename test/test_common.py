@@ -1,8 +1,7 @@
 import sys
 import unittest
 
-from ..xoi import utils
-
+from xoinvader import Settings
 
 class TestSettings(unittest.TestCase):
     def test_setattr(self):
