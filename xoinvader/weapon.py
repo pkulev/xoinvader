@@ -38,25 +38,17 @@ class Weapon(IWeapon):
         self._damage   = int(damage)
         self._radius   = int(radius)
         self._dy       = int(dy)
-        self._current_cooldown = self._cooldown
 
         #Experimental
         self.ready = True
-        self._timer = Timer(self._cooldown, self._ready_callback)
+        self._timer = Timer(self._cooldown, self._reload)
         self._coords = []
 
-    def _ready_callback(self):
+    def _reload(self):
         """Calls by timer when weapon is ready to fire."""
         # TODO: Play sound
         self._timer.reset()
         self.ready = True
-        # self._current_cooldown = self._cooldown
-
-    def _prepare_weapon(self):
-        #play sound
-        self.ready = True
-        self._current_cooldown = self._cooldown
-
 
     def make_shot(self, pos):
         if not self.ready:
@@ -70,54 +62,44 @@ class Weapon(IWeapon):
         if self._ammo == 0: raise ValueError("No ammo!")
 
         self.ready = False
-        #self._current_cooldown = 0
         self._timer.start()
-
 
     def get_render_data(self):
         return (self._coords, self._image.get_image())
 
-
     def remove_obsolete(self, pos):
         self._coords.remove(pos)
-
 
     @property
     def ammo(self):
         return 999 if self._ammo == "infinite" else self._ammo
 
-
     @property
     def max_ammo(self):
         return 999 if self._max_ammo == "infinite" else self._max_ammo
-
 
     @property
     def cooldown(self):
         return self._cooldown
 
-
     @property
     def current_cooldown(self):
-        #return self._current_cooldown
         return self.cooldown if self.ready else round(self._timer.getCurrentTime())
 
     @property
     def type(self):
         return self.__class__.__name__
 
-
     def update(self):
+        if self.ready and not self._coords:
+            return
+        
         new_coords = []
         for i in self._coords:
             new_coords.append(Point(x=i.x, y=i.y - self._dy))
         self._coords = new_coords[:]
-#        self._current_cooldown += 1
         self._timer.update()
         LOG.write(str(self.__class__.__name__) + " : " + "  --  ".join([str(i) for i in [self.current_cooldown, self._cooldown]]) + "\n")
-        #        if self._current_cooldown >= self._cooldown:
-        #            self._prepare_weapon()
-
 
 
 import curses

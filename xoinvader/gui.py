@@ -27,6 +27,37 @@ class WeaponWidget(Renderable):
         return [self._pos], self._image.get_image()
 
 
+class _Bar(Renderable):
+    def __init__(self, pos,
+                 prefix="", postfix="",
+                 left="[", right="]",
+                 marker=" ", marker_style=None,
+                 count=10, maxval=100,
+                 template=None, data=None):
+        
+        self._prefix = prefix
+        self._postfix = postfix
+        self._left = left
+        self._right = right
+        self._marker = marker
+        self._marker_style = marker_style
+        self._count = count
+        self._maxval = maxval
+        if template:
+            self._template = template
+        else:
+            self._template = "".join([
+                self.prefix, self.left, "{blocks}",
+                self.right, self.postfix
+            ])
+
+    def update(self, val):
+        pass
+
+    def get_render_data(self):
+        return [self._pos], self._image.get_image()
+
+        
 class Bar(Renderable):
     def __init__(self, title, pos, get_data, update_all=False):
         self._title = title
