@@ -1,10 +1,13 @@
 from configparser import SafeConfigParser, ExtendedInterpolation
 
-from .render import Renderable
-from .weapon import Blaster, Laser, UM, EBlaster
-from .utils import Point, Surface, InfList
+from xoinvader.render import Renderable
+from xoinvader.weapon import Blaster, Laser, UM, EBlaster
+from xoinvader.utils import Point, Surface, InfList
+from xoinvader.common import Settings
 
-config_file = "ships.cfg"
+#EXPERIMENTAL
+config_file = Settings.path.config.ships
+
 CONFIG = SafeConfigParser(allow_no_value=True,
                           interpolation=ExtendedInterpolation())
 CONFIG.read(config_file)
@@ -168,14 +171,11 @@ class Playership(Ship):
     def get_full_wcinfo(self):
         return self._weapon.current_cooldown, self._weapon.cooldown
 
-
     def get_render_data(self):
         return [self._pos], self._image.get_image()
 
-
     def get_renderable_objects(self):
         return self._weapons
-
 
     def take_damage(self, damage):
         if self._shield < damage:
@@ -186,7 +186,6 @@ class Playership(Ship):
             self._shield -= damage
         if self._hull < 0:
             self._hull = 0
-
 
     def refresh_shield(self, amount=None):
         if self._shield == self._max_shield:
