@@ -14,7 +14,7 @@ _ROOT = dirname(xoinvader.__file__)
 _CONFIG = _ROOT + "/config"
 
 
-__DEFAUT_XOI_SETTINGS__ = Entry(
+DEFAUT_XOI_SETTINGS = Entry(
     path=Entry(
         config=Entry(
             ships=_CONFIG + "/ships.cfg",
@@ -22,4 +22,4 @@ __DEFAUT_XOI_SETTINGS__ = Entry(
         res=None)
 )
 
-Settings = Entry(__DEFAUT_XOI_SETTINGS__)
+Settings = Entry(DEFAUT_XOI_SETTINGS)
