@@ -37,52 +37,51 @@ class App(object):
     """
 
     def __init__(self):
-        self.settings = Settings()
-        self.settings.layout = Layout().init_layout()
-        self.settings.border = self.settings.layout.field["border"]
-        self.settings.field = Point(x=self.settings.border.x,
-                                    y=self.settings.border.y-1)
+        Settings.layout = Layout().init_layout()
+        Settings.border = Settings.layout.field["border"]
+        Settings.field = Point(x=Settings.border.x,
+                                    y=Settings.border.y-1)
 
-        self.screen = create_curses_window(ncols=self.settings.border.x,
-                                           nlines=self.settings.border.y)
+        self.screen = create_curses_window(ncols=Settings.border.x,
+                                           nlines=Settings.border.y)
         style.init_styles(curses)
 
-        self.settings.renderer = Renderer(self.settings.border)
+        Settings.renderer = Renderer(Settings.border)
 
-        self.playership = Playership(self.settings.layout.field["playership"],
-                                     self.settings.field, self.settings)
-        self.settings.renderer.add_object(self.playership)
+        self.playership = Playership(Settings.layout.field["playership"],
+                                     Settings.field, Settings)
+        Settings.renderer.add_object(self.playership)
 
-        self.enemy = GenericXEnemy(Point(x=15, y=3), self.settings.field,
-                                   self.settings)
+        self.enemy = GenericXEnemy(Point(x=15, y=3), Settings.field,
+                                   Settings)
 
-        self.settings.renderer.add_object(self.enemy)
+        Settings.renderer.add_object(self.enemy)
         #gui
 
         self.hbar = Bar("Hull",
-                        self.settings.layout.gui["hbar"],
+                        Settings.layout.gui["hbar"],
                         self.playership.get_full_hinfo)
 
         self.sbar = Bar("Shield",
-                        self.settings.layout.gui["sbar"],
+                        Settings.layout.gui["sbar"],
                         self.playership.get_full_sinfo)
 
         self.sbar.status_style["good"] = style.gui["sh_ok"]
         self.sbar.status_style["dmgd"] = style.gui["sh_mid"]
 
-        self.wbar = Bar("", self.settings.layout.gui["wbar"],
+        self.wbar = Bar("", Settings.layout.gui["wbar"],
                         self.playership.get_full_wcinfo,
                         update_all=True)
 
         for state in ["good", "dmgd", "crit"]:
             self.wbar.status_style[state] = style.gui["dp_ok"]
 
-        self.winfo = WeaponWidget(self.settings.layout.gui["winfo"],
+        self.winfo = WeaponWidget(Settings.layout.gui["winfo"],
                                   self.playership.get_weapon_info)
 
         self.gui = [self.hbar, self.sbar, self.wbar, self.winfo]
         for gui_object in self.gui:
-            self.settings.renderer.add_object(gui_object)
+            Settings.renderer.add_object(gui_object)
 
 
 
@@ -120,10 +119,10 @@ class App(object):
         self.screen.erase()
         self.screen.border(0)
         self.screen.addstr(0, 2, "Score: {} ".format(0))
-        self.screen.addstr(0, self.settings.field.x // 2 - 4,
+        self.screen.addstr(0, Settings.field.x // 2 - 4,
                            "XOInvader", curses.A_BOLD)
 
-        self.settings.renderer.render_all(self.screen)
+        Settings.renderer.render_all(self.screen)
 
         self.screen.refresh()
 

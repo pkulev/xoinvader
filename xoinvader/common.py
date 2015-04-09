@@ -2,28 +2,24 @@
     Module for common shared objects.
 """
 
-# DEPRECATED
-class _Settings(object):
-    """Container for storing all game settings"""
+from os.path import dirname
 
-    def __init__(self):
-        self._settings = {}
+import xoinvader
+from xoinvader.settings import Settings as Entry
 
-    def __getattr__(self, name):
-        return self._settings[name]
 
-    def __setattr__(self, name, value):
-        #self._settings[name] = value
-        super(Settings, self).__setattr__(name, value)
+__all__ = ["settings"]
 
-__DEFAUT_XOI_SETTINGS__ = dict(
-    path = dict(config = None, res = None)
+_ROOT = dirname(xoinvader.__file__)
+_CONFIG = _ROOT + "/config"
+
+
+__DEFAUT_XOI_SETTINGS__ = Entry(
+    path=Entry(
+        config=Entry(
+            ships=_CONFIG + "/ships.cfg",
+            weapons=_CONFIG + "/weapons.cfg"),
+        res=None)
 )
 
-class Settings(dict):
-    """Container for storing all game settings"""
-    def __getattr__(self, name):
-        return self[name]
-
-    __setattr__ = dict.__setitem__
-    __delattr__ = dict.__delitem__
+Settings = Entry(__DEFAUT_XOI_SETTINGS__)

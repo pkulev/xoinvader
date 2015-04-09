@@ -1,10 +1,11 @@
 from abc import ABCMeta, abstractmethod
 from configparser import SafeConfigParser, ExtendedInterpolation
 
-from .utils import Point, Surface
+from xoinvader.utils import Point, Surface
+from xoinvader.common import Settings
 
 
-config_file = "weapons.cfg"
+config_file = Settings.path.config.weapons
 config = SafeConfigParser(allow_no_value=True,
                           interpolation=ExtendedInterpolation())
 config.read(config_file)
