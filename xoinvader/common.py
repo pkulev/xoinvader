@@ -8,7 +8,7 @@ import xoinvader
 from xoinvader.settings import Settings as Entry
 
 
-__all__ = ["settings"]
+__all__ = ["Settings"]
 
 _ROOT = dirname(xoinvader.__file__)
 _CONFIG = _ROOT + "/config"

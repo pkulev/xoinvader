@@ -1,7 +1,14 @@
+"""
+    Module that renders graphics to screen.
+"""
+
+
 from abc import ABCMeta, abstractmethod
 
 
 class Renderable(object, metaclass=ABCMeta):
+    """Abstract class that forces implementing methods below."""
+
     @abstractmethod
     def get_render_data(self):
         """Renderable.get_render_data(None) -> (gpos_list, data_gen)
@@ -29,20 +36,25 @@ class Renderable(object, metaclass=ABCMeta):
 
 
 class Renderer(object):
+    """Handles collection of renderable objects, renders them to screen."""
+
     def __init__(self, border):
         self._objects = []
         self._border = border
 
 
     def add_object(self, obj):
+        """Add renderable object."""
         self._objects.append(obj)
 
 
     def remove_object(self, obj):
+        """Remove renderable object."""
         self._objects.remove(obj)
 
 
     def render_all(self, screen):
+        """Render all renderable objects."""
         for obj in self._objects:
             gpos_list, data_gen = obj.get_render_data()
 
@@ -51,8 +63,9 @@ class Renderer(object):
                     lpos, image, style = data
                     cpos = gpos + lpos
 
-                    if (cpos.x >= self._border.x or cpos.y >= self._border.y) or \
-                       (cpos.x <= 0 or cpos.y <= 0):
+                    if (cpos.x >= self._border.x or cpos.y >= self._border.y) \
+                       or (cpos.x <= 0 or cpos.y <= 0):
+
                         obj.remove_obsolete(gpos)
                         continue
 
