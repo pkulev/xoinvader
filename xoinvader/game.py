@@ -8,12 +8,12 @@ import sys
 import time
 import curses
 
-from .gui import WeaponWidget, Bar
-from .ship import GenericXEnemy, Playership
-from .utils import Point, style, Layout
-from .render import Renderer
-from .common import Settings
-from .curses_utils import create_curses_window, deinit_curses
+from xoinvader.gui import WeaponWidget, Bar
+from xoinvader.ship import GenericXEnemy, Playership
+from xoinvader.utils import Point, style, Layout
+from xoinvader.render import Renderer
+from xoinvader.common import Settings
+from xoinvader.curses_utils import create_curses_window, deinit_curses
 
 
 KEY = "KEY"
