@@ -12,19 +12,16 @@ class TestSettings(unittest.TestCase):
         del self.settings
 
     def test_setattr(self):
-        settings = Settings()
-        settings.test_thing = 42
-        self.assertEquals(42, settings._settings["test_thing"])
+        self.settings.test_thing = 42
+        self.assertEquals(42, self.settings["test_thing"])
 
     def test_getattr(self):
-        settings = Settings()
-        settings._settings["test_thing"] = 42
-        self.assertEquals(42, settings.test_thing)
+        self.settings["test_thing"] = 42
+        self.assertEquals(42, self.settings.test_thing)
 
     def test_setattr_with_getattr(self):
-        settings = Settings()
-        settings.test_thing = 42
-        self.assertEquals(42, settings.test_thing)
-    @unittest.skip
+        self.settings.test_thing = 42
+        self.assertEquals(42, self.settings.test_thing)
+
     def test_get_nonexistent_value(self):
-        pass
+        self.assertRaises(KeyError, lambda : self.settings.test_thing)
