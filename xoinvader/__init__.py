@@ -8,3 +8,6 @@
     :copyright: (c) 2015 by Pavel Kulyov.
     :license: GPL, see LICENSE for more details.
 """
+
+from . import common
+
