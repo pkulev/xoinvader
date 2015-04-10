@@ -12,7 +12,7 @@ class Settings(dict):
             self._wrap_nested()
 
     def _wrap_nested(self):
-        for key, value in self.iteritems():
+        for key, value in self.items():
             if type(value) == dict:
                 self[key] = Settings(True, value)
 

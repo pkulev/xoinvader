@@ -9,5 +9,5 @@
     :license: GPL, see LICENSE for more details.
 """
 
-from . import common
+from . import common, settings
 
