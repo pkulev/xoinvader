@@ -1,6 +1,6 @@
 from xoinvader.render import Renderable
 from xoinvader.weapon import Blaster, Laser, UM, EBlaster
-from xoinvader.utils import Point, Surface, InfList
+from xoinvader.utils import Point, Surface, InfiniteList
 from xoinvader.common import Settings, get_json_config
 
 
@@ -88,7 +88,7 @@ class Playership(Ship):
         self._settings = settings
 
         self._fire = False
-        self._weapons = InfList([Blaster(), Laser(), UM()])
+        self._weapons = InfiniteList([Blaster(), Laser(), UM()])
         for weapon in self._weapons: self._settings.renderer.add_object(weapon)
         self._weapon = self._weapons.current()
         self._wbay = Point(x=self._image.width // 2, y=-1)
