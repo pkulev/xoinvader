@@ -134,11 +134,9 @@ class Playership(Ship):
                                                 c=self._weapon.ammo,
                                                 m=self._weapon.max_ammo)
 
-
     @property
     def max_hull(self):
         return self._max_hull
-
 
     @property
     def max_shield(self):

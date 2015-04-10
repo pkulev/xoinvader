@@ -29,25 +29,21 @@ class Weapon(IWeapon):
     def __init__(self, ammo, max_ammo, cooldown, damage, radius, dy):
         self._type     = "__basic__"
         self._image    = None
-        self._ammo     = int(ammo) if type(ammo) == int else ammo
-        self._max_ammo = int(max_ammo) if type(max_ammo) == int else max_ammo
-        self._cooldown = float(cooldown)
-        self._damage   = int(damage)
-        self._radius   = int(radius)
-        self._dy       = int(dy)
+        self._ammo     = ammo
+        self._max_ammo = max_ammo
+        self._cooldown = cooldown
+        self._damage   = damage
+        self._radius   = radius
+        self._dy       = dy
         self._current_cooldown = self._cooldown
 
-        #Experimental
         self.ready = True
-
         self._coords = []
-
 
     def _prepare_weapon(self):
         #play sound
         self.ready = True
         self._current_cooldown = self._cooldown
-
 
     def make_shot(self, pos):
         if not self.ready:
@@ -63,39 +59,31 @@ class Weapon(IWeapon):
         self.ready = False
         self._current_cooldown = 0
 
-
     def get_render_data(self):
         return (self._coords, self._image.get_image())
 
-
     def remove_obsolete(self, pos):
         self._coords.remove(pos)
-
 
     @property
     def ammo(self):
         return 999 if self._ammo == "infinite" else self._ammo
 
-
     @property
     def max_ammo(self):
         return 999 if self._max_ammo == "infinite" else self._max_ammo
-
 
     @property
     def cooldown(self):
         return self._cooldown
 
-
     @property
     def current_cooldown(self):
         return self._current_cooldown
 
-
     @property
     def type(self):
         return self.__class__.__name__
-
 
     def update(self):
         new_coords = []
