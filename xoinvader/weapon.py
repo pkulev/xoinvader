@@ -1,14 +1,10 @@
 from abc import ABCMeta, abstractmethod
-from configparser import SafeConfigParser, ExtendedInterpolation
 
 from xoinvader.utils import Point, Surface
-from xoinvader.common import Settings
+from xoinvader.common import Settings, get_json_config
 
 
-config_file = Settings.path.config.weapons
-config = SafeConfigParser(allow_no_value=True,
-                          interpolation=ExtendedInterpolation())
-config.read(config_file)
+CONFIG = get_json_config(Settings.path.config.weapons)
 
 
 class IWeapon(object, metaclass=ABCMeta):
@@ -16,7 +12,6 @@ class IWeapon(object, metaclass=ABCMeta):
     def make_shot(self):
         """Make shot, if can't - raise Value Error"""
         pass
-
 
     @abstractmethod
     def update(self):
@@ -27,15 +22,15 @@ class IWeapon(object, metaclass=ABCMeta):
 def _load_from_config(weapon, config):
     section = weapon.__name__
     params = ("ammo", "max_ammo", "cooldown", "damage", "radius", "dy")
-    return {var : config.get(section, var) for var in params}
+    return {var : config[section].get(var) for var in params}
 
 
 class Weapon(IWeapon):
     def __init__(self, ammo, max_ammo, cooldown, damage, radius, dy):
         self._type     = "__basic__"
         self._image    = None
-        self._ammo     = int(ammo) if ammo.isdigit() else ammo
-        self._max_ammo = int(max_ammo) if max_ammo.isdigit() else max_ammo
+        self._ammo     = int(ammo) if type(ammo) == int else ammo
+        self._max_ammo = int(max_ammo) if type(max_ammo) == int else max_ammo
         self._cooldown = float(cooldown)
         self._damage   = int(damage)
         self._radius   = int(radius)
@@ -115,25 +110,25 @@ class Weapon(IWeapon):
 import curses
 class Blaster(Weapon):
     def __init__(self):
-        super().__init__(**_load_from_config(self.__class__, config))
+        super().__init__(**_load_from_config(self.__class__, CONFIG))
         self._image = Surface([["^"]], style=[[curses.A_BOLD]])
 
 
 class EBlaster(Weapon):
     def __init__(self):
-        super().__init__(**_load_from_config(self.__class__, config))
+        super().__init__(**_load_from_config(self.__class__, CONFIG))
         self._image = Surface([[":"]])
 
 
 class Laser(Weapon):
     def __init__(self):
-        super().__init__(**_load_from_config(self.__class__, config))
+        super().__init__(**_load_from_config(self.__class__, CONFIG))
         self._image = Surface([["|"]], style=[[curses.A_BOLD]])
 
 
 class UM(Weapon):
     def __init__(self):
-        super().__init__(**_load_from_config(self.__class__, config))
+        super().__init__(**_load_from_config(self.__class__, CONFIG))
         self._image = Surface([["^"],
                                ["|"],
                                ["*"]], style = [[curses.A_BOLD] for _ in range(3)])

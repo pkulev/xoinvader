@@ -20,7 +20,7 @@
 	"UM" : {
 		"ammo" : 15,
 		"max_ammo" : 15,
-		"cooldown" : 5,
+		"cooldown" : 50,
 		"damage" : 3,
 		"radius" : 1,
 		"dy" : 1
