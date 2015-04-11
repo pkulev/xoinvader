@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from configparser import SafeConfigParser, ExtendedInterpolation
 
-from xoinvader.utils import Point, Surface
+from xoinvader.utils import Point, Surface, Timer
 from xoinvader.common import Settings
 
 
