@@ -1,14 +1,13 @@
 """ This is module docstring """
 
-from .render import Renderable
-from .utils import Surface, style
+from xoinvader.render import Renderable
+from xoinvader.utils import Surface, style
 
 
 class WeaponWidget(Renderable):
-    """this is class docstring stub """
-    def __init__(self, pos, get_data):
-        """This is init docstring """
+    """Widget for displaying weapon information."""
 
+    def __init__(self, pos, get_data):
         self._pos = pos
         self._get_data = get_data
         self._data = self._get_data()
@@ -28,13 +27,34 @@ class WeaponWidget(Renderable):
 
 
 class _Bar(Renderable):
+    """
+    Progress bar widget. All templates can contain dict keys for inserting data.
+
+    General:
+
+    :pos - position of the bar (global coordinates);
+
+    Bar specific:
+
+    :prefix - text before the bar;
+    :postfix - text after the bar;
+    :left - left edge of the bar;
+    :right - right edge of the bar;
+    :marker - symbol that fills the bar;
+    :marker_style - curses style for marker (passes to render);
+    :count - number of markers in the bar;
+    :maxval - max value of displayed parameter (affects the accuracy);
+    :template - string that can replace {pre,post}fix, left, right [EXPERIMENTAL];
+    :data - dict that substitutes to string;
+    """
+
     def __init__(self, pos,
                  prefix="", postfix="",
                  left="[", right="]",
                  marker=" ", marker_style=None,
                  count=10, maxval=100,
                  template=None, data=None):
-        
+
         self._prefix = prefix
         self._postfix = postfix
         self._left = left
@@ -52,12 +72,14 @@ class _Bar(Renderable):
             ])
 
     def update(self, val):
+        """Update bar."""
         pass
 
     def get_render_data(self):
+        """Return render specific data."""
         return [self._pos], self._image.get_image()
 
-        
+
 class Bar(Renderable):
     def __init__(self, title, pos, get_data, update_all=False):
         self._title = title
