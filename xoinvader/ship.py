@@ -1,16 +1,10 @@
-from configparser import SafeConfigParser, ExtendedInterpolation
-
 from xoinvader.render import Renderable
 from xoinvader.weapon import Blaster, Laser, UM, EBlaster
-from xoinvader.utils import Point, Surface, InfList
-from xoinvader.common import Settings
+from xoinvader.utils import Point, Surface, InfiniteList
+from xoinvader.common import Settings, get_json_config
 
-#EXPERIMENTAL
-config_file = Settings.path.config.ships
 
-CONFIG = SafeConfigParser(allow_no_value=True,
-                          interpolation=ExtendedInterpolation())
-CONFIG.read(config_file)
+CONFIG = get_json_config(Settings.path.config.ships)
 
 
 class Ship(Renderable):
@@ -31,26 +25,20 @@ class Ship(Renderable):
         self._shield = None
 
         #first initialization
-        self.load_config(CONFIG)
-
-
-    def load_config(self, config=CONFIG):
-        if not config:
-            raise ValueErrorException
-
-        def get_value(field):
-            return config.get(self.__class__.__name__, field)
-
-        self._dx = int(get_value("dx"))
-        self._max_hull = int(get_value("max_hull"))
-        self._max_shield = int(get_value("max_shield"))
-        self._hull = int(get_value("hull"))
-        self._shield = int(get_value("shield"))
-
+        self.load_config(CONFIG[self.__class__.__name__])
         
+    def load_config(self, config):
+        if not config:
+            raise ValueError
+
+        self._dx = int(config.dx)
+        self._hull = int(config.hull)
+        self._shield = int(config.shield)
+        self._max_hull = int(config.max_hull)
+        self._max_shield = int(config.max_shield)
+
     def move_left(self):
         self._dx = -1
-
 
     def move_right(self):
         self._dx = 1
@@ -59,19 +47,16 @@ class Ship(Renderable):
         self._weapon = weapon
         self._settings.renderer.add_object(self._weapon)
 
-
     def update(self):
         if self._pos.x == self._border.x - self._image.width - 1 and self._dx > 0:
             self._pos.x = self._border.x - self._image.width - 1
         elif self._pos.x == 1 and self._dx < 0:
             self._pos.x = 0
 
-
         self._weapon.update()
 
         if self._fire:
             self._weapon.make_shot(Point(x=self._pos.x + 1, y=self._pos.y))
-
 
     def get_render_data(self):
         return ([self._pos], self._image.get_image())
@@ -103,7 +88,7 @@ class Playership(Ship):
         self._settings = settings
 
         self._fire = False
-        self._weapons = InfList([Blaster(), Laser(), UM()])
+        self._weapons = InfiniteList([Blaster(), Laser(), UM()])
         for weapon in self._weapons: self._settings.renderer.add_object(weapon)
         self._weapon = self._weapons.current()
         self._wbay = Point(x=self._image.width // 2, y=-1)
@@ -149,11 +134,9 @@ class Playership(Ship):
                                                 c=self._weapon.ammo,
                                                 m=self._weapon.max_ammo)
 
-
     @property
     def max_hull(self):
         return self._max_hull
-
 
     @property
     def max_shield(self):

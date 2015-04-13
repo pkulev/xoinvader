@@ -10,7 +10,7 @@ import curses
 
 from xoinvader.gui import WeaponWidget, Bar
 from xoinvader.ship import GenericXEnemy, Playership
-from xoinvader.utils import Point, style, Layout
+from xoinvader.utils import Point, style
 from xoinvader.render import Renderer
 from xoinvader.common import Settings
 from xoinvader.curses_utils import create_curses_window, deinit_curses
@@ -37,46 +37,41 @@ class App(object):
     """
 
     def __init__(self):
-        Settings.layout = Layout().init_layout()
-        Settings.border = Settings.layout.field["border"]
-        Settings.field = Point(x=Settings.border.x,
-                                    y=Settings.border.y-1)
-
-        self.screen = create_curses_window(ncols=Settings.border.x,
-                                           nlines=Settings.border.y)
+        self.screen = create_curses_window(ncols=Settings.layout.field.border.x,
+                                           nlines=Settings.layout.field.border.y)
         style.init_styles(curses)
 
-        Settings.renderer = Renderer(Settings.border)
+        Settings.renderer = Renderer(Settings.layout.field.border)
 
-        self.playership = Playership(Settings.layout.field["playership"],
-                                     Settings.field, Settings)
+        self.playership = Playership(Settings.layout.field.player,
+                                     Settings.layout.field.edge, Settings)
         Settings.renderer.add_object(self.playership)
 
-        self.enemy = GenericXEnemy(Point(x=15, y=3), Settings.field,
+        self.enemy = GenericXEnemy(Point(x=15, y=3), Settings.layout.field.edge,
                                    Settings)
 
         Settings.renderer.add_object(self.enemy)
         #gui
 
         self.hbar = Bar("Hull",
-                        Settings.layout.gui["hbar"],
+                        Settings.layout.gui.bar.health,
                         self.playership.get_full_hinfo)
 
         self.sbar = Bar("Shield",
-                        Settings.layout.gui["sbar"],
+                        Settings.layout.gui.bar.shield,
                         self.playership.get_full_sinfo)
 
         self.sbar.status_style["good"] = style.gui["sh_ok"]
         self.sbar.status_style["dmgd"] = style.gui["sh_mid"]
 
-        self.wbar = Bar("", Settings.layout.gui["wbar"],
+        self.wbar = Bar("", Settings.layout.gui.bar.weapon,
                         self.playership.get_full_wcinfo,
                         update_all=True)
 
         for state in ["good", "dmgd", "crit"]:
             self.wbar.status_style[state] = style.gui["dp_ok"]
 
-        self.winfo = WeaponWidget(Settings.layout.gui["winfo"],
+        self.winfo = WeaponWidget(Settings.layout.gui.info.weapon,
                                   self.playership.get_weapon_info)
 
         self.gui = [self.hbar, self.sbar, self.wbar, self.winfo]
@@ -119,7 +114,7 @@ class App(object):
         self.screen.erase()
         self.screen.border(0)
         self.screen.addstr(0, 2, "Score: {} ".format(0))
-        self.screen.addstr(0, Settings.field.x // 2 - 4,
+        self.screen.addstr(0, Settings.layout.field.edge.x // 2 - 4,
                            "XOInvader", curses.A_BOLD)
 
         Settings.renderer.render_all(self.screen)

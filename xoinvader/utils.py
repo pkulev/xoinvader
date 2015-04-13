@@ -131,39 +131,7 @@ class Style(object):
 style = Style()
 
 
-class LayoutItem(dict):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def __getattr__(self, name):
-        return self[name]
-
-
-class Layout(object):
-    def __init__(self, config=None):
-        self._layout = {
-                        "field" : {},
-                        "gui" : {},
-                        }
-
-    def init_layout(self):
-        self.field["border"] = Point(x=90, y=34)
-        self.field["playership"] = Point(x=self.field["border"].x // 2,
-                                         y=self.field["border"].y - 1)
-
-        self.gui["hbar"]  = Point(x=2 , y=self.field["border"].y - 1)
-        self.gui["sbar"]  = Point(x=22, y=self.field["border"].y - 1)
-        self.gui["winfo"] = Point(x=self.gui["sbar"].x + 22,
-                                   y=self.field["border"].y -1)
-        self.gui["wbar"]  = Point(x=self.field["border"].x - 18,
-                                   y=self.field["border"].y - 1)
-        return self
-
-    def __getattr__(self, name):
-        return self._layout[name]
-
-
-class InfList(list):
+class InfiniteList(list):
     """Infinite list container"""
 
     def __init__(self, *args, **kwargs):
