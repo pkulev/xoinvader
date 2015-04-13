@@ -66,9 +66,9 @@ class _Bar(Renderable):
         if template:
             self._template = template
         else:
-            self._template = "".join([
-                self.prefix, self.left, "{blocks}",
-                self.right, self.postfix
+            self._template = "".join([str(val) for val in
+                [self._prefix, self._left, "{blocks}",
+                self._right, self._postfix]
             ])
 
     def update(self, val):
@@ -145,7 +145,8 @@ class Bar(Renderable):
         if self._update_all:
             self._max_value = self._get_data()[1]
         stylemap = self._generate_style_map()
-        self._image = Surface([[ch[0] for ch in stylemap]], [[st[1] for st in stylemap]])
+        self._image = Surface([[ch[0] for ch in stylemap]],
+                              [[st[1] for st in stylemap]])
 
 
     def get_render_data(self):

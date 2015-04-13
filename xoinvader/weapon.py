@@ -5,6 +5,7 @@ from xoinvader.common import Settings, get_json_config
 
 
 CONFIG = get_json_config(Settings.path.config.weapons)
+INFINITE = "infinite"
 
 
 class IWeapon(object, metaclass=ABCMeta):
@@ -44,21 +45,29 @@ class Weapon(IWeapon):
     def _reload(self):
         """Calls by timer when weapon is ready to fire."""
         # TODO: Play sound
-        self._timer.reset()
         self.ready = True
 
     def make_shot(self, pos):
+        """Check load and ammo, perform shot if ready."""
         if not self.ready:
             return
 
-        if self._ammo == "infinite":
+        if self._ammo == INFINITE:
             self._coords.append(pos)
         elif self._ammo > 0:
             self._coords.append(pos)
             self._ammo -= 1
-        if self._ammo == 0: raise ValueError("No ammo!")
+
+        if self._ammo == 0:
+            # No need to measure time.
+            # TODO: don't raise exception:
+            #       if no ammo - notify player once and
+            #       repeat on fire key pressed again.
+            self._timer.stop()
+            raise ValueError("No ammo!")
 
         self.ready = False
+        self._timer.reset()
         self._timer.start()
 
     def get_render_data(self):
@@ -69,11 +78,11 @@ class Weapon(IWeapon):
 
     @property
     def ammo(self):
-        return 999 if self._ammo == "infinite" else self._ammo
+        return 999 if self._ammo == INFINITE else self._ammo
 
     @property
     def max_ammo(self):
-        return 999 if self._max_ammo == "infinite" else self._max_ammo
+        return 999 if self._max_ammo == INFINITE else self._max_ammo
 
     @property
     def cooldown(self):
@@ -81,16 +90,23 @@ class Weapon(IWeapon):
 
     @property
     def current_cooldown(self):
-        return self.cooldown if self.ready else round(self._timer.getCurrentTime())
+        return self.cooldown if self.ready else round(self._timer.getElapsed())
 
     @property
     def type(self):
         return self.__class__.__name__
 
+    @property
+    def loadPercentage(self):
+        if self._ammo > 0:
+            return self._timer.getElapsed() * 100.0 / self._cooldown
+        else:
+            return 0
+
     def update(self):
         if self.ready and not self._coords:
             return
-        
+
         new_coords = []
         for i in self._coords:
             new_coords.append(Point(x=i.x, y=i.y - self._dy))

@@ -166,33 +166,50 @@ class Timer(object):
             self._current = time.perf_counter()
 
     def _timeIsUp(self):
-        """Return True if time's up, false otherwise."""
+        """Return True if time's up, False otherwise."""
         return self._current - self._start >= self._end
 
-    def getCurrentTime(self):
-        return self._current - self._start
+    def start(self):
+        self._running = True
+        self._start = time.perf_counter()
 
-    def getRemainingTime(self):
-        return self._end - self.getCurrentTime()
+    def stop(self):
+        self._running = False
+
+    def restart(self):
+        self._start = time.perf_counter()
+        self._current = self._start
+        self.start()
+
+    def reset(self):
+        self._running = False
+        self._start = 0
+        self._current = 0
 
     def update(self):
         """Public method for using in loops."""
+        if self._running == False:
+            return
+
         self._tick()
         if self._timeIsUp() and self._running:
             self._func()
             self.stop()
-        
+
+            # Timer's accuracy depends on owner's loop
+            self._current = self._end
+            
+    def isRunning(self):
+        return self._running
+
+    def getElapsed(self):
+        """Return elapsed time."""
+        return self._current - self._start
+
+    def getRemaining(self):
+        """Return remaining time."""
+        return self._end - self.getElapsed()
+
     def fireFunction(self):
         """Call stored callback."""
         self._func()
-
-    def reset(self):
-        self._start = time.perf_counter()
-        self._current = self._start
-        self.start()
-        
-    def start(self):
-        self._running = True
-
-    def stop(self):
-        self._running = False
