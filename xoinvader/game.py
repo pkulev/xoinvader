@@ -8,11 +8,12 @@ import sys
 import time
 import curses
 
-from xoinvader.gui import WeaponWidget, Bar
+from xoinvader.gui import WeaponWidget, _Bar, Bar
 from xoinvader.ship import GenericXEnemy, Playership
 from xoinvader.utils import Point, style
 from xoinvader.render import Renderer
 from xoinvader.common import Settings
+from xoinvader.settings import dotdict
 from xoinvader.curses_utils import create_curses_window, deinit_curses
 
 
@@ -53,6 +54,16 @@ class App(object):
         Settings.renderer.add_object(self.enemy)
         #gui
 
+        self.gui = dotdict(
+            hull=_Bar(prefix="Hull",
+                  stylemap={
+                      (70, 100) : style.gui["sh_ok"],
+                      (35, 70) : style.gui["sh"],
+                      (0, 35) :
+                  }),
+            shield=_Bar(prefix="Shield"),
+            weapon=_Bar()
+        )
         self.hbar = Bar("Hull",
                         Settings.layout.gui.bar.health,
                         self.playership.get_full_hinfo)

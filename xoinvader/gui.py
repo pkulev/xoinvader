@@ -52,8 +52,11 @@ class _Bar(Renderable):
                  prefix="", postfix="",
                  left="[", right="]",
                  marker=" ", marker_style=None,
+                 empty="-", empty_style=None,
                  count=10, maxval=100,
-                 template=None, data=None):
+                 general_style=None,
+                 template=None, data=None,
+                 stylemap=None):
 
         self._prefix = prefix
         self._postfix = postfix
@@ -61,8 +64,11 @@ class _Bar(Renderable):
         self._right = right
         self._marker = marker
         self._marker_style = marker_style
+        self._empty = empty
+        self._empty_style = empty_style
         self._count = count
         self._maxval = maxval
+        self._general_style = general_style
         if template:
             self._template = template
         else:
@@ -70,10 +76,31 @@ class _Bar(Renderable):
                 [self._prefix, self._left, "{blocks}",
                 self._right, self._postfix]
             ])
+        self._stylemap = stylemap
+        self._image = []
+
+    def _style(self, val):
+        for cond_entry, style in self._stylemap.items():
+            lcond, loper, rcond, roper = cond_entry
+            if lcond(val, loper) and rcond(val, roper):
+                return style
+        return None
+
+    def _refresh_image(self):
+        bar = self._template.format(blocks=self._marker * self._count)
+        image = []
+        for char in bar:
+            if char == self._marker:
+                image.append((char, self._marker_style))
+            else:
+                image.append((char, self._general_style))
+        self._image = Surface([[ch[0] for ch in image]],
+                              [[st[1] for st in image]])
 
     def update(self, val):
         """Update bar."""
-        pass
+        self._marker_style = self._style(val)
+        self._refresh_image
 
     def get_render_data(self):
         """Return render specific data."""
