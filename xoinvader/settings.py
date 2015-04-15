@@ -3,6 +3,10 @@
 """
 
 
+def dotdict(*args, **kwargs):
+    return Settings(*args, **kwargs)
+
+
 class Settings(dict):
     """Container for storing all game settings."""
     

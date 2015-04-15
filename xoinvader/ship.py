@@ -26,7 +26,7 @@ class Ship(Renderable):
 
         #first initialization
         self.load_config(CONFIG[self.__class__.__name__])
-        
+
     def load_config(self, config):
         if not config:
             raise ValueError
@@ -60,7 +60,7 @@ class Ship(Renderable):
 
     def get_render_data(self):
         return ([self._pos], self._image.get_image())
-    
+
 
 class GenericXEnemy(Ship):
     def __init__(self, pos, border, settings):
@@ -142,17 +142,14 @@ class Playership(Ship):
     def max_shield(self):
         return self._max_shield
 
-    def get_full_hinfo(self):
-        return self._hull, self._max_hull
+    def getHullPercentage(self):
+        return self._hull * 100.0 / self._max_hull
 
-    def get_full_sinfo(self):
-        return self._shield, self._max_shield
+    def getShieldPercentage(self):
+        return self._shield * 100.0 / self._max_shield
 
-    def get_full_winfo(self):
-        return self._weapon.ammo, self._weapon.max_ammo
-
-    def get_full_wcinfo(self):
-        return self._weapon.current_cooldown, self._weapon.cooldown
+    def getWeaponPercentage(self):
+        return self._weapon.loadPercentage()
 
     def get_render_data(self):
         return [self._pos], self._image.get_image()

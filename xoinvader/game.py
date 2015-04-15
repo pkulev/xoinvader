@@ -13,6 +13,7 @@ from xoinvader.ship import GenericXEnemy, Playership
 from xoinvader.utils import Point, style
 from xoinvader.render import Renderer
 from xoinvader.common import Settings
+from xoinvader.settings import dotdict
 from xoinvader.curses_utils import create_curses_window, deinit_curses
 
 
@@ -53,33 +54,35 @@ class App(object):
         Settings.renderer.add_object(self.enemy)
         #gui
 
-        self.hbar = Bar("Hull",
-                        Settings.layout.gui.bar.health,
-                        self.playership.get_full_hinfo)
-
-        self.sbar = Bar("Shield",
-                        Settings.layout.gui.bar.shield,
-                        self.playership.get_full_sinfo)
-
-        self.sbar.status_style["good"] = style.gui["sh_ok"]
-        self.sbar.status_style["dmgd"] = style.gui["sh_mid"]
-
-        self.wbar = Bar("", Settings.layout.gui.bar.weapon,
-                        self.playership.get_full_wcinfo,
-                        update_all=True)
-
-        for state in ["good", "dmgd", "crit"]:
-            self.wbar.status_style[state] = style.gui["dp_ok"]
-
-        self.winfo = WeaponWidget(Settings.layout.gui.info.weapon,
+        self.gui = dotdict(
+            hull=Bar(pos=Settings.layout.gui.bar.health, prefix="Hull: ",
+                  stylemap={
+                      (float.__ge__, 70.0, float.__le__, 100.0) : style.gui["dp_ok"],
+                      (float.__ge__, 35.0, float.__lt__, 70.0) : style.gui["dp_middle"],
+                      (float.__ge__, 0.0, float.__lt__, 35.0) : style.gui["dp_critical"]
+                  }),
+            shield=Bar(pos=Settings.layout.gui.bar.shield, prefix="Shield: ",
+                    stylemap={
+                        (float.__ge__, 70.0, float.__le__, 100.0) : style.gui["sh_ok"],
+                        (float.__ge__, 35.0, float.__lt__, 70.0) : style.gui["sh_mid"],
+                        (float.__ge__, 0.0, float.__lt__, 35.0) : style.gui["dp_critical"]
+                    }),
+            weapon=Bar(pos=Settings.layout.gui.bar.weapon,
+                    stylemap={
+                        (float.__ge__, 0.0, float.__le__, 100.0) : style.gui["dp_ok"]
+                    }),
+            weapon_info=WeaponWidget(Settings.layout.gui.info.weapon,
                                   self.playership.get_weapon_info)
+        )
 
-        self.gui = [self.hbar, self.sbar, self.wbar, self.winfo]
-        for gui_object in self.gui:
+        for gui_object in self.gui.values():
             Settings.renderer.add_object(gui_object)
 
-
-
+    def _update_gui(self):
+        self.gui.hull.update(self.playership.getHullPercentage())
+        self.gui.shield.update(self.playership.getShieldPercentage())
+        self.gui.weapon.update(self.playership.getWeaponPercentage())
+        self.gui.weapon_info.update()
 
     def events(self):
         """Handle events and give command to playership."""
@@ -106,8 +109,7 @@ class App(object):
         """Update all object's state."""
         self.playership.update()
         self.enemy.update()
-        for gui_object in self.gui:
-            gui_object.update()
+        self._update_gui()
 
     def render(self):
         """Render GUI and renderable objects to screen."""

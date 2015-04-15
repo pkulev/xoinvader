@@ -1,14 +1,13 @@
 """ This is module docstring """
 
-from .render import Renderable
-from .utils import Surface, style
+from xoinvader.render import Renderable
+from xoinvader.utils import Surface, style
 
 
 class WeaponWidget(Renderable):
-    """this is class docstring stub """
-    def __init__(self, pos, get_data):
-        """This is init docstring """
+    """Widget for displaying weapon information."""
 
+    def __init__(self, pos, get_data):
         self._pos = pos
         self._get_data = get_data
         self._data = self._get_data()
@@ -28,72 +27,90 @@ class WeaponWidget(Renderable):
 
 
 class Bar(Renderable):
-    def __init__(self, title, pos, get_data, update_all=False):
-        self._title = title
+    """
+    Progress bar widget.
+
+    General:
+
+    :pos - position of the bar (global coordinates);
+
+    Bar specific:
+
+    :prefix - text before the bar;
+    :postfix - text after the bar;
+    :left - left edge of the bar;
+    :right - right edge of the bar;
+    :marker - symbol that fills the bar;
+    :marker_style - curses style for marker (passes to render);
+    :empty - sympols that  fills empty bar space (without marker);
+    :empty_style - curses style for empty marker (passes to render);
+    :count - number of markers in the bar;
+    :maxval - max value of displayed parameter (affects the accuracy);
+    :general_style - style of other characters(prefix, postfix, etc);
+    :stylemap - mapping of compare functions and integers to curses style;
+    """
+
+    def __init__(self, pos,
+                 prefix="", postfix="",
+                 left="[", right="]",
+                 marker="█", marker_style=None,
+                 empty="-", empty_style=None,
+                 count=10, maxval=100,
+                 general_style=None,
+                 stylemap=None):
+
         self._pos = pos
-        self._get_data = get_data
-        self._value = self._get_data()[0]
-        self._max_value = self._get_data()[1]
-        self._update_all = update_all
+        self._prefix = prefix
+        self._postfix = postfix
+        self._left = left
+        self._right = right
+        self._marker = marker
+        self._marker_style = marker_style
+        self._empty = empty
+        self._empty_style = empty_style
+        self._count = count
+        self._maxval = maxval
+        self._general_style = general_style
+        self._stylemap = stylemap
 
-        self._bar = "{title}: [{elements}]".format(title=self._title, elements=" "*10)
-        self._image = Surface([[ch for ch in self._bar]])
+        self._template = "".join([str(val) for val in
+                                  [self._prefix, self._left, "{blocks}",
+                                   self._right, self._postfix]])
 
-        self.gui_style = style.gui["normal"]
-        self.status_style = {"crit" : style.gui["dp_critical"],
-                             "dmgd" : style.gui["dp_middle"],
-                             "good" : style.gui["dp_ok"],
-                             "blank": style.gui["dp_blank"]}
+        self._current_count = self._count
+        self._image = None
+        self._update_image()
 
+    def _update_current_count(self, val):
+        """Normalize current percentage and update count of marker blocks"""
+        self._current_count = int(round(val * self._count / self._maxval))
 
-    def _get_style(self, num):
-        if num == -1:
-            return self.status_style["blank"]
+    def _style(self, val):
+        for cond_entry, style in self._stylemap.items():
+            lcond, loper, rcond, roper = cond_entry
+            if lcond(val, loper) and rcond(val, roper):
+                return style
+        return None
 
-        if 70 <= num <= 100:
-            return self.status_style["good"]
-        elif 35 <= num < 70:
-            return self.status_style["dmgd"]
-        elif 0 <= num < 35:
-            return self.status_style["crit"]
-
-    def _generate_style_map(self):
-        num = self._value * 10 // self._max_value
-
-        num_percent = self._value * 100 // self._max_value
-        elem_style = self._get_style(num_percent)
-        blank_style = self._get_style(-1)
-        gui_style = self.gui_style
-
-        style_map = []
-        elem = 0
-        in_bar = False
-        for char in self._bar:
-            if char == "[":
-                style_map.append((char, gui_style))
-                in_bar = True
-            elif char == " " and in_bar:
-                if elem < num:
-                    style_map.append((char, elem_style))
-                else:
-                    style_map.append((char, blank_style))
-                elem += 1
-            elif char == "]":
-                in_bar = False
-                style_map.append((char, gui_style))
+    def _update_image(self):
+        left = self._marker * self._current_count
+        right = self._empty * (self._count - self._current_count)
+        bar = self._template.format(blocks=left + right)
+        image = []
+        for char in bar:
+            if char == self._marker:
+                image.append((char, self._marker_style))
             else:
-                style_map.append((char, gui_style))
+                image.append((char, self._general_style))
+        self._image = Surface([[ch[0] for ch in image]],
+                              [[st[1] for st in image]])
 
-        return style_map
-
-
-    def update(self):
-        self._value = self._get_data()[0]
-        if self._update_all:
-            self._max_value = self._get_data()[1]
-        stylemap = self._generate_style_map()
-        self._image = Surface([[ch[0] for ch in stylemap]], [[st[1] for st in stylemap]])
-
+    def update(self, val):
+        """Update bar."""
+        self._marker_style = self._style(val)
+        self._update_current_count(val)
+        self._update_image()
 
     def get_render_data(self):
+        """Return render specific data."""
         return [self._pos], self._image.get_image()

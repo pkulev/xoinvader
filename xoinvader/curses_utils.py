@@ -16,11 +16,11 @@ def create_curses_window(ncols, nlines, begin_x=0, begin_y=0):
 
     # Damage panel
     curses.init_pair(Color.dp_blank, curses.COLOR_BLACK, curses.COLOR_BLACK)
-    curses.init_pair(Color.dp_ok, curses.COLOR_WHITE, curses.COLOR_GREEN)
-    curses.init_pair(Color.dp_middle, curses.COLOR_WHITE, curses.COLOR_YELLOW)
-    curses.init_pair(Color.dp_critical, curses.COLOR_WHITE, curses.COLOR_RED)
-    curses.init_pair(Color.sh_ok, curses.COLOR_WHITE, curses.COLOR_BLUE)
-    curses.init_pair(Color.sh_mid, curses.COLOR_WHITE, curses.COLOR_CYAN)
+    curses.init_pair(Color.dp_ok, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(Color.dp_middle, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    curses.init_pair(Color.dp_critical, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(Color.sh_ok, curses.COLOR_BLUE, curses.COLOR_BLACK)
+    curses.init_pair(Color.sh_mid, curses.COLOR_CYAN, curses.COLOR_BLACK)
 
     # Weapons
     curses.init_pair(Color.blaster, curses.COLOR_GREEN, curses.COLOR_BLACK)
