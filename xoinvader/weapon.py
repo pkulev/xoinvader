@@ -46,6 +46,8 @@ class Weapon(IWeapon):
         """Calls by timer when weapon is ready to fire."""
         # TODO: Play sound
         self.ready = True
+        self._timer.stop()
+        self._timer.reset()
 
     def make_shot(self, pos):
         """Check load and ammo, perform shot if ready."""
@@ -67,7 +69,6 @@ class Weapon(IWeapon):
             raise ValueError("No ammo!")
 
         self.ready = False
-        self._timer.reset()
         self._timer.start()
 
     def get_render_data(self):
@@ -85,23 +86,13 @@ class Weapon(IWeapon):
         return 999 if self._max_ammo == INFINITE else self._max_ammo
 
     @property
-    def cooldown(self):
-        return self._cooldown
-
-    @property
-    def current_cooldown(self):
-        return self.cooldown if self.ready else round(self._timer.getElapsed())
-
-    @property
     def type(self):
         return self.__class__.__name__
 
-    @property
     def loadPercentage(self):
-        if self._ammo > 0:
-            return self._timer.getElapsed() * 100.0 / self._cooldown
-        else:
-            return 0
+        if self._ammo and self.ready:
+            return 100.0
+        return self._timer.getElapsed() * 100.0 / self._cooldown
 
     def update(self):
         if self.ready and not self._coords:

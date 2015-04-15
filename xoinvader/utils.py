@@ -170,8 +170,10 @@ class Timer(object):
         return self._current - self._start >= self._end
 
     def start(self):
+        """Start timer."""
         self._running = True
         self._start = time.perf_counter()
+        self._current = time.perf_counter()
 
     def stop(self):
         self._running = False
@@ -198,7 +200,7 @@ class Timer(object):
 
             # Timer's accuracy depends on owner's loop
             self._current = self._end
-            
+
     def isRunning(self):
         return self._running
 
