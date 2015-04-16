@@ -86,9 +86,8 @@ class Bar(Renderable):
         self._current_count = int(round(val * self._count / self._maxval))
 
     def _style(self, val):
-        for cond_entry, style in self._stylemap.items():
-            lcond, loper, rcond, roper = cond_entry
-            if lcond(val, loper) and rcond(val, roper):
+        for cmp_func, style in self._stylemap.items():
+            if cmp_func(val):
                 return style
         return None
 

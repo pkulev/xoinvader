@@ -57,19 +57,19 @@ class App(object):
         self.gui = dotdict(
             hull=Bar(pos=Settings.layout.gui.bar.health, prefix="Hull: ",
                   stylemap={
-                      (float.__ge__, 70.0, float.__le__, 100.0) : style.gui["dp_ok"],
-                      (float.__ge__, 35.0, float.__lt__, 70.0) : style.gui["dp_middle"],
-                      (float.__ge__, 0.0, float.__lt__, 35.0) : style.gui["dp_critical"]
+                      lambda val: 70.0 <= val <= 100.0 : style.gui["dp_ok"],
+                      lambda val: 35.0 <= val < 70.0 : style.gui["dp_middle"],
+                      lambda val: 0.0 <= val < 35.0 : style.gui["dp_critical"]
                   }),
             shield=Bar(pos=Settings.layout.gui.bar.shield, prefix="Shield: ",
                     stylemap={
-                        (float.__ge__, 70.0, float.__le__, 100.0) : style.gui["sh_ok"],
-                        (float.__ge__, 35.0, float.__lt__, 70.0) : style.gui["sh_mid"],
-                        (float.__ge__, 0.0, float.__lt__, 35.0) : style.gui["dp_critical"]
+                        lambda val: 70.0 <= val <= 100.0 : style.gui["sh_ok"],
+                        lambda val: 35.0 <= val < 70.0 : style.gui["sh_mid"],
+                        lambda val: 0.0 <= val < 35.0 : style.gui["dp_critical"]
                     }),
             weapon=Bar(pos=Settings.layout.gui.bar.weapon,
                     stylemap={
-                        (float.__ge__, 0.0, float.__le__, 100.0) : style.gui["dp_ok"]
+                        lambda val: 0.0 <= val <= 100.0 : style.gui["dp_ok"]
                     }),
             weapon_info=WeaponWidget(Settings.layout.gui.info.weapon,
                                   self.playership.get_weapon_info)
