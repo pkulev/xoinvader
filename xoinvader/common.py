@@ -8,7 +8,9 @@ import xoinvader
 from xoinvader.settings import Settings as Entry
 from xoinvader.utils import Point
 
+
 def get_json_config(path):
+    """Return Settings object made from json."""
     with open(path) as fd:
         config = Entry(json.load(fd))
     return config
@@ -41,7 +43,12 @@ DEFAUT_XOI_SETTINGS = dict(
         config=dict(
             ships=_CONFIG + "/ships.json",
             weapons=_CONFIG + "/weapons.json"),
-        res=None)
+        res=None),
+    color=dict(
+        general=dict(
+            normal=None),
+        gui=None,
+        weapon=None)
 )
 
 Settings = Entry(DEFAUT_XOI_SETTINGS)

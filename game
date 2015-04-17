@@ -1,5 +1,15 @@
 #! /usr/bin/env python3
+"""
+    XOInvader
+    ~~~~~~~~~
+"""
 
 from xoinvader.game import App
-app = App()
-app.loop()
+
+def main():
+    """Start the game!"""
+    game = App()
+    game.loop()
+
+if __name__ == "__main__":
+    main()

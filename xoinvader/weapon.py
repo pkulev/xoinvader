@@ -1,3 +1,5 @@
+""" Game weapon classes. """
+
 from abc import ABCMeta, abstractmethod
 
 from xoinvader.utils import Point, Surface, Timer
@@ -9,24 +11,27 @@ INFINITE = "infinite"
 
 
 class IWeapon(object, metaclass=ABCMeta):
+    """Interface for weapon game entities."""
     @abstractmethod
-    def make_shot(self):
+    def make_shot(self, pos):
         """Make shot, if can't - raise Value Error"""
         pass
 
     @abstractmethod
     def update(self):
-        """update coords list"""
+        """Update coords list."""
         pass
 
 
 def _load_from_config(weapon, config):
+    """Loads main parameters and returns kwargs for passing to Weapon."""
     section = weapon.__name__
     params = ("ammo", "max_ammo", "cooldown", "damage", "radius", "dy")
     return {var : config[section].get(var) for var in params}
 
 
 class Weapon(IWeapon):
+    """Main weapon class that implements main methods and behaviour."""
     def __init__(self, ammo, max_ammo, cooldown, damage, radius, dy):
         self._type     = "__basic__"
         self._image    = None
@@ -90,11 +95,13 @@ class Weapon(IWeapon):
         return self.__class__.__name__
 
     def loadPercentage(self):
+        """Return weapon load percentage."""
         if self._ammo and self.ready:
             return 100.0
         return self._timer.getElapsed() * 100.0 / self._cooldown
 
     def update(self):
+        """Update coords."""
         if self.ready and not self._coords:
             return
 

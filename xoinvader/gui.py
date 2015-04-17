@@ -1,4 +1,4 @@
-""" This is module docstring """
+""" Graphical user interface widgets."""
 
 from xoinvader.render import Renderable
 from xoinvader.utils import Surface
@@ -15,11 +15,12 @@ class WeaponWidget(Renderable):
         self._image = self._make_image()
 
     def _make_image(self):
+        """Return Surface object."""
         return Surface([[ch for ch in self._data]],
                        [[style.gui["yellow"] for _ in range(len(self._data))]])
 
-
     def update(self):
+        """Obtain new data and refresh image."""
         self._data = self._get_data()
         self._image = self._make_image()
 
@@ -48,7 +49,7 @@ class Bar(Renderable):
     :count - number of markers in the bar;
     :maxval - max value of displayed parameter (affects the accuracy);
     :general_style - style of other characters(prefix, postfix, etc);
-    :stylemap - mapping of compare functions and integers to curses style;
+    :stylemap - mapping of compare functions and integers to curses style.
     """
 
     def __init__(self, pos,
@@ -83,16 +84,18 @@ class Bar(Renderable):
         self._update_image()
 
     def _update_current_count(self, val):
-        """Normalize current percentage and update count of marker blocks"""
+        """Normalize current percentage and update count of marker blocks."""
         self._current_count = int(round(val * self._count / self._maxval))
 
     def _style(self, val):
-        for cmp_func, style in self._stylemap.items():
+        """Return style in depend on percentage."""
+        for cmp_func, bar_style in self._stylemap.items():
             if cmp_func(val):
-                return style
+                return bar_style
         return None
 
     def _update_image(self):
+        """Update image in depend on persentage."""
         left = self._marker * self._current_count
         right = self._empty * (self._count - self._current_count)
         bar = self._template.format(blocks=left + right)
