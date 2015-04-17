@@ -1,7 +1,8 @@
 """ This is module docstring """
 
 from xoinvader.render import Renderable
-from xoinvader.utils import Surface, style
+from xoinvader.utils import Surface
+from xoinvader.curses_utils import style
 
 
 class WeaponWidget(Renderable):

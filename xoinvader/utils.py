@@ -80,57 +80,6 @@ class Surface(object):
                 yield (Point(x=x, y=y), image, self._style[y][x] if self._style else None)
 
 
-class _Color(object):
-    def __init__(self):
-        self._color_names = [
-            # User interface colors
-            "ui_norm",
-            "ui_yellow",
-            # Damage panel colors
-            "dp_blank",
-            "dp_ok",
-            "dp_middle",
-            "dp_critical",
-            "sh_ok",
-            "sh_mid",
-            # Weapon's gauge colors
-            "blaster",
-            "laser",
-            "um",
-        ]
-        self._color_map = dict(zip(self._color_names,
-                               range(1, len(self._color_names) + 1)))
-
-    def __getattr__(self, name):
-        return self._color_map[name]
-
-Color = _Color()
-
-
-class Style(object):
-    def __init__(self):
-        self._style = {
-            "gui" : {},
-            "obj" : {},
-        }
-
-    def init_styles(self, curses):
-        self.gui["normal"] = curses.color_pair(Color.ui_norm)   | curses.A_BOLD
-        self.gui["yellow"] = curses.color_pair(Color.ui_yellow) | curses.A_BOLD
-
-        self.gui["dp_blank"]    = curses.color_pair(Color.dp_blank)    | curses.A_BOLD
-        self.gui["dp_ok"]       = curses.color_pair(Color.dp_ok)       | curses.A_BOLD
-        self.gui["dp_middle"]   = curses.color_pair(Color.dp_middle)   | curses.A_BOLD
-        self.gui["dp_critical"] = curses.color_pair(Color.dp_critical) | curses.A_BOLD
-        self.gui["sh_ok"]       = curses.color_pair(Color.sh_ok)       | curses.A_BOLD
-        self.gui["sh_mid"]      = curses.color_pair(Color.sh_mid)      | curses.A_BOLD
-
-    def __getattr__(self, name):
-        return self._style[name]
-
-style = Style()
-
-
 class InfiniteList(list):
     """Infinite list container"""
 

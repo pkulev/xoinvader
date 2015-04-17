@@ -10,11 +10,11 @@ import curses
 
 from xoinvader.gui import WeaponWidget, Bar
 from xoinvader.ship import GenericXEnemy, Playership
-from xoinvader.utils import Point, style
+from xoinvader.utils import Point
 from xoinvader.render import Renderer
 from xoinvader.common import Settings
 from xoinvader.settings import dotdict
-from xoinvader.curses_utils import create_curses_window, deinit_curses
+from xoinvader.curses_utils import create_curses_window, deinit_curses, style
 
 
 KEY = "KEY"
