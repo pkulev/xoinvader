@@ -4,6 +4,7 @@ from abc import ABCMeta, abstractmethod
 
 from xoinvader.utils import Point, Surface, Timer
 from xoinvader.common import Settings, get_json_config
+from xoinvader.sound import Mixer
 
 
 CONFIG = get_json_config(Settings.path.config.weapons)
@@ -46,6 +47,7 @@ class Weapon(IWeapon):
         self.ready = True
         self._timer = Timer(self._cooldown, self._reload)
         self._coords = []
+        self._sound = None
 
     def _reload(self):
         """Calls by timer when weapon is ready to fire."""
@@ -75,6 +77,8 @@ class Weapon(IWeapon):
 
         self.ready = False
         self._timer.start()
+        if self._sound:
+            Mixer.play()
 
     def get_render_data(self):
         return (self._coords, self._image.get_image())
@@ -117,6 +121,7 @@ class Blaster(Weapon):
     def __init__(self):
         super().__init__(**_load_from_config(self.__class__, CONFIG))
         self._image = Surface([["^"]], style=[[curses.A_BOLD]])
+        self._sound = True
 
 
 class EBlaster(Weapon):
