@@ -44,7 +44,7 @@ class Bar(Renderable):
     :right - right edge of the bar;
     :marker - symbol that fills the bar;
     :marker_style - curses style for marker (passes to render);
-    :empty - sympols that  fills empty bar space (without marker);
+    :empty - symbols that fills empty bar space (without marker);
     :empty_style - curses style for empty marker (passes to render);
     :count - number of markers in the bar;
     :maxval - max value of displayed parameter (affects the accuracy);
