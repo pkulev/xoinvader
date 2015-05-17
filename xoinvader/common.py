@@ -23,7 +23,8 @@ HEIGHT = 34
 
 _ROOT = dirname(xoinvader.__file__)
 _CONFIG = _ROOT + "/config"
-
+_RES = _ROOT + "/res"
+_SND = _RES + "/snd"
 
 DEFAUT_XOI_SETTINGS = dict(
     layout=dict(
@@ -43,7 +44,12 @@ DEFAUT_XOI_SETTINGS = dict(
         config=dict(
             ships=_CONFIG + "/ships.json",
             weapons=_CONFIG + "/weapons.json"),
-        res=None),
+        sound=dict(
+            weapon=dict(
+                Blaster=_SND + "/basic_blaster.ogg",
+                Laser=_SND + "/basic_laser.ogg",
+                EBlaster=_SND + "/basic_eblaster.ogg",
+                UM=_SND + "/basic_um.ogg"))),
     color=dict(
         general=dict(
             normal=None),

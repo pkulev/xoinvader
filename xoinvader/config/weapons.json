@@ -20,7 +20,7 @@
 	"UM" : {
 		"ammo" : 15,
 		"max_ammo" : 15,
-		"cooldown" : 50,
+		"cooldown" : 2,
 		"damage" : 3,
 		"radius" : 1,
 		"dy" : 1
@@ -29,7 +29,7 @@
 	"EBlaster" : {
 		"ammo" : "infinite",
 		"max_ammo" : "infinite",
-		"cooldown" : 0.2,
+		"cooldown" : 0.7,
 		"damage" : 25,
 		"radius" : 1,
 		"dy" : -1
