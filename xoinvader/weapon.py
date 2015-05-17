@@ -1,4 +1,4 @@
-""" Game weapon classes. """
+"""Game weapon classes."""
 
 from abc import ABCMeta, abstractmethod
 
@@ -15,7 +15,7 @@ class IWeapon(object, metaclass=ABCMeta):
     """Interface for weapon game entities."""
     @abstractmethod
     def make_shot(self, pos):
-        """Make shot, if can't - raise Value Error"""
+        """Make shot, if can't - raise ValueError."""
         pass
 
     @abstractmethod
@@ -34,7 +34,7 @@ def _load_from_config(weapon, config):
 class Weapon(IWeapon):
     """Main weapon class that implements main methods and behaviour."""
     def __init__(self, ammo, max_ammo, cooldown, damage, radius, dy):
-        self._type     = "__basic__"
+        self._type     = self.__class__.__name__
         self._image    = None
         self._ammo     = ammo
         self._max_ammo = max_ammo
@@ -47,7 +47,9 @@ class Weapon(IWeapon):
         self.ready = True
         self._timer = Timer(self._cooldown, self._reload)
         self._coords = []
-        self._sound = None
+        self._loud = True
+
+        Mixer.register(self._type)
 
     def _reload(self):
         """Calls by timer when weapon is ready to fire."""
@@ -77,26 +79,31 @@ class Weapon(IWeapon):
 
         self.ready = False
         self._timer.start()
-        if self._sound:
-            Mixer.play()
+        if self._loud:
+            Mixer.play(self.__class__.__name__)
 
     def get_render_data(self):
+        """Callback for Renderer."""
         return (self._coords, self._image.get_image())
 
     def remove_obsolete(self, pos):
+        """Callback for Renderer."""
         self._coords.remove(pos)
 
     @property
     def ammo(self):
+        """Return actual ammo."""
         return 999 if self._ammo == INFINITE else self._ammo
 
     @property
     def max_ammo(self):
+        """Return maximal ammo."""
         return 999 if self._max_ammo == INFINITE else self._max_ammo
 
     @property
     def type(self):
-        return self.__class__.__name__
+        """Return weapon type."""
+        return self._type
 
     def loadPercentage(self):
         """Return weapon load percentage."""
@@ -118,27 +125,30 @@ class Weapon(IWeapon):
 
 import curses
 class Blaster(Weapon):
+    """Basic player's weapon. Low damage, fast cooldown."""
     def __init__(self):
         super().__init__(**_load_from_config(self.__class__, CONFIG))
         self._image = Surface([["^"]], style=[[curses.A_BOLD]])
-        self._sound = True
 
 
 class EBlaster(Weapon):
+    """Basic enemy blaster. Almost identical to Blaster."""
     def __init__(self):
         super().__init__(**_load_from_config(self.__class__, CONFIG))
         self._image = Surface([[":"]])
 
 
 class Laser(Weapon):
+    """Basic player's laser. Medium damage, medium cooldown."""
     def __init__(self):
         super().__init__(**_load_from_config(self.__class__, CONFIG))
         self._image = Surface([["|"]], style=[[curses.A_BOLD]])
 
 
 class UM(Weapon):
+    """Player's unguided missile. High damage, slow cooldown."""
     def __init__(self):
         super().__init__(**_load_from_config(self.__class__, CONFIG))
         self._image = Surface([["^"],
                                ["|"],
-                               ["*"]], style = [[curses.A_BOLD] for _ in range(3)])
+                               ["*"]], style=[[curses.A_BOLD] for _ in range(3)])
