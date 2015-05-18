@@ -80,7 +80,7 @@ class Weapon(IWeapon):
         self.ready = False
         self._timer.start()
         if self._loud:
-            Mixer.play(self.__class__.__name__)
+            Mixer.play(self._type)
 
     def get_render_data(self):
         """Callback for Renderer."""
