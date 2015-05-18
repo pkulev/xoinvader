@@ -1,3 +1,8 @@
+"""Enemy and player ships."""
+
+
+from xoinvader.sound import Mixer
+from xoinvader.settings import dotdict
 from xoinvader.render import Renderable
 from xoinvader.weapon import Blaster, Laser, UM, EBlaster
 from xoinvader.utils import Point, Surface, InfiniteList
@@ -9,32 +14,34 @@ CONFIG = get_json_config(Settings.path.config.ships)
 
 class Ship(Renderable):
     def __init__(self, pos, border, settings):
+        self._type = self.__class__.__name__
         self._image = None
 
-        self._pos = pos
-        self._border = border
+        self._pos      = pos
+        self._border   = border
         self._settings = settings
 
-        self._dx = None
-        self._fire = False
+        self._dx     = None
+        self._fire   = False
         self._weapon = None
 
-        self._max_hull = None
+        self._max_hull   = None
         self._max_shield = None
-        self._hull = None
-        self._shield = None
+        self._hull       = None
+        self._shield     = None
 
         #first initialization
-        self.load_config(CONFIG[self.__class__.__name__])
+        self._load_config(CONFIG[self.__class__.__name__])
 
-    def load_config(self, config):
+    def _load_config(self, config):
+        """Load config from mapping."""
         if not config:
             raise ValueError
 
-        self._dx = int(config.dx)
-        self._hull = int(config.hull)
-        self._shield = int(config.shield)
-        self._max_hull = int(config.max_hull)
+        self._dx         = int(config.dx)
+        self._hull       = int(config.hull)
+        self._shield     = int(config.shield)
+        self._max_hull   = int(config.max_hull)
         self._max_shield = int(config.max_shield)
 
     def move_left(self):
@@ -93,8 +100,12 @@ class Playership(Ship):
         self._weapon = self._weapons.current()
         self._wbay = Point(x=self._image.width // 2, y=-1)
 
+        Mixer.register(".".join([self._type, "engine"]),
+                       Settings.path.sound.ship[self._type].engine)
+
     def move_left(self):
         self._dx = -1
+#        Mixer.play(".".join([self._type, "engine"]), loops=1)
 
     def move_right(self):
         self._dx = 1

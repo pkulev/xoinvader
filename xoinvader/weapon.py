@@ -2,6 +2,7 @@
 
 from abc import ABCMeta, abstractmethod
 
+
 from xoinvader.utils import Point, Surface, Timer
 from xoinvader.common import Settings, get_json_config
 from xoinvader.sound import Mixer
@@ -49,7 +50,7 @@ class Weapon(IWeapon):
         self._coords = []
         self._loud = True
 
-        Mixer.register(self._type)
+        Mixer.register(self._type, Settings.path.sound.weapon[self._type])
 
     def _reload(self):
         """Calls by timer when weapon is ready to fire."""
