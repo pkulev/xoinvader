@@ -3,6 +3,7 @@
 from abc import ABCMeta, abstractmethod
 
 
+from xoinvader.render import Renderable
 from xoinvader.utils import Point, Surface, Timer
 from xoinvader.common import Settings, get_json_config
 from xoinvader.sound import Mixer
@@ -32,7 +33,7 @@ def _load_from_config(weapon, config):
     return {var : config[section].get(var) for var in params}
 
 
-class Weapon(IWeapon):
+class Weapon(IWeapon, Renderable):
     """Main weapon class that implements main methods and behaviour."""
     def __init__(self, ammo, max_ammo, cooldown, damage, radius, dy):
         self._type     = self.__class__.__name__
