@@ -37,11 +37,11 @@ class App(object):
     really needed.
     """
 
-    def __init__(self):
+    def __init__(self, startup_args={}):
+        self._update_settings_from_args(startup_args)
         self.screen = create_curses_window(ncols=Settings.layout.field.border.x,
                                            nlines=Settings.layout.field.border.y)
         style.init_styles(curses)
-
         Settings.renderer = Renderer(Settings.layout.field.border)
 
         self.playership = Playership(Settings.layout.field.player,
@@ -83,6 +83,13 @@ class App(object):
         self.gui.shield.update(self.playership.getShieldPercentage())
         self.gui.weapon.update(self.playership.getWeaponPercentage())
         self.gui.weapon_info.update()
+
+    def _update_settings_from_args(self, args):
+        for arg, val in args.items():
+            if arg in Settings.system:
+                Settings.system[arg] = val
+            else:
+                raise KeyError("No such parameter in settings.")
 
     def events(self):
         """Handle events and give command to playership."""

@@ -12,6 +12,7 @@ class Settings(dict):
     
     def __init__(self, *args, **kwargs):
         super(Settings, self).__init__(*args, **kwargs)
+        self.__dict__ = self
         self._wrap_nested()
 
     def _wrap_nested(self):
@@ -20,8 +21,3 @@ class Settings(dict):
             if type(value) == dict:
                 self[key] = Settings(value)
 
-    def __getattr__(self, name):
-        return self[name]
-
-    __setattr__ = dict.__setitem__
-    __delattr__ = dict.__delitem__
