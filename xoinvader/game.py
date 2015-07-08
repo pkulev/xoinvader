@@ -14,20 +14,11 @@ from xoinvader.utils import Point
 from xoinvader.render import Renderer
 from xoinvader.common import Settings
 from xoinvader.settings import dotdict
+from xoinvader.input_handler import InputHandler, ExitGameCommand
 from xoinvader.curses_utils import create_curses_window, deinit_curses, style
 
 
-KEY = "KEY"
-K_Q = ord("q")
-K_E = ord("e")
-K_A = ord("a")
-K_D = ord("d")
-K_R = ord("r")
-K_SPACE = ord(" ")
-K_ESCAPE = 27
-
 MILLISECONDS_PER_FRAME = 16
-
 
 
 class App(object):
@@ -77,7 +68,7 @@ class App(object):
 
         for gui_object in self.gui.values():
             Settings.renderer.add_object(gui_object)
-
+        self._input_handler = InputHandler()
     def _update_gui(self):
         self.gui.hull.update(self.playership.getHullPercentage())
         self.gui.shield.update(self.playership.getShieldPercentage())
@@ -95,21 +86,26 @@ class App(object):
         """Handle events and give command to playership."""
 
         key = self.screen.getch()
-        if key == K_ESCAPE:
-            deinit_curses(self.screen)
-            sys.exit(1)
-        elif key == K_A:
-            self.playership.move_left()
-        elif key == K_D:
-            self.playership.move_right()
-        elif key == K_E:
-            self.playership.next_weapon()
-        elif key == K_Q:
-            self.playership.prev_weapon()
-        elif key == K_SPACE:
-            self.playership.toggle_fire()
-        elif key == K_R:
-            self.playership.take_damage(5)
+        command = self._input_handler.handle(key)
+        if command:
+            if isinstance(command, ExitGameCommand):
+                self.exit()
+            command.execute(self.playership)
+        # if key == K_ESCAPE:
+        #     deinit_curses(self.screen)
+        #     sys.exit(1)
+        # elif key == K_A:
+        #     self.playership.move_left()
+        # elif key == K_D:
+        #     self.playership.move_right()
+        # elif key == K_E:
+        #     self.playership.next_weapon()
+        # elif key == K_Q:
+        #     self.playership.prev_weapon()
+        # elif key == K_SPACE:
+        #     self.playership.toggle_fire()
+        # elif key == K_R:
+        #     self.playership.take_damage(5)
 
 
     def update(self):
@@ -144,6 +140,10 @@ class App(object):
             if delta <= MILLISECONDS_PER_FRAME:
                 time.sleep((MILLISECONDS_PER_FRAME - delta) / 1000.0)
             #else: log
+
+    def exit(self):
+        deinit_curses(self.screen)
+        sys.exit(1)
 
 def main():
     """Entry point. Create application class and go to main loop."""
