@@ -14,8 +14,8 @@ from xoinvader.utils import Point
 from xoinvader.render import Renderer
 from xoinvader.common import Settings
 from xoinvader.settings import dotdict
-from xoinvader.input_handler import InputHandler, ExitGameCommand
-from xoinvader.curses_utils import create_curses_window, deinit_curses, style
+from xoinvader.handlers import EventHandler
+from xoinvader.curses_utils import create_curses_window, style
 
 
 MILLISECONDS_PER_FRAME = 16
@@ -30,8 +30,10 @@ class App(object):
 
     def __init__(self, startup_args={}):
         self._update_settings_from_args(startup_args)
-        self.screen = create_curses_window(ncols=Settings.layout.field.border.x,
-                                           nlines=Settings.layout.field.border.y)
+        self.screen = create_curses_window(
+            ncols=Settings.layout.field.border.x,
+            nlines=Settings.layout.field.border.y)
+
         style.init_styles(curses)
         Settings.renderer = Renderer(Settings.layout.field.border)
 
@@ -43,8 +45,8 @@ class App(object):
                                    Settings)
 
         Settings.renderer.add_object(self.enemy)
-        #gui
 
+        # GUI style mapping
         self.gui = dotdict(
             hull=Bar(pos=Settings.layout.gui.bar.health, prefix="Hull: ",
                   stylemap={
@@ -68,7 +70,10 @@ class App(object):
 
         for gui_object in self.gui.values():
             Settings.renderer.add_object(gui_object)
-        self._input_handler = InputHandler()
+
+        # Loop handlers
+        self._events = EventHandler(self.screen, self.playership)
+
     def _update_gui(self):
         self.gui.hull.update(self.playership.getHullPercentage())
         self.gui.shield.update(self.playership.getShieldPercentage())
@@ -81,32 +86,6 @@ class App(object):
                 Settings.system[arg] = val
             else:
                 raise KeyError("No such parameter in settings.")
-
-    def events(self):
-        """Handle events and give command to playership."""
-
-        key = self.screen.getch()
-        command = self._input_handler.handle(key)
-        if command:
-            if isinstance(command, ExitGameCommand):
-                self.exit()
-            command.execute(self.playership)
-        # if key == K_ESCAPE:
-        #     deinit_curses(self.screen)
-        #     sys.exit(1)
-        # elif key == K_A:
-        #     self.playership.move_left()
-        # elif key == K_D:
-        #     self.playership.move_right()
-        # elif key == K_E:
-        #     self.playership.next_weapon()
-        # elif key == K_Q:
-        #     self.playership.prev_weapon()
-        # elif key == K_SPACE:
-        #     self.playership.toggle_fire()
-        # elif key == K_R:
-        #     self.playership.take_damage(5)
-
 
     def update(self):
         """Update all object's state."""
@@ -131,7 +110,7 @@ class App(object):
         while True:
             start_time = time.perf_counter()
 
-            self.events()
+            self._events.handle()
             self.update()
             self.render()
 
