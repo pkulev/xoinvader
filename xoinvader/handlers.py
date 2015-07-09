@@ -4,7 +4,6 @@ import sys
 from xoinvader.curses_utils import deinit_curses
 
 
-KEY = "KEY"
 K_Q = ord("q")
 K_E = ord("e")
 K_A = ord("a")
@@ -16,7 +15,7 @@ K_ESCAPE = 27
 
 class Command(object):
     def execute(self, actor):
-        pass
+        raise NotImplementedError
 
 class MoveLeftCommand(Command):
     def execute(self, actor):
@@ -38,6 +37,10 @@ class ToggleFireCommand(Command):
     def execute(self, actor):
         actor.toggle_fire()
 
+class TakeDamageCommand(Command):
+    def execute(self, actor):
+        actor.take_damage(5)
+
 class ExitGameCommand(Command):
     def execute(self, actor):
         deinit_curses(actor)
@@ -51,6 +54,7 @@ class InputHandler(object):
             K_D : MoveRightCommand(),
             K_E : NextWeaponCommand(),
             K_Q : PrevWeaponCommand(),
+            K_R : TakeDamageCommand(),
             K_SPACE : ToggleFireCommand(),
             K_ESCAPE : ExitGameCommand()
         }
