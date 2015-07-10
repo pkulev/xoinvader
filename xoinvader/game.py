@@ -17,6 +17,9 @@ from xoinvader.settings import dotdict
 from xoinvader.handlers import EventHandler
 from xoinvader.curses_utils import create_curses_window, style
 
+from application import Application
+
+
 
 MILLISECONDS_PER_FRAME = 16
 
@@ -126,8 +129,13 @@ class App(object):
 
 def main():
     """Entry point. Create application class and go to main loop."""
-    app = App()
+
+    app = Application()
+    app.register_state(MainMenuState())
+    app.register_state(InGameState())
     app.loop()
+    # app = App()
+    # app.loop()
 
 if __name__ == "__main__":
     main()
