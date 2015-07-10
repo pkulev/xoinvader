@@ -3,14 +3,18 @@ class Application(object):
         self._state = None
         self._states = {}
 
-	# Ms per frame
-	self._mspf = 16
+        # Ms per frame
+        self._mspf = 16
 
     def create_window(self):
         pass
 
     def exit(self):
         pass
+
+    @property
+    def state(self):
+        return self._state
 
     @state.setter
     def state(self, name):
@@ -21,10 +25,10 @@ class Application(object):
 
     def register_state(self, state):
         """Add new state and initiate it with owner."""
-	name = state.__class__.__name__
+        name = state.__class__.__name__
         self._states[name] = state(self)
-	if len(self._states) == 1:
-	    self._state = self._states[name]
+        if len(self._states) == 1:
+            self._state = self._states[name]
 
     def loop(self):
         while True:

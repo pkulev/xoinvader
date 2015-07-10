@@ -17,8 +17,8 @@ from xoinvader.settings import dotdict
 from xoinvader.handlers import EventHandler
 from xoinvader.curses_utils import create_curses_window, style
 
-from application import Application
-
+from xoinvader.application import Application
+from xoinvader.states import InGameState, MainMenuState
 
 
 MILLISECONDS_PER_FRAME = 16

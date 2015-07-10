@@ -13,7 +13,7 @@ class State(object):
     def render(self):
         raise NotImplementedError
 
-class InGame(State):
+class InGameState(State):
     def __init__(self, owner):
         super(InGame, self).__init__(owner)
         self._objects = []
@@ -29,24 +29,24 @@ class InGame(State):
         key = self._screen.getch()
 #        if 
 
-class MainMenu(State):
+class MainMenuState(State):
     def __init__(self, owner):
-	super(MainMenu, self).__init__(owner)
-	self._items = {
-	    "New Game": 1,
-	    "Continue": 2,
-	    "Exit": 3}
-	self._currentMenu = None
+        super(MainMenu, self).__init__(owner)
+        self._items = {
+            "New Game": 1,
+            "Continue": 2,
+            "Exit": 3}
+        self._currentMenu = None
 
 #    def register_menu_item(self, caption, item_action_list):
     def events(self):
-	key = self._screen.getch()
-	if key == 27:
-	    pos = self._screen.getyx()
-	    self._screen.addstr(50,50, str(pos))
+        key = self._screen.getch()
+        if key == 27:
+            pos = self._screen.getyx()
+            self._screen.addstr(50,50, str(pos))
 
     def update(self):
-	pass
+        pass
 
     def render(self):
-	pass
+        pass
