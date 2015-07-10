@@ -15,6 +15,16 @@ def get_json_config(path):
         config = Entry(json.load(fd))
     return config
 
+def rootify(root, config):
+    "Append paths in dict to root."
+    for key, path in config.items():
+        if isinstance(path, dict):
+            rootify(root, path)
+        else:
+            config[key] = root + path
+    open("lolo", "w").write(str(config))
+    return config
+
 
 __all__ = ["Settings"]
 
@@ -40,19 +50,7 @@ DEFAUT_XOI_SETTINGS = dict(
                 weapon=Point(x=WIDTH - 18, y=HEIGHT - 1)),
             info=dict(
                 weapon=Point(x=44, y=HEIGHT - 1)))),
-    path=dict(
-        config=dict(
-            ships=_CONFIG + "/ships.json",
-            weapons=_CONFIG + "/weapons.json"),
-        sound=dict(
-            weapon=dict(
-                Blaster=_SND + "/basic_blaster.ogg",
-                Laser=_SND + "/basic_laser.ogg",
-                EBlaster=_SND + "/basic_eblaster.ogg",
-                UM=_SND + "/basic_um.ogg"),
-            ship=dict(
-                Playership=(dict(
-                    engine=_SND + "/playership_engine.ogg"))))),
+    path=rootify(_ROOT, get_json_config(_ROOT + "/config/path.json")),
     color=dict(
         general=dict(
             normal=None),
