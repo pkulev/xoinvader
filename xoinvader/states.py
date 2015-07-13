@@ -15,7 +15,7 @@ class State(object):
 
 class InGameState(State):
     def __init__(self, owner):
-        super(InGame, self).__init__(owner)
+        super(InGameState, self).__init__(owner)
         self._objects = []
 
     def add_object(self, obj):
@@ -31,7 +31,7 @@ class InGameState(State):
 
 class MainMenuState(State):
     def __init__(self, owner):
-        super(MainMenu, self).__init__(owner)
+        super(MainMenuState, self).__init__(owner)
         self._items = {
             "New Game": 1,
             "Continue": 2,

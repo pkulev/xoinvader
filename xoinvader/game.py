@@ -88,7 +88,7 @@ class App(object):
             if arg in Settings.system:
                 Settings.system[arg] = val
             else:
-                raise KeyError("No such parameter in settings.")
+                raise KeyError("No such parameter in settings: %s." % arg)
 
     def update(self):
         """Update all object's state."""
@@ -131,8 +131,8 @@ def main():
     """Entry point. Create application class and go to main loop."""
 
     app = Application()
-    app.register_state(MainMenuState())
-    app.register_state(InGameState())
+    app.register_state(MainMenuState)
+    app.register_state(InGameState)
     app.loop()
     # app = App()
     # app.loop()

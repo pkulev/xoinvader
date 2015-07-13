@@ -1,10 +1,29 @@
+import time
+
+# ?!
+from xoinvader.gui import WeaponWidget, Bar
+from xoinvader.ship import GenericXEnemy, Playership
+from xoinvader.utils import Point
+from xoinvader.render import Renderer
+from xoinvader.common import Settings
+from xoinvader.handlers import EventHandler
+
+
+from xoinvader.curses_utils import create_curses_window
+
+
 class Application(object):
-    def __init__(self):
+    def __init__(self, startup_args={}):
+        self._update_settings_from_args(startup_args)
+        self_screen = create_curses_window(None)
         self._state = None
         self._states = {}
 
         # Ms per frame
         self._mspf = 16
+
+    def _update_settings_from_args(self, args):
+        pass
 
     def create_window(self):
         pass
