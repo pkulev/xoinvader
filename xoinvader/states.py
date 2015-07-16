@@ -1,3 +1,5 @@
+from xoinvader.handlers import EventHandler
+
 class State(object):
     def __init__(self, owner):
         self._owner = owner
@@ -17,6 +19,10 @@ class InGameState(State):
     def __init__(self, owner):
         super(InGameState, self).__init__(owner)
         self._objects = []
+        self._screen = self._owner.screen
+        self._actor = self._owner.playership
+
+        self._events = EventHandler(self._screen, self._actor)
 
     def add_object(self, obj):
         self._objects.append(obj)
@@ -26,8 +32,13 @@ class InGameState(State):
 
     def events(self):
         # for event in xoinvader.messageBus.get():
-        key = self._screen.getch()
-#        if 
+        self._events.handle()
+
+    def update(self):
+        pass
+
+    def render(self):
+        pass
 
 class MainMenuState(State):
     def __init__(self, owner):
