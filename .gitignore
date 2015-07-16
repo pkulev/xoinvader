@@ -43,3 +43,4 @@ docs/_build/
 # Temporary IDE files
 *~
 \#*
+*.swp
