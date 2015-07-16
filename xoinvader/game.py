@@ -14,7 +14,7 @@ from xoinvader.utils import Point
 from xoinvader.render import Renderer
 from xoinvader.common import Settings
 from xoinvader.settings import dotdict
-from xoinvader.handlers import EventHandler
+from xoinvader.handlers import InGameEventHandler
 from xoinvader.curses_utils import create_curses_window, style
 
 from xoinvader.application import Application
@@ -75,7 +75,7 @@ class App(object):
             Settings.renderer.add_object(gui_object)
 
         # Loop handlers
-        self._events = EventHandler(self)
+        self._events = InGameEventHandler(self)
 
     def _update_gui(self):
         self.gui.hull.update(self.actor.getHullPercentage())

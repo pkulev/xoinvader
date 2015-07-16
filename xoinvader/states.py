@@ -4,9 +4,7 @@ import curses
 
 from xoinvader.state import State
 from xoinvader.common import Settings
-from xoinvader.handlers import EventHandler
-
-from xoinvader.handlers import K_ESCAPE, TestCommand
+from xoinvader.handlers import InGameEventHandler, MainMenuEventHandler
 
 
 class InGameState(State):
@@ -17,10 +15,7 @@ class InGameState(State):
         self._actor = self._owner.actor
         self.add_object(self._actor)
 
-        self._events = EventHandler(self)
-
-        # To test state changing
-        self._events.input_handler._button_map[K_ESCAPE] = TestCommand()
+        self._events = InGameEventHandler(self)
 
     def add_object(self, obj):
         self._objects.append(obj)
@@ -57,7 +52,7 @@ class MainMenuState(State):
             "Continue": 2,
             "Exit": 3}
         self._currentMenu = None
-        self._events = EventHandler(self)
+        self._events = MainMenuEventHandler(self)
 
 #    def register_menu_item(self, caption, item_action_list):
     def events(self):
