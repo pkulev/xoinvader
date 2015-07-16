@@ -18,8 +18,8 @@ class Command(object):
         raise NotImplementedError
 
 class TestCommand(Command):
-    def exectute(self, actor):
-        actor._owner.state = "MainMenuState"
+    def execute(self, actor):
+        actor.owner.state = "MainMenuState"
 
 class MoveLeftCommand(Command):
     def execute(self, actor):
@@ -73,8 +73,17 @@ class InputHandler(_InputHandler):
         return self._button_map.get(input, None)
 
 
-class EventHandler(object):
+class Handler(object):
     def __init__(self, owner):
+        self._owner = owner
+
+    def handle(self):
+        raise NotImplementedError
+
+
+class EventHandler(Handler):
+    def __init__(self, owner):
+        super(EventHandler, self).__init__(owner)
         self.input_handler = InputHandler()
         self._owner = owner
         self._screen = self._owner.screen
@@ -90,6 +99,6 @@ class EventHandler(object):
             if isinstance(cmd, ExitGameCommand):
                 cmd.execute(self._screen)
             elif isinstance(cmd, TestCommand):
-                cmd.execute(self._owner._owner)
+                cmd.execute(self._owner)
             else:
                 cmd.execute(self._actor)
