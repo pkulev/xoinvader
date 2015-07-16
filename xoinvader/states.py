@@ -6,6 +6,8 @@ from xoinvader.state import State
 from xoinvader.common import Settings
 from xoinvader.handlers import EventHandler
 
+from xoinvader.handlers import K_ESCAPE, TestCommand
+
 
 class InGameState(State):
     def __init__(self, owner):
@@ -15,7 +17,10 @@ class InGameState(State):
         self._actor = self._owner.playership
         self.add_object(self._actor)
 
-        self._events = EventHandler(self._screen, self._actor)
+        self._events = EventHandler(self)
+
+        # To test state changing
+        self._events.input_handler._button_map[K_ESCAPE] = TestCommand
 
     def add_object(self, obj):
         self._objects.append(obj)
@@ -44,6 +49,9 @@ class InGameState(State):
 class MainMenuState(State):
     def __init__(self, owner):
         super(MainMenuState, self).__init__(owner)
+        self._screen = owner.screen
+        self._actor = None
+
         self._items = {
             "New Game": 1,
             "Continue": 2,
