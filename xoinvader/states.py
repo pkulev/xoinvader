@@ -1,19 +1,11 @@
+""" Provides main game-specific states. """
+
+import curses
+
+from xoinvader.state import State
+from xoinvader.common import Settings
 from xoinvader.handlers import EventHandler
 
-class State(object):
-    def __init__(self, owner):
-        self._owner = owner
-        self._background = None
-        self._music = None
-
-    def events(self):
-        raise NotImplementedError
-
-    def update(self):
-        raise NotImplementedError
-
-    def render(self):
-        raise NotImplementedError
 
 class InGameState(State):
     def __init__(self, owner):
@@ -21,6 +13,7 @@ class InGameState(State):
         self._objects = []
         self._screen = self._owner.screen
         self._actor = self._owner.playership
+        self.add_object(self._actor)
 
         self._events = EventHandler(self._screen, self._actor)
 
@@ -35,10 +28,18 @@ class InGameState(State):
         self._events.handle()
 
     def update(self):
-        pass
+        for obj in self._objects:
+            obj.update()
 
     def render(self):
-        pass
+        self._screen.erase()
+        self._screen.border(0)
+        self._screen.addstr(0, 2, "Score: %s " % 0)
+        self._screen.addstr(0, Settings.layout.field.edge.x // 2 - 4,
+                "XOinvader", curses.A_BOLD)
+
+        Settings.renderer.render_all(self._screen)
+        self._screen.refresh()
 
 class MainMenuState(State):
     def __init__(self, owner):
