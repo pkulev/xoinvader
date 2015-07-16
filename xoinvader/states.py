@@ -4,7 +4,8 @@ import curses
 
 from xoinvader.state import State
 from xoinvader.common import Settings
-from xoinvader.handlers import InGameEventHandler, MainMenuEventHandler
+from xoinvader.handlers import InGameEventHandler
+from xoinvader.main_menu import MainMenuEventHandler
 
 
 class InGameState(State):

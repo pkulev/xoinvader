@@ -8,7 +8,7 @@ from xoinvader.utils import Point
 from xoinvader.render import Renderer
 from xoinvader.common import Settings
 from xoinvader.settings import dotdict
-from xoinvader.handlers import EventHandler
+from xoinvader.handlers import InGameEventHandler
 from xoinvader.curses_utils import create_curses_window, style
 
 class _Application(object):
