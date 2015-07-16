@@ -14,13 +14,13 @@ class InGameState(State):
         super(InGameState, self).__init__(owner)
         self._objects = []
         self._screen = self._owner.screen
-        self._actor = self._owner.playership
+        self._actor = self._owner.actor
         self.add_object(self._actor)
 
         self._events = EventHandler(self)
 
         # To test state changing
-        self._events.input_handler._button_map[K_ESCAPE] = TestCommand
+        self._events.input_handler._button_map[K_ESCAPE] = TestCommand()
 
     def add_object(self, obj):
         self._objects.append(obj)
@@ -57,16 +57,16 @@ class MainMenuState(State):
             "Continue": 2,
             "Exit": 3}
         self._currentMenu = None
+        self._events = EventHandler(self)
 
 #    def register_menu_item(self, caption, item_action_list):
     def events(self):
-        key = self._screen.getch()
-        if key == 27:
-            pos = self._screen.getyx()
-            self._screen.addstr(50,50, str(pos))
+        self._events.handle()
 
     def update(self):
         pass
 
     def render(self):
-        pass
+        self._screen.erase()
+        self._screen.border(0)
+        self._screen.addstr(4, 4, "Whoooch")
