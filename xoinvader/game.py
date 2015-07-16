@@ -40,9 +40,9 @@ class App(object):
         style.init_styles(curses)
         Settings.renderer = Renderer(Settings.layout.field.border)
 
-        self.playership = Playership(Settings.layout.field.player,
+        self.actor = Playership(Settings.layout.field.player,
                                      Settings.layout.field.edge, Settings)
-        Settings.renderer.add_object(self.playership)
+        Settings.renderer.add_object(self.actor)
 
         self.enemy = GenericXEnemy(Point(x=15, y=3), Settings.layout.field.edge,
                                    Settings)
@@ -68,19 +68,19 @@ class App(object):
                         lambda val: 0.0 <= val <= 100.0 : style.gui["dp_ok"]
                     }),
             weapon_info=WeaponWidget(Settings.layout.gui.info.weapon,
-                                  self.playership.get_weapon_info)
+                                  self.actor.get_weapon_info)
         )
 
         for gui_object in self.gui.values():
             Settings.renderer.add_object(gui_object)
 
         # Loop handlers
-        self._events = EventHandler(self.screen, self.playership)
+        self._events = EventHandler(self)
 
     def _update_gui(self):
-        self.gui.hull.update(self.playership.getHullPercentage())
-        self.gui.shield.update(self.playership.getShieldPercentage())
-        self.gui.weapon.update(self.playership.getWeaponPercentage())
+        self.gui.hull.update(self.actor.getHullPercentage())
+        self.gui.shield.update(self.actor.getShieldPercentage())
+        self.gui.weapon.update(self.actor.getWeaponPercentage())
         self.gui.weapon_info.update()
 
     def _update_settings_from_args(self, args):
@@ -92,7 +92,7 @@ class App(object):
 
     def update(self):
         """Update all object's state."""
-        self.playership.update()
+        self.actor.update()
         self.enemy.update()
         self._update_gui()
 
@@ -131,8 +131,8 @@ def main():
     """Entry point. Create application class and go to main loop."""
 
     app = Application()
-    app.register_state(MainMenuState)
     app.register_state(InGameState)
+    app.register_state(MainMenuState)
     app.loop()
     # app = App()
     # app.loop()
