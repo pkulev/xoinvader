@@ -57,7 +57,7 @@ class _InputHandler(object):
     def handle(self, input):
         raise NotImplementedError
 
-class InputHandler(object):
+class InputHandler(_InputHandler):
     def __init__(self):
         self._button_map = {
             K_A : MoveLeftCommand(),
@@ -91,3 +91,5 @@ class EventHandler(object):
                 cmd.execute(self._screen)
             elif isinstance(cmd, TestCommand):
                 cmd.execute(self._owner._owner)
+            else:
+                cmd.execute(self._actor)
