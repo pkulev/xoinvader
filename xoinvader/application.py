@@ -42,7 +42,7 @@ class _Application(object):
 
     def register_state(self, state):
         """Add new state and initiate it with owner."""
-        name = state.__class__.__name__
+        name = state.__name__
         self._states[name] = state(self)
         if len(self._states) == 1:
             self._state = self._states[name]
@@ -70,7 +70,7 @@ class Application(_Application):
         self._update_settings_from_args(startup_args)
         self.screen = create_curses_window(
                 ncols=Settings.layout.field.border.x,
-                nlines=Settings.layout.field.border.x)
+                nlines=Settings.layout.field.border.y)
 
         # Ms per frame
         self._mspf = 16
@@ -78,10 +78,10 @@ class Application(_Application):
         style.init_styles(curses)
         Settings.renderer = Renderer(Settings.layout.field.border)
 
-        self.playership = Playership(Settings.layout.field.player,
+        self.actor = Playership(Settings.layout.field.player,
                 Settings.layout.field.edge, Settings)
 
-        Settings.renderer.add_object(self.playership)
+        Settings.renderer.add_object(self.actor)
 
         self.enemy = GenericXEnemy(Point(x=15, y=3), Settings.layout.field.edge,
                 Settings)
@@ -107,7 +107,7 @@ class Application(_Application):
                         lambda val: 0.0 <= val <= 100.0 : style.gui["dp_ok"]
                     }),
             weapon_info=WeaponWidget(Settings.layout.gui.info.weapon,
-                                  self.playership.get_weapon_info)
+                                  self.actor.get_weapon_info)
         )
 
         for gui_object in self.gui.values():
