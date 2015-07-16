@@ -17,6 +17,10 @@ class Command(object):
     def execute(self, actor):
         raise NotImplementedError
 
+class TestCommand(Command):
+    def exectute(self, actor):
+        actor._owner.state = "MainMenuState"
+
 class MoveLeftCommand(Command):
     def execute(self, actor):
         actor.move_left()
@@ -46,6 +50,12 @@ class ExitGameCommand(Command):
         deinit_curses(actor)
         sys.exit(os.EX_OK)
 
+class _InputHandler(object):
+    def __init__(self):
+        self._button_map = {}
+
+    def handle(self, input):
+        raise NotImplementedError
 
 class InputHandler(object):
     def __init__(self):
@@ -64,14 +74,20 @@ class InputHandler(object):
 
 
 class EventHandler(object):
-    def __init__(self, screen, actor):
+    def __init__(self, owner):
         self.input_handler = InputHandler()
-        self._screen = screen
-        self._actor = actor
+        self._owner = owner
+        self._screen = self._owner.screen
+        self._actor = self._owner.actor
 
     def handle(self):
         key = self._screen.getch()
         cmd = self.input_handler.handle(key)
+#        if cmd:
+#            cmd.execute(self._screen if isinstance(cmd, ExitGameCommand)
+#else self._actor)
         if cmd:
-            cmd.execute(self._screen if isinstance(cmd, ExitGameCommand)
-                        else self._actor)
+            if isinstance(cmd, ExitGameCommand):
+                cmd.execute(self._screen)
+            elif isinstance(cmd, TestCommand):
+                cmd.execute(self._owner._owner)
