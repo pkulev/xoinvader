@@ -5,7 +5,6 @@ import curses
 from xoinvader.state import State
 from xoinvader.common import Settings
 from xoinvader.handlers import InGameEventHandler
-from xoinvader.main_menu import MainMenuEventHandler
 
 
 class InGameState(State):
@@ -41,28 +40,3 @@ class InGameState(State):
 
         Settings.renderer.render_all(self._screen)
         self._screen.refresh()
-
-class MainMenuState(State):
-    def __init__(self, owner):
-        super(MainMenuState, self).__init__(owner)
-        self._screen = owner.screen
-        self._actor = None
-
-        self._items = {
-            "New Game": 1,
-            "Continue": 2,
-            "Exit": 3}
-        self._currentMenu = None
-        self._events = MainMenuEventHandler(self)
-
-#    def register_menu_item(self, caption, item_action_list):
-    def events(self):
-        self._events.handle()
-
-    def update(self):
-        pass
-
-    def render(self):
-        self._screen.erase()
-        self._screen.border(0)
-        self._screen.addstr(4, 4, "Whoooch")
