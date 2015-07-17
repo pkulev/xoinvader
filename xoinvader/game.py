@@ -14,11 +14,11 @@ from xoinvader.utils import Point
 from xoinvader.render import Renderer
 from xoinvader.common import Settings
 from xoinvader.settings import dotdict
-from xoinvader.handlers import InGameEventHandler
 from xoinvader.curses_utils import create_curses_window, style
 
 from xoinvader.application import Application
-from xoinvader.states import InGameState, MainMenuState
+from xoinvader.ingame import InGameState, InGameEventHandler
+from xoinvader.menu import MainMenuState
 
 
 MILLISECONDS_PER_FRAME = 16
