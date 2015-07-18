@@ -78,7 +78,7 @@ def create_curses_window(ncols, nlines, begin_x=0, begin_y=0):
     curses.init_pair(Color.um, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
 
     screen = curses.newwin(nlines, ncols, begin_x, begin_y)
-    screen.keypad(1)
+    screen.keypad(0)
     screen.nodelay(1)
     curses.noecho()
     curses.cbreak()

@@ -6,13 +6,13 @@
 
 import argparse
 
-from xoinvader.game import App
+from xoinvader.game import create_game
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-ns", "--no-sound", default=False, action="store_true",
-                        help="Disable sounds.")
+            help="Disable sounds.")
 
     args = parser.parse_args()
     return args
@@ -22,7 +22,7 @@ def main():
     args = parse_args()
 
     """Start the game!"""
-    game = App(args.__dict__)
+    game = create_game(args.__dict__)
     game.loop()
 
 if __name__ == "__main__":

@@ -26,13 +26,6 @@ class IWeapon(object, metaclass=ABCMeta):
         pass
 
 
-def _load_from_config(weapon, config):
-    """Loads main parameters and returns kwargs for passing to Weapon."""
-    section = weapon.__name__
-    params = ("ammo", "max_ammo", "cooldown", "damage", "radius", "dy")
-    return {var : config[section].get(var) for var in params}
-
-
 class Weapon(IWeapon, Renderable):
     """Main weapon class that implements main methods and behaviour."""
     def __init__(self, ammo, max_ammo, cooldown, damage, radius, dy):
@@ -129,28 +122,28 @@ import curses
 class Blaster(Weapon):
     """Basic player's weapon. Low damage, fast cooldown."""
     def __init__(self):
-        super().__init__(**_load_from_config(self.__class__, CONFIG))
+        super().__init__(**CONFIG[self.__class__.__name__])
         self._image = Surface([["^"]], style=[[curses.A_BOLD]])
 
 
 class EBlaster(Weapon):
     """Basic enemy blaster. Almost identical to Blaster."""
     def __init__(self):
-        super().__init__(**_load_from_config(self.__class__, CONFIG))
+        super().__init__(**CONFIG[self.__class__.__name__])
         self._image = Surface([[":"]])
 
 
 class Laser(Weapon):
     """Basic player's laser. Medium damage, medium cooldown."""
     def __init__(self):
-        super().__init__(**_load_from_config(self.__class__, CONFIG))
+        super().__init__(**CONFIG[self.__class__.__name__])
         self._image = Surface([["|"]], style=[[curses.A_BOLD]])
 
 
 class UM(Weapon):
     """Player's unguided missile. High damage, slow cooldown."""
     def __init__(self):
-        super().__init__(**_load_from_config(self.__class__, CONFIG))
+        super().__init__(**CONFIG[self.__class__.__name__])
         self._image = Surface([["^"],
                                ["|"],
                                ["*"]], style=[[curses.A_BOLD] for _ in range(3)])

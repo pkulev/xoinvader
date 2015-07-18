@@ -1,77 +1,22 @@
-import os
-import sys
-
-from xoinvader.curses_utils import deinit_curses
-
-
-K_Q = ord("q")
-K_E = ord("e")
-K_A = ord("a")
-K_D = ord("d")
-K_R = ord("r")
-K_SPACE = ord(" ")
-K_ESCAPE = 27
-
-
 class Command(object):
     def execute(self, actor):
         raise NotImplementedError
 
-class MoveLeftCommand(Command):
-    def execute(self, actor):
-        actor.move_left()
 
-class MoveRightCommand(Command):
-    def execute(self, actor):
-        actor.move_right()
+class Handler(object):
+    """
+    Base game handler.
 
-class NextWeaponCommand(Command):
-    def execute(self, actor):
-        actor.next_weapon()
+    Provides accessing to main State's fields and handle function stub.
 
-class PrevWeaponCommand(Command):
-    def execute(self, actor):
-        actor.prev_weapon()
-
-class ToggleFireCommand(Command):
-    def execute(self, actor):
-        actor.toggle_fire()
-
-class TakeDamageCommand(Command):
-    def execute(self, actor):
-        actor.take_damage(5)
-
-class ExitGameCommand(Command):
-    def execute(self, actor):
-        deinit_curses(actor)
-        sys.exit(os.EX_OK)
-
-
-class InputHandler(object):
-    def __init__(self):
-        self._button_map = {
-            K_A : MoveLeftCommand(),
-            K_D : MoveRightCommand(),
-            K_E : NextWeaponCommand(),
-            K_Q : PrevWeaponCommand(),
-            K_R : TakeDamageCommand(),
-            K_SPACE : ToggleFireCommand(),
-            K_ESCAPE : ExitGameCommand()
-        }
-
-    def handle(self, input):
-        return self._button_map.get(input, None)
-
-
-class EventHandler(object):
-    def __init__(self, screen, actor):
-        self.input_handler = InputHandler()
-        self._screen = screen
-        self._actor = actor
+    :_owner : pointer to master State instance;
+    :_screen : pointer to State's curses.Window instance;
+    :_actor : pointer to State's actor instance;
+    """
+    def __init__(self, owner):
+        self._owner = owner
+        self._screen = owner.screen
+        self._actor = owner.actor
 
     def handle(self):
-        key = self._screen.getch()
-        cmd = self.input_handler.handle(key)
-        if cmd:
-            cmd.execute(self._screen if isinstance(cmd, ExitGameCommand)
-                        else self._actor)
+        raise NotImplementedError
