@@ -2,10 +2,15 @@
 
 import curses
 
+from xoinvader.gui import WeaponWidget, Bar
 from xoinvader.keys import *
+from xoinvader.ship import GenericXEnemy, Playership
 from xoinvader.state import State
+from xoinvader.utils import Point
 from xoinvader.common import Settings
+from xoinvader.settings import dotdict
 from xoinvader.handlers import Command, Handler
+from xoinvader.curses_utils import style
 
 
 class MoveLeftCommand(Command):
@@ -77,16 +82,56 @@ class InGameState(State):
         super(InGameState, self).__init__(owner)
         self._objects = []
         self._screen = self._owner.screen
-        self._actor = self._owner.actor
+
+        self._actor = Playership(Settings.layout.field.player,
+                Settings.layout.field.edge, Settings)
+
         self.add_object(self._actor)
+        Settings.renderer.add_object(self.actor)
 
         self._events = InGameEventHandler(self)
+
+        # GUI style mapping
+        self.gui = dotdict(
+                hull=Bar(pos=Settings.layout.gui.bar.health, prefix="Hull: ",
+                  stylemap={
+                      lambda val: 70.0 <= val <= 100.0 : style.gui["dp_ok"],
+                      lambda val: 35.0 <= val < 70.0 : style.gui["dp_middle"],
+                      lambda val: 0.0 <= val < 35.0 : style.gui["dp_critical"]
+                  }),
+            shield=Bar(pos=Settings.layout.gui.bar.shield, prefix="Shield: ",
+                    stylemap={
+                        lambda val: 70.0 <= val <= 100.0 : style.gui["sh_ok"],
+                        lambda val: 35.0 <= val < 70.0 : style.gui["sh_mid"],
+                        lambda val: 0.0 <= val < 35.0 : style.gui["dp_critical"]
+                    }),
+            weapon=Bar(pos=Settings.layout.gui.bar.weapon,
+                    stylemap={
+                        lambda val: 0.0 <= val <= 100.0 : style.gui["dp_ok"]
+                    }),
+            weapon_info=WeaponWidget(Settings.layout.gui.info.weapon,
+                                  self.actor.get_weapon_info)
+        )
+
+        for gui_object in self.gui.values():
+            Settings.renderer.add_object(gui_object)
+
+        self.enemy = GenericXEnemy(Point(x=15, y=3), Settings.layout.field.edge,
+                Settings)
+
+        Settings.renderer.add_object(self.enemy)
 
     def add_object(self, obj):
         self._objects.append(obj)
 
     def handle_event(self, event):
         raise NotImplementedError
+
+    def _update_gui(self):
+        self.gui.hull.update(self.actor.getHullPercentage())
+        self.gui.shield.update(self.actor.getShieldPercentage())
+        self.gui.weapon.update(self.actor.getWeaponPercentage())
+        self.gui.weapon_info.update()
 
     def events(self):
         # for event in xoinvader.messageBus.get():
@@ -95,6 +140,8 @@ class InGameState(State):
     def update(self):
         for obj in self._objects:
             obj.update()
+        self.enemy.update()
+        self._update_gui()
 
     def render(self):
         self._screen.erase()
