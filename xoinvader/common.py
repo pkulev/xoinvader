@@ -22,7 +22,6 @@ def rootify(root, config):
             rootify(root, path)
         else:
             config[key] = root + path
-    open("lolo", "w").write(str(config))
     return config
 
 
