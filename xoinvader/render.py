@@ -9,6 +9,8 @@ from abc import ABCMeta, abstractmethod
 class Renderable(object, metaclass=ABCMeta):
     """Abstract class that forces implementing methods below."""
 
+    render_priority = 0
+
     @abstractmethod
     def get_render_data(self):
         """Renderable.get_render_data(None) -> (gpos_list, data_gen)
@@ -21,7 +23,6 @@ class Renderable(object, metaclass=ABCMeta):
           Example: (Point(x=5, y=5), "*", curses.A_BOLD)
         """
         pass
-
 
     def remove_obsolete(self, pos):
         """Renderable.remove_obsolete(Point(int, int)) -> None
@@ -42,16 +43,14 @@ class Renderer(object):
         self._objects = []
         self._border = border
 
-
     def add_object(self, obj):
         """Add renderable object."""
         self._objects.append(obj)
-
+        self._objects.sort(key=lambda x: x.render_priority)
 
     def remove_object(self, obj):
         """Remove renderable object."""
         self._objects.remove(obj)
-
 
     def render_all(self, screen):
         """Render all renderable objects."""

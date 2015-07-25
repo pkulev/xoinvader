@@ -8,6 +8,8 @@ from xoinvader.curses_utils import style
 class WeaponWidget(Renderable):
     """Widget for displaying weapon information."""
 
+    render_priority = 1
+
     def __init__(self, pos, get_data):
         self._pos = pos
         self._get_data = get_data
@@ -51,6 +53,8 @@ class Bar(Renderable):
     :general_style - style of other characters(prefix, postfix, etc);
     :stylemap - mapping of compare functions and integers to curses style.
     """
+
+    render_priority = 1
 
     def __init__(self, pos,
                  prefix="", postfix="",

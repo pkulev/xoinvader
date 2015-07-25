@@ -13,7 +13,7 @@ CONFIG = get_json_config(Settings.path.config.weapons)
 INFINITE = "infinite"
 
 
-class IWeapon(object, metaclass=ABCMeta):
+class IWeapon(Renderable, metaclass=ABCMeta):
     """Interface for weapon game entities."""
     @abstractmethod
     def make_shot(self, pos):
@@ -26,7 +26,7 @@ class IWeapon(object, metaclass=ABCMeta):
         pass
 
 
-class Weapon(IWeapon, Renderable):
+class Weapon(IWeapon):
     """Main weapon class that implements main methods and behaviour."""
     def __init__(self, ammo, max_ammo, cooldown, damage, radius, dy):
         self._type     = self.__class__.__name__
