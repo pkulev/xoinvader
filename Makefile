@@ -1,10 +1,20 @@
+PIP = pip3
+PYTHON = python3
+VENV = ./env
+VENV_CMD = virtualenv --python=python3
+RM = rm -f
+
 all: help
 
-install:
-	pip3 install .
+clean_devel:
+	${RM} -r ${VENV} *.egg-info
 
-devel:
-	python3 setup.py --editable install .
+install:
+	${PIP} install .
+
+devel: clean_devel
+	${VENV_CMD} ${VENV}
+	${PYTHON} setup.py --editable install .
 
 help:
 	@printf "USAGE: make [params]\"
