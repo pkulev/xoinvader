@@ -5,6 +5,79 @@ from xoinvader.utils import Surface
 from xoinvader.curses_utils import style
 
 
+class TextWidget(Renderable):
+    """Simple text widget."""
+
+    render_priority = 1
+
+    def __init__(self, pos, text, style=None):
+        self._pos = pos
+        self._text = text
+        self._style = style
+        self._image = self._make_image()
+
+    def _make_image(self):
+        """Return Surface object."""
+        _style = self._style or style.gui["normal"]
+        return Surface([[ch for ch in self._text]],
+                       [[_style for _ in range(len(self._text))]])
+
+    def update(self, text=None, style=None):
+        """Obtain (or not) new data and refresh image."""
+        if text:
+            self._text = text
+        if style:
+           self._style = style
+        if text or style:
+            self._image = self._make_image
+
+    def get_render_data(self):
+        return [self._pos], self._image.get_image()
+
+
+class MenuItemWidget(TextWidget):
+    """Selectable menu item widget."""
+
+    render_priority = 1
+
+    def __init__(self, pos, text, left="* ", right=" *", style=None):
+
+        self._left = left
+        self._right = right
+        self._selected = False
+
+        super(MenuItemWidget, self).__init__(pos, text, style)
+
+    def _make_image(self):
+        """Return Surface object."""
+        _style = self._style or style.gui["yellow"]
+        if self._selected:
+            _full_text = "".join([self._left, self._text, self._right])
+        else:
+            _full_text = self._text
+
+        return Surface([[ch for ch in _full_text]],
+                       [[_style for _ in range(len(_full_text))]])
+
+    def toggle_select(self):
+        self._selected = not self._selected
+
+    def select(self):
+        self._selected = True
+        self._image = self._make_image()
+
+    def deselect(self):
+        self._selected = False
+        self._image = self._make_image()
+
+    @property
+    def selected(self):
+        return self._selected
+
+    def get_render_data(self):
+        return [self._pos], self._image.get_image()
+
+
 class WeaponWidget(Renderable):
     """Widget for displaying weapon information."""
 
