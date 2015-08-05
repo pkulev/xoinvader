@@ -14,10 +14,6 @@ from xoinvader.handlers import Handler
 from xoinvader.curses_utils import deinit_curses
 
 
-def execute(command, actor):
-    command(actor)
-
-
 def exit_game_command(actor):
     deinit_curses(actor)
     sys.exit(os.EX_OK)
@@ -38,14 +34,14 @@ class MainMenuInputHandler(Handler):
 
     def handle(self):
         key = self._screen.getch()
-        cmd = self._command_map.get(key, None)
-        if cmd:
-            if cmd is exit_game_command:
-                execute(cmd, self._screen)
-            elif cmd is to_ingame_command:
-                execute(cmd, self._owner)
+        command = self._command_map.get(key)
+        if command:
+            if command is exit_game_command:
+                command(self._screen)
+            elif command is to_ingame_command:
+                command(self._owner)
             else:
-                execute(cmd, self._actor)
+                command(self._actor)
 
 
 class MainMenuEventHandler(Handler):
