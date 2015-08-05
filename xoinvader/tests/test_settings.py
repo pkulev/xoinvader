@@ -24,4 +24,4 @@ class TestSettings(unittest.TestCase):
         self.assertEquals(42, self.settings.test_thing)
 
     def test_get_nonexistent_value(self):
-        self.assertRaises(KeyError, lambda : self.settings.test_thing)
+        self.assertRaises(AttributeError, lambda : self.settings.test_thing)
