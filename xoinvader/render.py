@@ -5,6 +5,7 @@
 
 from abc import ABCMeta, abstractmethod
 
+from xoinvader.utils import Point
 
 class Renderable(object, metaclass=ABCMeta):
     """Abstract class that forces implementing methods below."""
@@ -34,6 +35,29 @@ class Renderable(object, metaclass=ABCMeta):
         method.
         """
         pass
+
+
+def render_objects(objects, screen):
+    """Render all renderable objects."""
+    border = Point(*screen.getmaxyx()[::-1])
+    for obj in objects:
+        gpos_list, data_gen = obj.get_render_data()
+
+        for data in data_gen:
+            for gpos in gpos_list:
+                lpos, image, style = data
+                cpos = gpos + lpos
+
+                if (cpos.x >= border.x or cpos.y >= border.y) \
+                   or (cpos.x <= 0 or cpos.y <= 0):
+
+                    obj.remove_obsolete(gpos)
+                    continue
+
+                if style:
+                    screen.addch(cpos.y, cpos.x, image, style)
+                else:
+                    screen.addch(cpos.y, cpos.x, image)
 
 
 class Renderer(object):

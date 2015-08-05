@@ -4,20 +4,27 @@
 import os
 import sys
 
+from xoinvader.gui import TextWidget, MenuItemWidget
 from xoinvader.keys import *
 from xoinvader.state import State
-from xoinvader.handlers import Command, Handler
+from xoinvader.utils import Point
+from xoinvader.common import Settings
+from xoinvader.render import render_objects
+from xoinvader.handlers import Handler
 from xoinvader.curses_utils import deinit_curses
 
 
-class ExitGameCommand(Command):
-    def execute(self, actor):
-        deinit_curses(actor)
-        sys.exit(os.EX_OK)
+def execute(command, actor):
+    command(actor)
 
-class ToInGameCommand(Command):
-    def execute(self, actor):
-        actor.owner.state = "InGameState"
+
+def exit_game_command(actor):
+    deinit_curses(actor)
+    sys.exit(os.EX_OK)
+
+
+def to_ingame_command(actor):
+    actor.owner.state = "InGameState"
 
 
 class MainMenuInputHandler(Handler):
@@ -25,20 +32,20 @@ class MainMenuInputHandler(Handler):
         super(MainMenuInputHandler, self).__init__(owner)
 
         self._command_map = {
-            K_ESCAPE : ToInGameCommand(),
-            K_R : ExitGameCommand()
+            K_ESCAPE : to_ingame_command,
+            K_R : exit_game_command
         }
 
     def handle(self):
         key = self._screen.getch()
         cmd = self._command_map.get(key, None)
         if cmd:
-            if isinstance(cmd, ExitGameCommand):
-                cmd.execute(self._screen)
-            elif isinstance(cmd, ToInGameCommand):
-                cmd.execute(self._owner)
+            if cmd is exit_game_command:
+                execute(cmd, self._screen)
+            elif cmd is to_ingame_command:
+                execute(cmd, self._owner)
             else:
-                cmd.execute(self._actor)
+                execute(cmd, self._actor)
 
 
 class MainMenuEventHandler(Handler):
@@ -58,6 +65,11 @@ class MainMenuState(State):
         self._screen = owner.screen
         self._actor = None
 
+        self._objects = [TextWidget(Point(4,4), "Whoooch"),
+                         MenuItemWidget(Point(10, 10), "First menu item"),
+                         MenuItemWidget(Point(10, 11), "Second menu item")]
+#        Settings.renderer.add_object(self._objects[0])
+        self._objects[1].select()
         self._items = {
             "New Game": 1,
             "Continue": 2,
@@ -70,9 +82,10 @@ class MainMenuState(State):
         self._events.handle()
 
     def update(self):
-        pass
+        for o in self._objects:
+            o.update()
 
     def render(self):
         self._screen.erase()
         self._screen.border(0)
-        self._screen.addstr(4, 4, "Whoooch")
+        render_objects(self._objects, self._screen)
