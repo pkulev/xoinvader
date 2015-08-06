@@ -2,14 +2,13 @@
 
 import curses
 
-from xoinvader.gui import WeaponWidget, Bar
+from xoinvader.gui import TextWidget, WeaponWidget, Bar
 from xoinvader.keys import *
 from xoinvader.ship import GenericXEnemy, Playership
 from xoinvader.state import State
 from xoinvader.utils import Point
 from xoinvader.common import Settings
 from xoinvader.render import render_objects
-from xoinvader.settings import dotdict
 from xoinvader.handlers import Handler
 from xoinvader.curses_utils import style
 
@@ -86,7 +85,7 @@ class InGameState(State):
         self._actor = Playership(Settings.layout.field.player,
                 Settings.layout.field.edge, Settings)
 
-        self.add_object(self._actor)
+        self._objects.append(self._actor)
 
         self._events = InGameEventHandler(self)
 
@@ -96,7 +95,7 @@ class InGameState(State):
         self.enemy = GenericXEnemy(Point(x=15, y=3), Settings.layout.field.edge,
                 Settings)
 
-        self.add_object(self.enemy)
+        self._objects.append(self.enemy)
 
     def _create_gui(self):
         return [
@@ -118,16 +117,13 @@ class InGameState(State):
                 }, callback=self._actor.getWeaponPercentage),
             WeaponWidget(Settings.layout.gui.info.weapon,
                          self.actor.get_weapon_info)
-        ]
-
-    def add_object(self, obj):
-        self._objects.append(obj)
-
-    def handle_event(self, event):
-        raise NotImplementedError
+        ] + [
+            TextWidget(Point(2, 0), "Score: %s" % 0),
+            TextWidget(Point(Settings.layout.field.edge.x // 2 - 4, 0),
+                       "XOInvader", curses.A_BOLD)
+]
 
     def events(self):
-        # for event in xoinvader.messageBus.get():
         self._events.handle()
 
     def update(self):
@@ -137,10 +133,11 @@ class InGameState(State):
     def render(self):
         self._screen.erase()
         self._screen.border(0)
-        self._screen.addstr(0, 2, "Score: %s " % 0)
-        self._screen.addstr(0, Settings.layout.field.edge.x // 2 - 4,
-                "XOinvader", curses.A_BOLD)
 
+        # FIXME:
+        # crutch to render shells
+        # TODO:
+        # ObjectManager with compound objects support.
         Settings.renderer.render_all(self._screen)
         render_objects(self._objects, self._screen)
         self._screen.refresh()
