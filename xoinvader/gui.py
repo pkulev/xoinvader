@@ -136,7 +136,7 @@ class Bar(Renderable):
                  empty="-", empty_style=None,
                  count=10, maxval=100,
                  general_style=None,
-                 stylemap=None):
+                 stylemap=None, callback=None):
 
         self._pos = pos
         self._prefix = prefix
@@ -151,6 +151,7 @@ class Bar(Renderable):
         self._maxval = maxval
         self._general_style = general_style
         self._stylemap = stylemap
+        self._callback = callback
 
         self._template = "".join([str(val) for val in
                                   [self._prefix, self._left, "{blocks}",
@@ -185,8 +186,14 @@ class Bar(Renderable):
         self._image = Surface([[ch[0] for ch in image]],
                               [[st[1] for st in image]])
 
-    def update(self, val):
-        """Update bar."""
+    def update(self, val=None):
+        """Update bar if there's need for it."""
+        if self._callback:
+            val = self._callback()
+
+        if val is None:
+            raise ValueError("val = None, what to do?")
+
         self._marker_style = self._style(val)
         self._update_current_count(val)
         self._update_image()
