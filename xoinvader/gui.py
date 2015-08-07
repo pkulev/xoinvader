@@ -1,5 +1,6 @@
 """ Graphical user interface widgets."""
 
+
 from xoinvader.render import Renderable
 from xoinvader.utils import Surface
 from xoinvader.curses_utils import style
@@ -32,6 +33,7 @@ class TextWidget(Renderable):
             self._image = self._make_image
 
     def get_render_data(self):
+        """Return render specific data."""
         return [self._pos], self._image.get_image()
 
 
@@ -41,7 +43,6 @@ class MenuItemWidget(TextWidget):
     render_priority = 1
 
     def __init__(self, pos, text, left="* ", right=" *", style=None):
-
         self._left = left
         self._right = right
         self._selected = False
@@ -60,13 +61,16 @@ class MenuItemWidget(TextWidget):
                        [[_style for _ in range(len(_full_text))]])
 
     def toggle_select(self):
+        """Draw or not selector characters."""
         self._selected = not self._selected
 
     def select(self):
+        """Select and refresh image."""
         self._selected = True
         self._image = self._make_image()
 
     def deselect(self):
+        """Deselect and refresh image."""
         self._selected = False
         self._image = self._make_image()
 
@@ -75,6 +79,7 @@ class MenuItemWidget(TextWidget):
         return self._selected
 
     def get_render_data(self):
+        """Return render specific data."""
         return [self._pos], self._image.get_image()
 
 
@@ -100,6 +105,7 @@ class WeaponWidget(Renderable):
         self._image = self._make_image()
 
     def get_render_data(self):
+        """Return render specific data."""
         return [self._pos], self._image.get_image()
 
 
@@ -124,7 +130,8 @@ class Bar(Renderable):
     :count - number of markers in the bar;
     :maxval - max value of displayed parameter (affects the accuracy);
     :general_style - style of other characters(prefix, postfix, etc);
-    :stylemap - mapping of compare functions and integers to curses style.
+    :stylemap - mapping of compare functions and integers to curses style;
+    :callback - calls if not None to get new percentage value.
     """
 
     render_priority = 1
