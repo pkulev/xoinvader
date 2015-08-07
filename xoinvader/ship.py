@@ -21,9 +21,10 @@ class Ship(Renderable):
         self._border   = border
         self._settings = settings
 
-        self._dx     = None
-        self._fire   = False
-        self._weapon = None
+        self._dx      = None
+        self._fire    = False
+        self._weapon  = None
+        self._weapons = InfiniteList()
 
         self._max_hull   = None
         self._max_shield = None
@@ -50,7 +51,17 @@ class Ship(Renderable):
     def move_right(self):
         self._dx = 1
 
+    def toggle_fire(self):
+        self._fire = not self._fire
+
+    def next_weapon(self):
+        self._weapon = self._weapons.next()
+
+    def prev_weapon(self):
+        self._weapon = self._weapons.prev()
+
     def add_weapon(self, weapon):
+        self._weapons.append(weapon)
         self._weapon = weapon
         self._settings.renderer.add_object(self._weapon)
 
@@ -60,7 +71,12 @@ class Ship(Renderable):
         elif self._pos.x == 1 and self._dx < 0:
             self._pos.x = 0
 
-        self._weapon.update()
+        self._pos.x += self._dx
+        self._dx = 0
+
+        for weapon in self._weapons:
+            weapon.update()
+
 
         if self._fire:
             self._weapon.make_shot(Point(x=self._pos.x + 1, y=self._pos.y))
@@ -76,9 +92,10 @@ class GenericXEnemy(Ship):
                                [' ', 'X', ' '],
                                [' ', '*', ' ']])
 
-        self._weapon = EBlaster()
+        self.add_weapon(EBlaster())
         self._settings.renderer.add_object(self._weapon)
         self._fire = True
+
 
 class Playership(Ship):
 
@@ -103,21 +120,6 @@ class Playership(Ship):
         Mixer.register(".".join([self._type, "engine"]),
                        Settings.path.sound.ship[self._type].engine)
 
-    def move_left(self):
-        self._dx = -1
-#        Mixer.play(".".join([self._type, "engine"]), loops=1)
-
-    def move_right(self):
-        self._dx = 1
-
-    def toggle_fire(self):
-        self._fire = not self._fire
-
-    def next_weapon(self):
-        self._weapon = self._weapons.next()
-
-    def prev_weapon(self):
-        self._weapon = self._weapons.prev()
 
     def update(self):
         if self._pos.x == self._border.x - self._image.width - 1 and self._dx > 0:
@@ -128,8 +130,6 @@ class Playership(Ship):
         self._pos.x += self._dx
         self._dx = 0
 
-        for weapon in self._weapons:
-            weapon.update()
         if self._fire:
             try:
                 self._weapon.make_shot(Point(x=self._pos.x + self._wbay.x,

@@ -36,6 +36,8 @@ def toggle_fire_command(actor):
 def take_damage_command(actor):
     actor.take_damage(5)
 
+def switch_actor_command(actor):
+    actor._actor, actor._owner.enemy = actor._owner.enemy, actor._actor
 
 def to_mainmenu_command(actor):
     actor.owner.state = "MainMenuState"
@@ -51,6 +53,7 @@ class InGameInputHandler(Handler):
             K_E : next_weapon_command,
             K_Q : prev_weapon_command,
             K_R : take_damage_command,
+            K_F : switch_actor_command,
             K_SPACE : toggle_fire_command,
             K_ESCAPE : to_mainmenu_command
         }
@@ -61,6 +64,8 @@ class InGameInputHandler(Handler):
         if command:
             if command is to_mainmenu_command:
                 command(self._owner)
+            elif command is switch_actor_command:
+                command(self)
             else:
                 command(self._actor)
 
@@ -100,13 +105,13 @@ class InGameState(State):
     def _create_gui(self):
         return [
             Bar(pos=Settings.layout.gui.bar.health, prefix="Hull: ",
-                stylemap={
+                general_style=curses.A_BOLD, stylemap={
                     lambda val: 70.0 <= val <= 100.0 : style.gui["dp_ok"],
                     lambda val: 35.0 <= val < 70.0 : style.gui["dp_middle"],
                     lambda val: 0.0 <= val < 35.0 : style.gui["dp_critical"]
                 }, callback=self._actor.getHullPercentage),
             Bar(pos=Settings.layout.gui.bar.shield, prefix="Shield: ",
-                stylemap={
+                general_style=curses.A_BOLD, stylemap={
                     lambda val: 70.0 <= val <= 100.0 : style.gui["sh_ok"],
                     lambda val: 35.0 <= val < 70.0 : style.gui["sh_mid"],
                     lambda val: 0.0 <= val < 35.0 : style.gui["dp_critical"]
@@ -121,7 +126,7 @@ class InGameState(State):
             TextWidget(Point(2, 0), "Score: %s" % 0),
             TextWidget(Point(Settings.layout.field.edge.x // 2 - 4, 0),
                        "XOInvader", curses.A_BOLD)
-]
+        ]
 
     def events(self):
         self._events.handle()
