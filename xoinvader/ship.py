@@ -91,9 +91,9 @@ class Ship(Renderable):
 
     def update(self):
         if self._pos.x == self._border.x - self._image.width - 1 and self._dx > 0:
-            self._pos.x = self._border.x - self._image.width - 1
-        elif self._pos.x == 1 and self._dx < 0:
             self._pos.x = 0
+        elif self._pos.x == 1 and self._dx < 0:
+            self._pos.x = self._border.x - self._image.width
 
         self._pos.x += self._dx
         self._dx = 0
