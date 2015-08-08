@@ -26,6 +26,7 @@ class Ship(Renderable):
         self._weapon  = None
         self._weapons = InfiniteList()
         self._wbay = None
+        self._direction = 0
 
         self._max_hull   = None
         self._max_shield = None
@@ -70,10 +71,10 @@ class Ship(Renderable):
         return self._weapons
 
     def move_left(self):
-        self._dx = -1
+        self._direction = -1
 
     def move_right(self):
-        self._dx = 1
+        self._direction = 1
 
     def toggle_fire(self):
         self._fire = not self._fire
@@ -90,13 +91,15 @@ class Ship(Renderable):
         self._settings.renderer.add_object(self._weapon)
 
     def update(self):
+        # TODO:
+        # think about those who has dx > 1
         if self._pos.x == self._border.x - self._image.width - 1 and self._dx > 0:
             self._pos.x = 0
         elif self._pos.x == 1 and self._dx < 0:
             self._pos.x = self._border.x - self._image.width
 
-        self._pos.x += self._dx
-        self._dx = 0
+        self._pos.x += self._direction * self._dx
+        self._direction = 0
 
         for weapon in self._weapons:
             weapon.update()

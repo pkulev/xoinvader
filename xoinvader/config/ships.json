@@ -8,7 +8,7 @@
 	},
 
 	"GenericXEnemy" : {
-		"dx" : 1,
+		"dx" : 2,
 		"hull" : 100,
 		"shield" : 100,
 		"max_hull" : 100,
