@@ -55,21 +55,42 @@ class MainMenuEventHandler(Handler):
         # Some other event stuff
 
 
+# Compound renderable object
+# Contains renderables as InGame state contains. Or Playership object contains weapons.
+class Menu(object):
+    """
+    Represents menu.
+
+    Keeps MenuItemWidget : owner.method mapping.
+    Actor of any game menu state.
+    """
+
+    def __init__(self, items=None):
+        self._items = items if items else list()
+
+    def move_up(self):
+        pass
+
+    def move_down(self):
+        pass
+
+# recursion?
+class SubMenu(Menu):
+    pass
+
+
 class MainMenuState(State):
     def __init__(self, owner):
         super(MainMenuState, self).__init__(owner)
         self._screen = owner.screen
-        self._actor = None
+        self._actor = None # Should be some of Menu instances?
 
         self._objects = [TextWidget(Point(4,4), "Whoooch"),
                          MenuItemWidget(Point(10, 10), "First menu item"),
                          MenuItemWidget(Point(10, 11), "Second menu item")]
 #        Settings.renderer.add_object(self._objects[0])
         self._objects[1].select()
-        self._items = {
-            "New Game": 1,
-            "Continue": 2,
-            "Exit": 3}
+
         self._currentMenu = None
         self._events = MainMenuEventHandler(self)
 
@@ -84,4 +105,5 @@ class MainMenuState(State):
     def render(self):
         self._screen.erase()
         self._screen.border(0)
+        #render_objects(self._actor.get_objects, self._screen)
         render_objects(self._objects, self._screen)
