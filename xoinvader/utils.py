@@ -28,6 +28,9 @@ class Point:
     def __add__(self, other):
         return Point(x=self.x + other.x, y=self.y + other.y)
 
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
     @property
     def x(self):
         return self._x
@@ -84,18 +87,24 @@ class InfiniteList(list):
     """Infinite list container"""
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(InfiniteList, self).__init__(*args, **kwargs)
         self._index = 0
 
     def current(self):
         return self[self._index]
 
     def next(self):
-        self._index = (self._index + 1) % len(self)
+        try:
+            self._index = (self._index + 1) % len(self)
+        except ZeroDivisionError:
+            raise IndexError("List is empty.")
         return self[self._index]
 
     def prev(self):
-        self._index = (self._index - 1) % len(self)
+        try:
+            self._index = (self._index - 1) % len(self)
+        except ZeroDivisionError:
+            raise IndexError("List is empty.")
         return self[self._index]
 
 
