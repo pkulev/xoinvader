@@ -6,10 +6,18 @@ class Application(object):
         self._state = None
         self._states = {}
         self._mspf = None # ms per frame
+        self._running = False
+
+    @property
+    def running(self):
+        return self._running
 
     @property
     def state(self):
-        return self._state
+        if self._state:
+            return self._state.__class__.__name__
+        else:
+            raise AttributeError("There is no available state.")
 
     @state.setter
     def state(self, name):
@@ -25,8 +33,16 @@ class Application(object):
         if len(self._states) == 1:
             self._state = self._states[name]
 
+    def stop(self):
+        self._running = False
+
     def loop(self):
-        while True:
+        if self._state:
+            self._running = True
+        else:
+            raise AttributeError("There is no avalable state.")
+
+        while self._running:
             start_time = time.perf_counter()
 
             self._state.events()
