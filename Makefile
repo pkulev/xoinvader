@@ -7,8 +7,10 @@ RM = rm -f
 
 all: help
 
-clean_devel:
+clean:
+	${RM} -r *~ ./xoinvader/*~ ./xoinvader/tests/*~
 	${RM} -r ${VENV} *.egg-info
+	${RM} -r ./htmlcov
 
 install:
 	${PIP} install .
@@ -34,4 +36,4 @@ count:
 	@find ./xoinvader/tests -name "*.py" | xargs wc -l
 	@find . -name "*.json" | xargs wc -l
 
-.PHONY: help lint test view count all
+.PHONY: all clean install devel help lint test view count
