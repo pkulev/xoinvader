@@ -12,7 +12,9 @@ from xoinvader.ingame import InGameState
 from xoinvader.render import Renderer
 from xoinvader.common import Settings
 from xoinvader.application import Application
-from xoinvader.curses_utils import create_curses_window, style
+from xoinvader.curses_utils import create_curses_window
+from xoinvader.curses_utils import deinit_curses
+from xoinvader.curses_utils import style
 
 
 class XOInvader(Application):
@@ -36,9 +38,14 @@ class XOInvader(Application):
             else:
                 raise KeyError("No such argument: '%s'." % arg)
 
+    def stop(self):
+        deinit_curses(self.screen)
+        super(XOInvader, self).stop()
 
-def create_game(args={}):
-    app = XOInvader(args)
+
+def create_game(args=None):
+    """Create XOInvader game instance."""
+    app = XOInvader(args or dict())
     app.register_state(InGameState)
     app.register_state(MainMenuState)
     return app
