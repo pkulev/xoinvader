@@ -49,14 +49,10 @@ class TestUtils(unittest.TestCase):
         data = "test1"
         inf_list = InfiniteList([data])
 
-        self.assertEqual(len(inf_list)), 1)
+        self.assertEqual(len(inf_list), 1)
         self.assertEqual(inf_list[0], data)
         self.assertEqual(inf_list.current(), data)
         self.assertEqual(inf_list.next(), data)
         self.assertEqual(inf_list.prev(), data)
-
-
-
-
 
         # Test many elements behaviour
