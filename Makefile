@@ -23,7 +23,8 @@ lint:
 	@find . -name "*.py" -exec pylint -f colorized {} \;
 
 count:
-	@find . -name "*.py" | xargs wc -l
+	@find . -name "*.py" -not -path "./xoinvader/tests/*" | xargs wc -l game
+	@find ./xoinvader/tests -name "*.py" | xargs wc -l
 	@find . -name "*.json" | xargs wc -l
 
 .PHONY: help lint count all
