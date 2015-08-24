@@ -24,7 +24,7 @@ def main():
     args = parse_args()
 
     game = create_game(args.__dict__)
-    game.loop()
+    return game.loop()
 
 if __name__ == "__main__":
     main()
