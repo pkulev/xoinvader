@@ -7,11 +7,13 @@ from xoinvader.utils import InfiniteList
 from xoinvader.utils import Point
 
 
-class TestUtils(unittest.TestCase):
+class TestLogger(unittest.TestCase):
     def test_create_logger(self):
         logger = create_logger("test", "test.log")
         self.assertTrue(logger)
 
+
+class TestPoint(unittest.TestCase):
     def test_point_operations(self):
         ax, ay, bx, by = 10, 10, 20, 20
         a = Point(ax, ay)
@@ -38,6 +40,8 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(a + b, Point(0, 0))
         self.assertEqual(a + Point(-50, -50), Point(-30, -30))
 
+
+class TestInfiniteList(unittest.TestCase):
     def test_infinite_list_operations(self):
         # Test empty InfiniteList behaviour
 
@@ -56,3 +60,9 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(inf_list.prev(), data)
 
         # Test many elements behaviour
+
+
+class TestSurface(unittest.TestCase):
+    @unittest.skip("Not completed yet.")
+    def test_surface_creation(self):
+        pass
