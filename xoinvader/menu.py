@@ -1,22 +1,16 @@
 """MainMenuState-related input and event handlers."""
 
 
-import os
-import sys
-
 from xoinvader.gui import TextWidget, MenuItemWidget
 from xoinvader.keys import *
 from xoinvader.state import State
 from xoinvader.utils import Point
-from xoinvader.common import Settings
 from xoinvader.render import render_objects
 from xoinvader.handlers import Handler
-from xoinvader.curses_utils import deinit_curses
 
 
 def exit_game_command(actor):
-    deinit_curses(actor)
-    sys.exit(os.EX_OK)
+    actor.owner.stop()
 
 
 def to_ingame_command(actor):
@@ -36,9 +30,7 @@ class MainMenuInputHandler(Handler):
         key = self._screen.getch()
         command = self._command_map.get(key)
         if command:
-            if command is exit_game_command:
-                command(self._screen)
-            elif command is to_ingame_command:
+            if command in [exit_game_command, to_ingame_command]:
                 command(self._owner)
             else:
                 command(self._actor)
@@ -88,7 +80,6 @@ class MainMenuState(State):
         self._objects = [TextWidget(Point(4,4), "Whoooch"),
                          MenuItemWidget(Point(10, 10), "First menu item"),
                          MenuItemWidget(Point(10, 11), "Second menu item")]
-#        Settings.renderer.add_object(self._objects[0])
         self._objects[1].select()
 
         self._currentMenu = None
