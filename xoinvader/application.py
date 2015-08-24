@@ -1,3 +1,4 @@
+import os
 import time
 
 
@@ -55,3 +56,5 @@ class Application(object):
                 time.sleep((self._mspf - delta) / 1000.0)
             else:
                 pass # Log FPS drawdowns.
+
+        return os.EX_OK
