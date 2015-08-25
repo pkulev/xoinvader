@@ -18,9 +18,9 @@ from xoinvader.curses_utils import style
 
 
 class XOInvader(Application):
-    def __init__(self, startup_args={}):
+    """Main game class."""
+    def __init__(self, startup_args=None):
         super(XOInvader, self).__init__(startup_args)
-        self._update_settings(startup_args)
         self.screen = create_curses_window(
                 ncols=Settings.layout.field.border.x,
                 nlines=Settings.layout.field.border.y)
@@ -31,13 +31,6 @@ class XOInvader(Application):
         style.init_styles(curses)
         Settings.renderer = Renderer(Settings.layout.field.border)
 
-    def _update_settings(self, args):
-        for arg, val in args.items():
-            if arg in Settings.system:
-                Settings.system[arg] = val
-            else:
-                raise KeyError("No such argument: '%s'." % arg)
-
     def stop(self):
         deinit_curses(self.screen)
         super(XOInvader, self).stop()
@@ -45,7 +38,7 @@ class XOInvader(Application):
 
 def create_game(args=None):
     """Create XOInvader game instance."""
-    app = XOInvader(args or dict())
+    app = XOInvader(args)
     app.register_state(InGameState)
     app.register_state(MainMenuState)
     return app
