@@ -1,13 +1,27 @@
+"""Base class for game application."""
+
 import os
 import time
 
+from xoinvader.common import Settings
+# TODO: Think about protocol between Application and SettingsManager
 
 class Application(object):
-    def __init__(self, startup_args={}):
+    def __init__(self, startup_args=None):
         self._state = None
         self._states = {}
         self._mspf = None # ms per frame
         self._running = False
+
+        if startup_args:
+            self._update_settings(startup_args)
+
+    def _update_settings(self, args):
+        for arg, val in args.items():
+            if arg in Settings.system:
+                Settings.system[arg] = val
+            else:
+                raise KeyError("No such argument: '%s'." % arg)
 
     @property
     def running(self):
