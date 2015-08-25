@@ -56,8 +56,7 @@ DEFAUT_XOI_SETTINGS = dict(
         gui=None,
         weapon=None),
     system=dict(
-        no_sound=False,
-        with_states=False
+        no_sound=False
     )
 )
 

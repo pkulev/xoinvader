@@ -1,3 +1,5 @@
+"""xoinvader.application.Application unit test."""
+
 import time
 import unittest
 
@@ -5,21 +7,24 @@ from xoinvader.application import Application
 
 
 class StateMock(object):
-    on_event = None
+    """Mocks State interface."""
+    on_event = lambda: None
 
     def __init__(self, owner):
         self.owner = owner
         self.one_loop_passed = False
 
     def events(self):
-        if StateMock.on_event:
-            StateMock.on_event()
+        """Event stub."""
+        StateMock.on_event()
         time.sleep(0.5)
 
     def update(self):
+        """Update stub."""
         time.sleep(0.5)
 
     def render(self):
+        """Render stub."""
         time.sleep(0.5)
         if self.one_loop_passed:
             self.owner.stop()
@@ -28,11 +33,16 @@ class StateMock(object):
 
 
 class AnotherStateMock(StateMock):
+    """YAS."""
     pass
 
 
 class TestApplication(unittest.TestCase):
+    """Unit test."""
+
     def test_application_properties(self):
+        """Test general property behaviour."""
+
         # Empty object
         app = Application()
         self.assertRaises(AttributeError, lambda: app.state)
@@ -45,6 +55,7 @@ class TestApplication(unittest.TestCase):
         self.assertEqual(app.state, StateMock.__name__)
 
         def set_state():
+            """Change state."""
             app.state = "test"
         self.assertRaises(KeyError, set_state)
 
@@ -58,8 +69,9 @@ class TestApplication(unittest.TestCase):
         self.assertEqual(app.state, AnotherStateMock.__name__)
 
     def test_application_loop(self):
-
+        """Test main loop behaviour."""
         def check_running_is_true():
+            """Assert running."""
             self.assertIs(app.running, True)
 
         app = Application()
@@ -73,7 +85,9 @@ class TestApplication(unittest.TestCase):
         self.assertIs(app.running, False)
 
         #TODO: test slow loop execution
+        #TODO: implement logging
 
-    @unittest.skipUnless(hasattr(Application, "apply_startup_args"), "Not implemented.")
     def test_application_startup_args(self):
-        app = Application({"arg1", "val1"})
+        """Test startup_args."""
+        app = Application({"no_sound": True})
+        self.assertRaises(KeyError, Application, {"test": "arg"})
