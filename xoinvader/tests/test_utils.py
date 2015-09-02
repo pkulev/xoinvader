@@ -5,6 +5,7 @@ import pprint
 from xoinvader.utils import create_logger
 from xoinvader.utils import InfiniteList
 from xoinvader.utils import Point
+from xoinvader.utils import Surface
 
 
 class TestLogger(unittest.TestCase):
@@ -63,6 +64,19 @@ class TestInfiniteList(unittest.TestCase):
 
 
 class TestSurface(unittest.TestCase):
-    @unittest.skip("Not completed yet.")
-    def test_surface_creation(self):
-        pass
+    def setUp(self):
+        self.image = [
+                [" ", "O", " "],
+                ["x", "X", "x"]]
+
+        self.reverted = [
+                ["x", "X", "x"],
+                [" ", "O", " "]]
+
+        self.style = []
+
+    def test_surface_attributes(self):
+        surface = Surface(self.image, orientation="down")
+        self.assertEqual(surface.height, len(self.image))
+        self.assertEqual(surface.width, len(self.image[0]))
+        self.assertEqual(surface._image, self.reverted)
