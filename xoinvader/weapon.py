@@ -15,8 +15,8 @@ class Weapon(Renderable):
     """
     Main weapon class that implements main methods and behaviour.
 
-    Callbacks for rendering: get_render_data(), remove_obsolete(pos).
-    """
+    Callbacks for rendering: get_render_data(), remove_obsolete(pos)."""
+
     def __init__(self, ammo, max_ammo, cooldown, damage, radius, dy):
         self._type     = self.__class__.__name__
         self._image    = None
