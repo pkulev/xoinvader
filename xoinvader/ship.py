@@ -13,6 +13,8 @@ CONFIG = get_json_config(Settings.path.config.ships)
 
 
 class Ship(Renderable):
+    """Base class for all ships. Contains basic ship logic."""
+
     def __init__(self, pos, border, settings):
         self._type = self.__class__.__name__
         self._image = None
@@ -56,41 +58,54 @@ class Ship(Renderable):
         return self._max_shield
 
     def getHullPercentage(self):
+        """Return hull percentage."""
         return self._hull * 100.0 / self._max_hull
 
     def getShieldPercentage(self):
+        """Return shield percentage."""
         return self._shield * 100.0 / self._max_shield
 
     def getWeaponPercentage(self):
+        """Return weapon load percentage."""
         return self._weapon.loadPercentage()
 
     def get_render_data(self):
+        """Callback for rendering."""
         return [self._pos], self._image.get_image()
 
     def get_renderable_objects(self):
+        """CORP stub."""
         return self._weapons
 
     def move_left(self):
+        """Change direction."""
         self._direction = -1
 
     def move_right(self):
+        """Change direction."""
         self._direction = 1
 
     def toggle_fire(self):
+        """Toggle current weapon fire mode."""
         self._fire = not self._fire
 
     def next_weapon(self):
+        """Select next weapon."""
         self._weapon = self._weapons.next()
 
     def prev_weapon(self):
+        """Select previous weapon."""
         self._weapon = self._weapons.prev()
 
     def add_weapon(self, weapon):
+        """Add new weapon."""
         self._weapons.append(weapon)
         self._weapon = weapon
         self._settings.renderer.add_object(self._weapon)
 
     def update(self):
+        """Update ship object's state."""
+
         # TODO:
         # think about those who has dx > 1
         if self._pos.x == self._border.x - self._image.width - 1 and self._dx > 0:
@@ -104,7 +119,6 @@ class Ship(Renderable):
         for weapon in self._weapons:
             weapon.update()
 
-
         if self._fire:
             try:
                 self._weapon.make_shot(Point(x=self._pos.x + self._wbay.x,
@@ -115,6 +129,7 @@ class Ship(Renderable):
         self.refresh_shield()
 
     def take_damage(self, damage):
+        """Calculate and apply damage to shield and hull."""
         if self._shield < damage:
             rest_damage = damage - self._shield
             self._shield = 0
@@ -124,21 +139,24 @@ class Ship(Renderable):
         if self._hull < 0:
             self._hull = 0
 
-    def refresh_shield(self, amount=None):
+    def refresh_shield(self, amount=1):
+        """Refresh shield."""
         if self._shield == self._max_shield:
             return
 
-        a = amount if amount else 1
-        if self._shield + a > self._max_shield:
+        if self._shield + amount > self._max_shield:
             self._shield = self._max_shield
         else:
-            self._shield += a
+            self._shield += amount
 
     def get_render_data(self):
+        """Callback for renderers."""
         return ([self._pos], self._image.get_image())
 
 
 class GenericXEnemy(Ship):
+    """Generic X enemy class."""
+
     def __init__(self, pos, border, settings):
         super().__init__(pos, border, settings)
         self._image = Surface([['x', '^', 'x'],
@@ -150,7 +168,9 @@ class GenericXEnemy(Ship):
         self._fire = True
         self._wbay = Point(x=self._image.width // 2, y=1)
 
+
 class Playership(Ship):
+    """Playership class. Contains additional methods for HUD."""
 
     def __init__(self, pos, border, settings):
         super().__init__(pos, border, settings)
@@ -174,6 +194,7 @@ class Playership(Ship):
                        Settings.path.sound.ship[self._type].engine)
 
     def get_weapon_info(self):
+        """Return information about current weapon."""
         return "Weapon: {w} | [{c}/{m}]".format(w=self._weapon.type,
                                                 c=self._weapon.ammo,
                                                 m=self._weapon.max_ammo)
