@@ -3,16 +3,14 @@
 """
 
 
-from abc import ABCMeta, abstractmethod
-
 from xoinvader.utils import Point
 
-class Renderable(object, metaclass=ABCMeta):
-    """Abstract class that forces implementing methods below."""
+
+class Renderable(object):
+    """Base for renderable objects."""
 
     render_priority = 0
 
-    @abstractmethod
     def get_render_data(self):
         """Renderable.get_render_data(None) -> (gpos_list, data_gen)
 
@@ -23,7 +21,7 @@ class Renderable(object, metaclass=ABCMeta):
         * data_gen: generator which yields tuple (lpos, image, style)
           Example: (Point(x=5, y=5), "*", curses.A_BOLD)
         """
-        pass
+        raise NotImplementedError
 
     def remove_obsolete(self, pos):
         """Renderable.remove_obsolete(Point(int, int)) -> None
@@ -60,6 +58,10 @@ def render_objects(objects, screen):
                     screen.addch(cpos.y, cpos.x, image)
 
 
+#FIXME: DEPRECATED.
+# * Make weapon shells as separate entities
+# * Implement Compound Object Rendering Protocol
+# * Use render_objects function for rendering scene.
 class Renderer(object):
     """Handles collection of renderable objects, renders them to screen."""
 

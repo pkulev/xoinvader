@@ -1,7 +1,5 @@
 """Game weapon classes."""
 
-from abc import ABCMeta, abstractmethod
-
 
 from xoinvader.render import Renderable
 from xoinvader.utils import Point, Surface, Timer
@@ -13,21 +11,12 @@ CONFIG = get_json_config(Settings.path.config.weapons)
 INFINITE = "infinite"
 
 
-class IWeapon(Renderable, metaclass=ABCMeta):
-    """Interface for weapon game entities."""
-    @abstractmethod
-    def make_shot(self, pos):
-        """Make shot, if can't - raise ValueError."""
-        pass
+class Weapon(Renderable):
+    """
+    Main weapon class that implements main methods and behaviour.
 
-    @abstractmethod
-    def update(self):
-        """Update coords list."""
-        pass
-
-
-class Weapon(IWeapon):
-    """Main weapon class that implements main methods and behaviour."""
+    Callbacks for rendering: get_render_data(), remove_obsolete(pos).
+    """
     def __init__(self, ammo, max_ammo, cooldown, damage, radius, dy):
         self._type     = self.__class__.__name__
         self._image    = None
@@ -78,11 +67,11 @@ class Weapon(IWeapon):
             Mixer.play(self._type)
 
     def get_render_data(self):
-        """Callback for Renderer."""
+        """Callback for Renderers."""
         return (self._coords, self._image.get_image())
 
     def remove_obsolete(self, pos):
-        """Callback for Renderer."""
+        """Callback for Renderers."""
         self._coords.remove(pos)
 
     @property
