@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
 
+#TODO:
+#Think about pygame installing.
+
 setup(
     name="XOInvader",
     description="Curses-based space game",
@@ -12,7 +15,7 @@ setup(
     package_data={"xoinvader": ["config/*.json", "res/*"]},
     licence="MIT",
     platforms="Posix",
-    install_requires=["pygame"],
+    install_requires=[],
     entry_points="""
     [console_scripts]
     xoigame = xoinvader.game:main
