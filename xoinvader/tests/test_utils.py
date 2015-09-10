@@ -16,30 +16,36 @@ class TestLogger(unittest.TestCase):
 
 class TestPoint(unittest.TestCase):
     def test_point_operations(self):
-        ax, ay, bx, by = 10, 10, 20, 20
-        a = Point(ax, ay)
-        b = Point(bx, by)
+        ax, ay, az = 10, 10, 10
+        bx, by, bz = 20, 20, 20
+        a = Point(ax, ay, az)
+        b = Point(bx, by, bz)
 
         self.assertEqual(a.x, ax)
         self.assertEqual(a.y, ay)
+        self.assertEqual(a.z, az)
         self.assertEqual(b.x, bx)
         self.assertEqual(b.y, by)
+        self.assertEqual(b.z, bz)
 
-        self.assertEqual(a.__repr__(), "Point(x={}, y={})".format(a.x, a.y))
+        self.assertEqual(a.__repr__(), "Point(x={0}, y={1}, z={2})".format(a.x, a.y, a.z))
 
-        self.assertEqual(a + b, Point(ax + bx, ay + by))
+        self.assertEqual(a + b, Point(ax + bx, ay + by, az + bz))
 
         a.x = bx
         a.y = by
+        a.z = bz
 
         self.assertEqual(a.x, bx)
         self.assertEqual(a.y, by)
+        self.assertEqual(a.z, bz)
 
         b.x = -bx
         b.y = -by
+        b.z = -bz
 
-        self.assertEqual(a + b, Point(0, 0))
-        self.assertEqual(a + Point(-50, -50), Point(-30, -30))
+        self.assertEqual(a + b, Point(0, 0, 0))
+        self.assertEqual(a + Point(-50, -50, -50), Point(-30, -30, -30))
 
 
 class TestInfiniteList(unittest.TestCase):
