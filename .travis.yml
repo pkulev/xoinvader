@@ -6,8 +6,11 @@ os:
     - linux
 
 before_install:
-    - pip install --upgrade pip pytest pytest-cov flake8 pylint
+    - pip install --upgrade pip pytest pytest-cov flake8 pylint coveralls
     - sudo apt-get install python-pygame
+
+after_success:
+    - coveralls
 
 script:
     - py.test
