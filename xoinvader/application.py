@@ -7,6 +7,15 @@ from xoinvader.common import Settings
 # TODO: Think about protocol between Application and SettingsManager
 
 class Application(object):
+    """Base class for game applications.
+
+    :param startup_args: arguments for passing to game settings
+    :type startup_args: dict
+
+    :return: Application instance
+    :rtype: :class:`xoinvader.application.Application`
+    """
+
     def __init__(self, startup_args=None):
         self._state = None
         self._states = {}
@@ -17,6 +26,11 @@ class Application(object):
             self._update_settings(startup_args)
 
     def _update_settings(self, args):
+        """Update system settings from startup arguments.
+
+        :param args: arguments
+        :type args: dict
+        """
         for arg, val in args.items():
             if arg in Settings.system:
                 Settings.system[arg] = val
@@ -25,10 +39,21 @@ class Application(object):
 
     @property
     def running(self):
+        """Is game running or not.
+
+        :getter: get application status
+        :type: boolean
+        """
         return self._running
 
     @property
     def state(self):
+        """Current state.
+
+        :getter: Return current state
+        :setter: Set current state
+        :type: string
+        """
         if self._state:
             return self._state.__class__.__name__
         else:
@@ -42,16 +67,26 @@ class Application(object):
             raise KeyError("No such state: '{0}'.".format(name))
 
     def register_state(self, state):
-        """Add new state and initiate it with owner."""
+        """Add new state and initiate it with owner.
+
+        :param state: state class to register
+        :type state: :class:`xoinvader.state.State`
+        """
         name = state.__name__
         self._states[name] = state(self)
         if len(self._states) == 1:
             self._state = self._states[name]
 
     def stop(self):
+        """Stop application."""
         self._running = False
 
     def loop(self):
+        """Start main application loop.
+
+        :return: execution status code
+        :trype: integer
+        """
         if self._state:
             self._running = True
         else:
