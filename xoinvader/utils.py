@@ -15,21 +15,27 @@ def create_logger(lname, fname, fmode="w", level=logging.INFO):
     return logging.getLogger(lname)
 
 
-class Point:
-    def __init__(self, x, y):
+class Point(object):
+    """3D point representation."""
+
+    def __init__(self, x=0, y=0, z=0):
         self._x = x
         self._y = y
+        self._z = z
 
     def __repr__(self):
-        return "Point(x={}, y={})".format(self._x, self._y)
+        return "Point(x={0}, y={1}, z={2})".format(self.x, self.y, self.z)
 
     __str__ = __repr__
 
     def __add__(self, other):
-        return Point(x=self.x + other.x, y=self.y + other.y)
+        return Point(
+            x=self.x + other.x,
+            y=self.y + other.y,
+            z=self.z + other.z)
 
     def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
+        return self.x == other.x and self.y == other.y and self.z == other.z
 
     @property
     def x(self):
@@ -46,6 +52,14 @@ class Point:
     @y.setter
     def y(self, val):
         self._y = val
+
+    @property
+    def z(self):
+        return self._z
+
+    @z.setter
+    def z(self, val):
+        self._z = val
 
 
 class Surface(object):
