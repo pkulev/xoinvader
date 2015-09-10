@@ -5,7 +5,7 @@ setup(
     description="Curses-based space game",
     author="Pavel Kulyov",
     author_email="kulyov.pavel@gmail.com",
-    version="0.1",
+    version="0.1a1",
     py_modules=["game"],
     packages=find_packages(),
     package_dir={"xoinvader": "xoinvader"},
