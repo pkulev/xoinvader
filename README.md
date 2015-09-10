@@ -18,7 +18,6 @@ Documentation can be found [here](http://www.g-v.im/).
 Tests
 -----
 * Coverage ~30%
-* Travis CI will be soon
 
 Installation
 ------------
