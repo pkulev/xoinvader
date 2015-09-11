@@ -93,7 +93,7 @@ class Weapon(Renderable):
         """Return weapon load percentage."""
         if self._ammo and self.ready:
             return 100.0
-        return self._timer.getElapsed() * 100.0 / self._cooldown
+        return self._timer.get_elapsed() * 100.0 / self._cooldown
 
     def update(self):
         """Update coords."""
