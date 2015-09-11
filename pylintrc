@@ -12,7 +12,7 @@ profile=no
 
 # Add files or directories to the blacklist. They should be base names, not
 # paths.
-ignore=CVS
+ignore=CVS,docs
 
 # Pickle collected data for later comparisons.
 persistent=yes
@@ -208,7 +208,7 @@ required-attributes=
 bad-functions=map,filter
 
 # Good variable names which should always be accepted, separated by a comma
-good-names=i,j,k,ex,Run,_,x,y,z,_x,_y,_z,o,e
+good-names=i,j,k,ex,Run,_,x,y,z,_x,_y,_z,o,e,fd,f
 
 # Bad variable names which should always be refused, separated by a comma
 bad-names=foo,bar,baz,toto,tutu,tata

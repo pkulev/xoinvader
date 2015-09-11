@@ -6,11 +6,11 @@ os:
     - linux
 
 before_install:
-    - pip install --upgrade pip pytest pytest-cov flake8 pylint coveralls
+    - pip install --upgrade pip pytest pytest-cov flake8 pylint coveralls tox
     - sudo apt-get install python-pygame
 
 after_success:
     - coveralls
 
 script:
-    - py.test
+    - tox

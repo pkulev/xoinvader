@@ -9,9 +9,9 @@ RM = rm -f
 all: help
 
 clean:
-	${RM} -r *~ ./xoinvader/*~ ./xoinvader/tests/*~
+	${RM} -r *~ ./xoinvader/*~ ./xoinvader/tests/*~ ./xoinvader/*.pyc ./xoinvader/tests/*.pyc
 	${RM} -r ${VENV} *.egg-info
-	${RM} -r ./htmlcov
+	${RM} -r ./htmlcov ./docs/build/
 
 install:
 	${PIP} install .
