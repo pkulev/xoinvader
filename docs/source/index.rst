@@ -21,7 +21,9 @@ Contents:
    :hidden:
 
    xoinvader/ref/application
-
+   xoinvader/ref/curses_utils
+   xoinvader/ref/state
+   xoinvader/ref/utils
 
 Indices and tables
 ==================
