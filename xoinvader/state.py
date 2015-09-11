@@ -2,13 +2,15 @@
 
 
 class State(object):
-    """
-    Represents game state skeleton.
+    """Represents game state skeleton.
 
-    Every game state have:
-    :actor : controllable object;
-    :owner : owner of state, instance of Application;
-    :screen : screen, where state draws it's objects.
+    .. warning:: implement actor base class
+
+    :param owner: state's owner
+    :type owner: `xoinvader.application.Application`
+
+    :returns: state instance
+    :rtype: `xoinvader.state.State`
     """
 
     def __init__(self, owner):
@@ -21,24 +23,42 @@ class State(object):
 
     @property
     def owner(self):
+        """State's owner.
+
+        :getter: yes
+        :setter: no
+        :type: `xoinvader.application.Application`
+        """
         return self._owner
 
     @property
     def actor(self):
+        """Controllable object.
+
+        :getter: yes
+        :setter: no
+        :type: object
+        """
         return self._actor
 
     @property
     def screen(self):
+        """Screen for rendering state's objects.
+
+        :getter: yes
+        :setter: no
+        :type: `curses.Window`
+        """
         return self._screen
 
     def events(self):
-        "Event handler, calls by Application.loop method."
+        "Event handler, calls by `Application.loop` method."
         raise NotImplementedError
 
     def update(self):
-        "Update handler, calls by Application.loop method."
+        "Update handler, calls by `Application.loop` method."
         raise NotImplementedError
 
     def render(self):
-        "Render handler, calls by Application.loop method."
+        "Render handler, calls by `Application.loop` method."
         raise NotImplementedError

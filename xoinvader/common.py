@@ -1,6 +1,8 @@
 """
     Module for common shared objects.
 """
+
+
 import json
 from os.path import dirname
 

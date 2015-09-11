@@ -2,7 +2,6 @@
 
 
 from xoinvader.sound import Mixer
-from xoinvader.settings import dotdict
 from xoinvader.render import Renderable
 from xoinvader.weapon import Blaster, Laser, UM, EBlaster
 from xoinvader.utils import Point, Surface, InfiniteList
@@ -35,7 +34,7 @@ class Ship(Renderable):
         self._hull       = None
         self._shield     = None
 
-        #first initialization
+        # first initialization
         self._load_config(CONFIG[self.__class__.__name__])
 
     def _load_config(self, config):
@@ -123,7 +122,7 @@ class Ship(Renderable):
             try:
                 self._weapon.make_shot(Point(x=self._pos.x + self._wbay.x,
                                              y=self._pos.y + self._wbay.y))
-            except ValueError as e:
+            except ValueError:
                 self.next_weapon()
 
         self.refresh_shield()
@@ -149,19 +148,16 @@ class Ship(Renderable):
         else:
             self._shield += amount
 
-    def get_render_data(self):
-        """Callback for renderers."""
-        return ([self._pos], self._image.get_image())
-
 
 class GenericXEnemy(Ship):
     """Generic X enemy class."""
 
     def __init__(self, pos, border, settings):
         super().__init__(pos, border, settings)
-        self._image = Surface([['x', '^', 'x'],
+        self._image = Surface([[' ', '*', ' '],
                                [' ', 'X', ' '],
-                               [' ', '*', ' ']])
+                               ['x', '^', 'x']],
+                              reverse=True)
 
         self.add_weapon(EBlaster())
         self._settings.renderer.add_object(self._weapon)
@@ -175,9 +171,9 @@ class Playership(Ship):
     def __init__(self, pos, border, settings):
         super().__init__(pos, border, settings)
 
-        self._image = Surface([[' ',' ','O',' ',' '],
-                               ['<','=','H','=','>'],
-                               [' ','*',' ','*',' ']])
+        self._image = Surface([[' ', ' ', 'O', ' ', ' '],
+                               ['<', '=', 'H', '=', '>'],
+                               [' ', '*', ' ', '*', ' ']])
 
         self._pos = Point(x=pos.x - self._image.width // 2,
                           y=pos.y - self._image.height)
@@ -186,7 +182,9 @@ class Playership(Ship):
 
         self._fire = False
         self._weapons = InfiniteList([Blaster(), Laser(), UM()])
-        for weapon in self._weapons: self._settings.renderer.add_object(weapon)
+        for weapon in self._weapons:
+            self._settings.renderer.add_object(weapon)
+
         self._weapon = self._weapons.current()
         self._wbay = Point(x=self._image.width // 2, y=-1)
 

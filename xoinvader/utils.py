@@ -1,22 +1,56 @@
+"""Various useful tools."""
+
 import time
 import logging
 
 
-log_format = "[%(asctime)s] %(levelname)s: %(message)s"
-date_format = "%m/%d/%Y %I:%M:%S %p"
+LOG_FORMAT = "[%(asctime)s] %(levelname)s: %(message)s"
+DATE_FORMAT = "%m/%d/%Y %I:%M:%S %p"
 
 
 def create_logger(lname, fname, fmode="w", level=logging.INFO):
+    """Create simple logger.
+
+    .. note:: Needs enchancement.
+
+    :param lname: logger name
+    :type lname: string
+
+    :param fname: file name
+    :type fname: string
+
+    :param fmode: file mode
+    :type fmode: string
+
+    :param level: logging level
+    :type level: integer
+
+    :return: logger instance
+    :rtype: `logging.Logger`
+    """
     logging.basicConfig(filename=fname,
                         filemode=fmode,
-                        format=log_format,
-                        datefmt=date_format,
+                        format=LOG_FORMAT,
+                        datefmt=DATE_FORMAT,
                         level=level)
     return logging.getLogger(lname)
 
 
 class Point(object):
-    """3D point representation."""
+    """3D point representation.
+
+    :param x: x coordinate
+    :type x: integer
+
+    :param y: y coordinate
+    :type y: integer
+
+    :param z: z coordinate
+    :type z: integer
+
+    :return: Point instance
+    :rtype: `xoinvader.utils.Point`
+    """
 
     def __init__(self, x=0, y=0, z=0):
         self._x = x
@@ -39,6 +73,12 @@ class Point(object):
 
     @property
     def x(self):
+        """x coordinate.
+
+        :getter: yes
+        :setter: yes
+        :type: integer
+        """
         return self._x
 
     @x.setter
@@ -47,6 +87,12 @@ class Point(object):
 
     @property
     def y(self):
+        """y coordinate.
+
+        :getter: yes
+        :setter: yes
+        :type: integer
+        """
         return self._y
 
     @y.setter
@@ -55,6 +101,12 @@ class Point(object):
 
     @property
     def z(self):
+        """z coordinate.
+
+        :getter: yes
+        :setter: yes
+        :type: integer
+        """
         return self._z
 
     @z.setter
@@ -63,51 +115,94 @@ class Point(object):
 
 
 class Surface(object):
-    """image is list of lists of char:
-        rocket
-        [
-         ["^"],     ^
-         ["|"],     |
-         ["*"] ]    *
+    """Representation of graphic objects.
 
-        ship
-        [
-         [" "," ","O"," "," "],           O
-         ["<","=","H","=",">"],         <=H=>
-         [" ","*"," ","*"," "] ]         * *
+    :param image: source for building image
+    :type image: [ [char] ]
+
+    .. note:: add building from string
+
+    :param style: source for building styled image
+    :type style: [ [integer(curses constant)] ]
+
+    :param reverse: reverse sourse before building (for enemies)
+    :type reverse: boolean
+
+    :return: Surface instance
+    :rtype: `xoinvader.utils.Surface`
     """
 
-    def __init__(self, image, style=None, orientation='up'):
-        self._image = image if orientation == 'up' else image[::-1]
+    # Example:
+    #    rocket
+    #    [
+    #     ["^"],     ^
+    #     ["|"],     |
+    #     ["*"] ]    *
+
+    #    ship
+    #    [
+    #     [" "," ","O"," "," "],           O
+    #     ["<","=","H","=",">"],         <=H=>
+    #     [" ","*"," ","*"," "] ]         * *
+
+    def __init__(self, image, style=None, reverse=False):
+        self._image = image[::-1] if reverse else image
         self._width = max([len(l) for l in self._image])
         self._height = len(self._image)
         self._style = style
 
     @property
     def height(self):
+        """Height of the surface.
+
+        :getter: yes
+        :setter: no
+        :type: integer
+        """
         return self._height
 
     @property
     def width(self):
+        """Width of the surface.
+
+        :getter: yes
+        :setter: no
+        :type: integer
+        """
         return self._width
 
     def get_image(self):
+        """Image generator. Allows to renderers render Surfaces.
+
+        :return: image generator
+        :rtype: generator(`xoinvader.utils.Point`, string, integer)
+        """
         for y, row in enumerate(self._image):
             for x, image in enumerate(row):
                 yield (Point(x=x, y=y), image, self._style[y][x] if self._style else None)
 
 
 class InfiniteList(list):
-    """Infinite list container"""
+    """Infinite list container."""
 
     def __init__(self, *args, **kwargs):
         super(InfiniteList, self).__init__(*args, **kwargs)
         self._index = 0
 
     def current(self):
+        """Get current element.
+
+        :return: current element
+        :rtype: object
+        """
         return self[self._index]
 
     def next(self):
+        """Get next element.
+
+        :return: next element
+        :rtype: object
+        """
         try:
             self._index = (self._index + 1) % len(self)
         except ZeroDivisionError:
@@ -115,6 +210,11 @@ class InfiniteList(list):
         return self[self._index]
 
     def prev(self):
+        """Get previous element.
+
+        :return: previous element
+        :rtype: object
+        """
         try:
             self._index = (self._index - 1) % len(self)
         except ZeroDivisionError:
@@ -134,11 +234,15 @@ class Timer(object):
 
     def _tick(self):
         """Refresh counter."""
-        if self._running:
+        if self.running:
             self._current = time.perf_counter()
 
-    def _timeIsUp(self):
-        """Return True if time's up, False otherwise."""
+    def _time_is_up(self):
+        """return is it time to fire fuction or not.
+
+        :return: time is up
+        :trype: boolean
+        """
         return self._current - self._start >= self._end
 
     def start(self):
@@ -148,42 +252,60 @@ class Timer(object):
         self._current = time.perf_counter()
 
     def stop(self):
+        """Stop timer."""
         self._running = False
 
     def restart(self):
+        """Restart timer."""
         self._start = time.perf_counter()
         self._current = self._start
         self.start()
 
     def reset(self):
+        """Reset timer."""
         self._running = False
         self._start = 0
         self._current = 0
 
     def update(self):
         """Public method for using in loops."""
-        if self._running == False:
+        if self.running == False:
             return
 
         self._tick()
-        if self._timeIsUp() and self._running:
+        if self._time_is_up() and self.running:
             self._func()
             self.stop()
 
             # Timer's accuracy depends on owner's loop
             self._current = self._end
 
-    def isRunning(self):
+    @property
+    def running(self):
+        """Is timer running or not.
+
+        :getter: yes
+        :setter: no
+        :type: boolean
+        """
         return self._running
 
-    def getElapsed(self):
-        """Return elapsed time."""
+    def get_elapsed(self):
+        """Elapsed time from start.
+
+        :return: elapsed time
+        :rtype: float
+        """
         return self._current - self._start
 
-    def getRemaining(self):
-        """Return remaining time."""
-        return self._end - self.getElapsed()
+    def get_remaining(self):
+        """Remaining time to fire callback.
 
-    def fireFunction(self):
+        :return: remaining time
+        :rtype: float
+        """
+        return self._end - self.get_elapsed()
+
+    def fire_function(self):
         """Call stored callback."""
         self._func()

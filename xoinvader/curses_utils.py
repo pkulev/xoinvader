@@ -22,15 +22,16 @@ class _Color(object):
             "um",
         ]
         self._color_map = dict(zip(self._color_names,
-                               range(1, len(self._color_names) + 1)))
+                                   range(1, len(self._color_names) + 1)))
 
     def __getattr__(self, name):
         return self._color_map[name]
 
 Color = _Color()
 
-
+#TODO: rewrite this shit
 class Style(object):
+    """Container for style mappings."""
     def __init__(self):
         self._style = {
             "gui" : {},
@@ -38,25 +39,57 @@ class Style(object):
         }
 
     def init_styles(self, curses):
-        self.gui["normal"] = curses.color_pair(Color.ui_norm)   | curses.A_BOLD
-        self.gui["yellow"] = curses.color_pair(Color.ui_yellow) | curses.A_BOLD
+        """Initialize styles.
 
-        self.gui["dp_blank"]    = curses.color_pair(Color.dp_blank)    | curses.A_BOLD
-        self.gui["dp_ok"]       = curses.color_pair(Color.dp_ok)       | curses.A_BOLD
-        self.gui["dp_middle"]   = curses.color_pair(Color.dp_middle)   | curses.A_BOLD
-        self.gui["dp_critical"] = curses.color_pair(Color.dp_critical) | curses.A_BOLD
-        self.gui["sh_ok"]       = curses.color_pair(Color.sh_ok)       | curses.A_BOLD
-        self.gui["sh_mid"]      = curses.color_pair(Color.sh_mid)      | curses.A_BOLD
+        :param curses: curses module to initialize pairs
+        :type curses: module
+        """
+        self.gui["normal"] = curses.color_pair(Color.ui_norm)          \
+            | curses.A_BOLD
+        self.gui["yellow"] = curses.color_pair(Color.ui_yellow)        \
+            | curses.A_BOLD
+
+        self.gui["dp_blank"] = curses.color_pair(Color.dp_blank)       \
+            | curses.A_BOLD
+        self.gui["dp_ok"] = curses.color_pair(Color.dp_ok)             \
+            | curses.A_BOLD
+        self.gui["dp_middle"] = curses.color_pair(Color.dp_middle)     \
+            | curses.A_BOLD
+        self.gui["dp_critical"] = curses.color_pair(Color.dp_critical) \
+            | curses.A_BOLD
+        self.gui["sh_ok"] = curses.color_pair(Color.sh_ok)             \
+            | curses.A_BOLD
+        self.gui["sh_mid"] = curses.color_pair(Color.sh_mid)           \
+            | curses.A_BOLD
 
     def __getattr__(self, name):
         return self._style[name]
 
 style = Style()
 
+#TODO: refactor
+def get_styles():
+    """Return Style object."""
+    return Style()
 
 def create_curses_window(ncols, nlines, begin_x=0, begin_y=0):
-    """Initialize curses, colors, make and return window."""
+    """Initialize curses, colors, make and return window.
 
+    :param ncols: number of columns
+    :type ncols: integer
+
+    :param nlines: number of lines
+    :type nlines: integer
+
+    :param begin_x: offset by x
+    :type begin_x: integer
+
+    :param begin_y: offset by y
+    :type begin_y: integer
+
+    :return: initialized curses window
+    :rtype: `curses.Window`
+    """
     curses.initscr()
     curses.start_color()
 
@@ -87,8 +120,11 @@ def create_curses_window(ncols, nlines, begin_x=0, begin_y=0):
 
 
 def deinit_curses(screen):
-    """Destroy window, deinit curses, make console changes back."""
+    """Destroy window, deinit curses, make console changes back.
 
+    :param screen: main screen
+    :type screen: `curses.Window`
+    """
     screen.nodelay(0)
     screen.keypad(0)
     curses.nocbreak()
