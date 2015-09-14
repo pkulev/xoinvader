@@ -67,11 +67,9 @@ class Weapon(Renderable):
             Mixer.play(self._type)
 
     def get_render_data(self):
-        """Callback for Renderers."""
         return (self._coords, self._image.get_image())
 
     def remove_obsolete(self, pos):
-        """Callback for Renderers."""
         self._coords.remove(pos)
 
     @property
@@ -111,28 +109,28 @@ import curses
 class Blaster(Weapon):
     """Basic player's weapon. Low damage, fast cooldown."""
     def __init__(self):
-        super().__init__(**CONFIG[self.__class__.__name__])
+        super(Blaster, self).__init__(**CONFIG[self.__class__.__name__])
         self._image = Surface([["^"]], style=[[curses.A_BOLD]])
 
 
 class EBlaster(Weapon):
     """Basic enemy blaster. Almost identical to Blaster."""
     def __init__(self):
-        super().__init__(**CONFIG[self.__class__.__name__])
+        super(EBlaster, self).__init__(**CONFIG[self.__class__.__name__])
         self._image = Surface([[":"]])
 
 
 class Laser(Weapon):
     """Basic player's laser. Medium damage, medium cooldown."""
     def __init__(self):
-        super().__init__(**CONFIG[self.__class__.__name__])
+        super(Laser, self).__init__(**CONFIG[self.__class__.__name__])
         self._image = Surface([["|"]], style=[[curses.A_BOLD]])
 
 
 class UM(Weapon):
     """Player's unguided missile. High damage, slow cooldown."""
     def __init__(self):
-        super().__init__(**CONFIG[self.__class__.__name__])
+        super(UM, self).__init__(**CONFIG[self.__class__.__name__])
         self._image = Surface([["^"],
                                ["|"],
                                ["*"]], style=[[curses.A_BOLD] for _ in range(3)])

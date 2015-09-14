@@ -6,6 +6,7 @@ Prepare environment for starting game and start it."""
 
 
 import curses
+import argparse
 
 from xoinvader.menu import MainMenuState
 from xoinvader.ingame import InGameState
@@ -42,3 +43,31 @@ def create_game(args=None):
     app.register_state(InGameState)
     app.register_state(MainMenuState)
     return app
+
+
+def parse_args():
+    """Parse incoming arguments."""
+    parser = argparse.ArgumentParser()
+
+    add_args = dict(
+        no_sound=dict(
+            default=False,
+            action="store_true",
+            help="Disable sounds."))
+
+    parser.add_argument("-ns", "--no-sound", **add_args["no_sound"])
+
+    args = parser.parse_args()
+    return args
+
+
+def main():
+    """Start the game!"""
+    args = parse_args()
+
+    game = create_game(args.__dict__)
+    return game.loop()
+
+
+if __name__ == "__main__":
+    main()

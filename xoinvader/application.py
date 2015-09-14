@@ -11,9 +11,6 @@ class Application(object):
 
     :param startup_args: arguments for passing to game settings
     :type startup_args: dict
-
-    :return: Application instance
-    :rtype: :class:`xoinvader.application.Application`
     """
 
     def __init__(self, startup_args=None):
@@ -85,7 +82,7 @@ class Application(object):
         """Start main application loop.
 
         :return: execution status code
-        :trype: integer
+        :rtype: integer
         """
         if self._state:
             self._running = True

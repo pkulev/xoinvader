@@ -153,7 +153,7 @@ class GenericXEnemy(Ship):
     """Generic X enemy class."""
 
     def __init__(self, pos, border, settings):
-        super().__init__(pos, border, settings)
+        super(GenericXEnemy, self).__init__(pos, border, settings)
         self._image = Surface([[' ', '*', ' '],
                                [' ', 'X', ' '],
                                ['x', '^', 'x']],
@@ -169,7 +169,7 @@ class Playership(Ship):
     """Playership class. Contains additional methods for HUD."""
 
     def __init__(self, pos, border, settings):
-        super().__init__(pos, border, settings)
+        super(Playership, self).__init__(pos, border, settings)
 
         self._image = Surface([[' ', ' ', 'O', ' ', ' '],
                                ['<', '=', 'H', '=', '>'],

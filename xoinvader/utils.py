@@ -1,7 +1,12 @@
 """Various useful tools."""
 
-import time
+
 import logging
+import time
+try:
+    import time.perf_counter
+except ImportError:
+    time.perf_counter = time.time
 
 
 LOG_FORMAT = "[%(asctime)s] %(levelname)s: %(message)s"
@@ -241,7 +246,7 @@ class Timer(object):
         """return is it time to fire fuction or not.
 
         :return: time is up
-        :trype: boolean
+        :rtype: boolean
         """
         return self._current - self._start >= self._end
 
