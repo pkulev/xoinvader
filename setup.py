@@ -6,9 +6,11 @@ from setuptools import setup, find_packages
 setup(
     name="XOInvader",
     description="Curses-based space game",
+    long_description=open("README.md").read(),
     author="Pavel Kulyov",
     author_email="kulyov.pavel@gmail.com",
     version="0.1a1",
+    url="http://www.g-v.im/",
     py_modules=["game"],
     packages=find_packages(),
     package_dir={"xoinvader": "xoinvader"},
