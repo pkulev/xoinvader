@@ -1,4 +1,15 @@
+import os
+
 from setuptools import setup, find_packages
+
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+
+def description():
+    with open(os.path.join(basedir, "README.md")) as fd:
+        return fd.read()
+
 
 #TODO:
 #Think about pygame installing.
@@ -6,7 +17,7 @@ from setuptools import setup, find_packages
 setup(
     name="XOInvader",
     description="Curses-based space game",
-    long_description=open("README.md").read(),
+    long_description=description(),
     author="Pavel Kulyov",
     author_email="kulyov.pavel@gmail.com",
     version="0.1a1",
