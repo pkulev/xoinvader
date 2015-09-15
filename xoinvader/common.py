@@ -1,6 +1,4 @@
-"""
-    Module for common shared objects.
-"""
+"""Module for common shared objects."""
 
 
 import json
