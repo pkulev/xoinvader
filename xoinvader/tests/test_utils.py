@@ -76,17 +76,13 @@ class TestSurface(unittest.TestCase):
                 [" ", "O", " "],
                 ["x", "X", "x"]]
 
-        self.reversed = [
-                ["x", "X", "x"],
-                [" ", "O", " "]]
-
         self.style = []
 
     def test_surface_attributes(self):
-        surface = Surface(self.image, reverse=True)
+        surface = Surface(self.image)
         self.assertEqual(surface.height, len(self.image))
         self.assertEqual(surface.width, len(self.image[0]))
-        self.assertEqual(surface._image, self.reversed)
+        self.assertEqual(surface._image)
 
     def test_image_generator(self):
         surface = Surface(self.image)
@@ -105,9 +101,9 @@ class TestTimer(unittest.TestCase):
         self.check = False
         self.timer = Timer(5.0, self._func)
         self.timer.start()
-        while self.timer.isRunning():
-            self.assertGreaterEqual(self.timer.getElapsed(), 0.0,
+        while self.timer.running:
+            self.assertGreaterEqual(self.timer.get_elapsed(), 0.0,
                     msg="check={0}\n".format(str(self.check)) + pprint.pformat(vars(self.timer)))
             self.timer.update()
-            self.assertGreaterEqual(self.timer.getElapsed(), 0.0,
+            self.assertGreaterEqual(self.timer.get_elapsed(), 0.0,
                     msg="check={0}\n".format(str(self.check)) + pprint.pformat(vars(self.timer)))

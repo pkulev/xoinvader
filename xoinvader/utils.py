@@ -130,9 +130,6 @@ class Surface(object):
     :param style: source for building styled image
     :type style: [ [integer(curses constant)] ]
 
-    :param reverse: reverse sourse before building (for enemies)
-    :type reverse: boolean
-
     :return: Surface instance
     :rtype: `xoinvader.utils.Surface`
     """
@@ -150,8 +147,8 @@ class Surface(object):
     #     ["<","=","H","=",">"],         <=H=>
     #     [" ","*"," ","*"," "] ]         * *
 
-    def __init__(self, image, style=None, reverse=False):
-        self._image = image[::-1] if reverse else image
+    def __init__(self, image, style=None):
+        self._image = image
         self._width = max([len(l) for l in self._image])
         self._height = len(self._image)
         self._style = style

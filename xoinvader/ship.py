@@ -154,10 +154,9 @@ class GenericXEnemy(Ship):
 
     def __init__(self, pos, border, settings):
         super(GenericXEnemy, self).__init__(pos, border, settings)
-        self._image = Surface([[' ', '*', ' '],
+        self._image = Surface([['x', '^', 'x'],
                                [' ', 'X', ' '],
-                               ['x', '^', 'x']],
-                              reverse=True)
+                               [' ', '*', ' ']])
 
         self.add_weapon(EBlaster())
         self._settings.renderer.add_object(self._weapon)
