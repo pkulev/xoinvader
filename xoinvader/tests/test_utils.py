@@ -82,7 +82,7 @@ class TestSurface(unittest.TestCase):
         surface = Surface(self.image)
         self.assertEqual(surface.height, len(self.image))
         self.assertEqual(surface.width, len(self.image[0]))
-        self.assertEqual(surface._image)
+        self.assertEqual(surface._image, self.image)
 
     def test_image_generator(self):
         surface = Surface(self.image)
