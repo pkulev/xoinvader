@@ -8,9 +8,6 @@ class State(object):
 
     :param owner: state's owner
     :type owner: `xoinvader.application.Application`
-
-    :returns: state instance
-    :rtype: `xoinvader.state.State`
     """
 
     def __init__(self, owner):
@@ -27,7 +24,7 @@ class State(object):
 
         :getter: yes
         :setter: no
-        :type: `xoinvader.application.Application`
+        :type: :class:`xoinvader.application.Application`
         """
         return self._owner
 
