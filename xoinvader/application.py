@@ -6,6 +6,7 @@ import time
 from xoinvader.common import Settings
 # TODO: Think about protocol between Application and SettingsManager
 
+
 class Application(object):
     """Base class for game applications.
 
@@ -16,7 +17,8 @@ class Application(object):
     def __init__(self, startup_args=None):
         self._state = None
         self._states = {}
-        self._mspf = None # ms per frame
+        # ms per frame
+        self._mspf = None
         self._running = False
 
         if startup_args:
@@ -101,6 +103,7 @@ class Application(object):
             if delta <= self._mspf:
                 time.sleep((self._mspf - delta) / 1000.0)
             else:
-                pass # Log FPS drawdowns.
+                # TODO: Log FPS drawdowns.
+                pass
 
         return os.EX_OK

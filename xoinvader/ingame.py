@@ -1,9 +1,10 @@
 """InGameState-specific input/event handlers and commands."""
 
+
 import curses
 
 from xoinvader.gui import TextWidget, WeaponWidget, Bar
-from xoinvader.keys import *
+from xoinvader.keys import K_A, K_D, K_E, K_F, K_R, K_SPACE, K_ESCAPE, K_Q
 from xoinvader.ship import GenericXEnemy, Playership
 from xoinvader.state import State
 from xoinvader.utils import Point
@@ -36,8 +37,10 @@ def toggle_fire_command(actor):
 def take_damage_command(actor):
     actor.take_damage(5)
 
+
 def switch_actor_command(actor):
     actor._actor, actor._owner.enemy = actor._owner.enemy, actor._actor
+
 
 def to_mainmenu_command(actor):
     actor.owner.state = "MainMenuState"
@@ -48,14 +51,14 @@ class InGameInputHandler(Handler):
         super(InGameInputHandler, self).__init__(owner)
 
         self._command_map = {
-            K_A : move_left_command,
-            K_D : move_right_command,
-            K_E : next_weapon_command,
-            K_Q : prev_weapon_command,
-            K_R : take_damage_command,
-            K_F : switch_actor_command,
-            K_SPACE : toggle_fire_command,
-            K_ESCAPE : to_mainmenu_command
+            K_A: move_left_command,
+            K_D: move_right_command,
+            K_E: next_weapon_command,
+            K_Q: prev_weapon_command,
+            K_R: take_damage_command,
+            K_F: switch_actor_command,
+            K_SPACE: toggle_fire_command,
+            K_ESCAPE: to_mainmenu_command
         }
 
     def handle(self):
@@ -88,38 +91,42 @@ class InGameState(State):
         self._screen = self._owner.screen
 
         self._actor = Playership(Settings.layout.field.player,
-                Settings.layout.field.edge, Settings)
+                                 Settings.layout.field.edge, Settings)
 
         self._objects.append(self._actor)
-
         self._events = InGameEventHandler(self)
-
-
         self._objects.extend(self._create_gui())
-
-        self.enemy = GenericXEnemy(Point(x=15, y=3), Settings.layout.field.edge,
-                Settings)
+        self.enemy = GenericXEnemy(
+            Point(x=15, y=3),
+            Settings.layout.field.edge,
+            Settings)
 
         self._objects.append(self.enemy)
 
     def _create_gui(self):
+        """Create user intarface."""
+        whatever = lambda val: 0.0 <= val <= 100.0
+        high = lambda val: 70.0 <= val <= 100.0
+        normal = lambda val: 35.0 <= val < 70.0
+        low = lambda val: 0.0 <= val < 35.0
+
         return [
             Bar(pos=Settings.layout.gui.bar.health, prefix="Hull: ",
                 general_style=curses.A_BOLD, stylemap={
-                    lambda val: 70.0 <= val <= 100.0 : style.gui["dp_ok"],
-                    lambda val: 35.0 <= val < 70.0 : style.gui["dp_middle"],
-                    lambda val: 0.0 <= val < 35.0 : style.gui["dp_critical"]
-                }, callback=self._actor.getHullPercentage),
+                    high: style.gui["dp_ok"],
+                    normal: style.gui["dp_middle"],
+                    low: style.gui["dp_critical"]
+                }, callback=self._actor.get_hull_percentage),
             Bar(pos=Settings.layout.gui.bar.shield, prefix="Shield: ",
                 general_style=curses.A_BOLD, stylemap={
-                    lambda val: 70.0 <= val <= 100.0 : style.gui["sh_ok"],
-                    lambda val: 35.0 <= val < 70.0 : style.gui["sh_mid"],
-                    lambda val: 0.0 <= val < 35.0 : style.gui["dp_critical"]
-                }, callback=self._actor.getShieldPercentage),
+                    high: style.gui["sh_ok"],
+                    normal: style.gui["sh_mid"],
+                    low: style.gui["dp_critical"]
+                }, callback=self._actor.get_shield_percentage),
             Bar(pos=Settings.layout.gui.bar.weapon,
                 stylemap={
-                    lambda val: 0.0 <= val <= 100.0 : style.gui["dp_ok"]
-                }, callback=self._actor.getWeaponPercentage),
+                    whatever: style.gui["dp_ok"]
+                }, callback=self._actor.get_weapon_percentage),
             WeaponWidget(Settings.layout.gui.info.weapon,
                          self.actor.get_weapon_info)
         ] + [

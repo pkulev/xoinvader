@@ -15,6 +15,7 @@ def get_json_config(path):
         config = Entry(json.load(fd))
     return config
 
+
 def rootify(root, config):
     "Append paths in dict to root."
     for key, path in config.items():

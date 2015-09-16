@@ -1,6 +1,8 @@
 """Game weapon classes."""
 
 
+import curses
+
 from xoinvader.render import Renderable
 from xoinvader.utils import Point, Surface, Timer
 from xoinvader.common import Settings, get_json_config
@@ -11,6 +13,7 @@ CONFIG = get_json_config(Settings.path.config.weapons)
 INFINITE = "infinite"
 
 
+# TODO: think about composition
 class Weapon(Renderable):
     """
     Main weapon class that implements main methods and behaviour.
@@ -18,14 +21,14 @@ class Weapon(Renderable):
     Callbacks for rendering: get_render_data(), remove_obsolete(pos)."""
 
     def __init__(self, ammo, max_ammo, cooldown, damage, radius, dy):
-        self._type     = self.__class__.__name__
-        self._image    = None
-        self._ammo     = ammo
+        self._type = self.__class__.__name__
+        self._image = None
+        self._ammo = ammo
         self._max_ammo = max_ammo
         self._cooldown = cooldown
-        self._damage   = damage
-        self._radius   = radius
-        self._dy       = dy
+        self._damage = damage
+        self._radius = radius
+        self._dy = dy
         self._current_cooldown = self._cooldown
 
         self.ready = True
@@ -87,7 +90,7 @@ class Weapon(Renderable):
         """Return weapon type."""
         return self._type
 
-    def loadPercentage(self):
+    def load_percentage(self):
         """Return weapon load percentage."""
         if self._ammo and self.ready:
             return 100.0
@@ -105,7 +108,6 @@ class Weapon(Renderable):
         self._timer.update()
 
 
-import curses
 class Blaster(Weapon):
     """Basic player's weapon. Low damage, fast cooldown."""
     def __init__(self):
@@ -133,4 +135,5 @@ class UM(Weapon):
         super(UM, self).__init__(**CONFIG[self.__class__.__name__])
         self._image = Surface([["^"],
                                ["|"],
-                               ["*"]], style=[[curses.A_BOLD] for _ in range(3)])
+                               ["*"]],
+                              style=[[curses.A_BOLD] for _ in range(3)])

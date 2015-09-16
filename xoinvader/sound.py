@@ -14,7 +14,7 @@ class _Mixer(object):
 
     def __init__(self):
         self._sounds = dict()
-        self._mute = True#Settings.system.no_sound
+        self._mute = True  # Settings.system.no_sound
 
     def register(self, object_id, sound_path):
         """Map object classname to sound object."""

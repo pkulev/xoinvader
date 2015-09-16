@@ -11,6 +11,7 @@ from xoinvader.common import Settings, get_json_config
 CONFIG = get_json_config(Settings.path.config.ships)
 
 
+# Think about compositing
 class Ship(Renderable):
     """Base class for all ships. Contains basic ship logic."""
 
@@ -18,21 +19,21 @@ class Ship(Renderable):
         self._type = self.__class__.__name__
         self._image = None
 
-        self._pos      = pos
-        self._border   = border
+        self._pos = pos
+        self._border = border
         self._settings = settings
 
-        self._dx      = None
-        self._fire    = False
-        self._weapon  = None
+        self._dx = None
+        self._fire = False
+        self._weapon = None
         self._weapons = InfiniteList()
         self._wbay = None
         self._direction = 0
 
-        self._max_hull   = None
+        self._max_hull = None
         self._max_shield = None
-        self._hull       = None
-        self._shield     = None
+        self._hull = None
+        self._shield = None
 
         # first initialization
         self._load_config(CONFIG[self.__class__.__name__])
@@ -42,10 +43,10 @@ class Ship(Renderable):
         if not config:
             raise ValueError
 
-        self._dx         = int(config.dx)
-        self._hull       = int(config.hull)
-        self._shield     = int(config.shield)
-        self._max_hull   = int(config.max_hull)
+        self._dx = int(config.dx)
+        self._hull = int(config.hull)
+        self._shield = int(config.shield)
+        self._max_hull = int(config.max_hull)
         self._max_shield = int(config.max_shield)
 
     @property
@@ -56,17 +57,17 @@ class Ship(Renderable):
     def max_shield(self):
         return self._max_shield
 
-    def getHullPercentage(self):
+    def get_hull_percentage(self):
         """Return hull percentage."""
         return self._hull * 100.0 / self._max_hull
 
-    def getShieldPercentage(self):
+    def get_shield_percentage(self):
         """Return shield percentage."""
         return self._shield * 100.0 / self._max_shield
 
-    def getWeaponPercentage(self):
+    def get_weapon_percentage(self):
         """Return weapon load percentage."""
-        return self._weapon.loadPercentage()
+        return self._weapon.load_percentage()
 
     def get_render_data(self):
         """Callback for rendering."""

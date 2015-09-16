@@ -23,8 +23,8 @@ class XOInvader(Application):
     def __init__(self, startup_args=None):
         super(XOInvader, self).__init__(startup_args)
         self.screen = create_curses_window(
-                ncols=Settings.layout.field.border.x,
-                nlines=Settings.layout.field.border.y)
+            ncols=Settings.layout.field.border.x,
+            nlines=Settings.layout.field.border.y)
 
         # Ms per frame
         self._mspf = 16

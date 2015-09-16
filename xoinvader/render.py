@@ -58,7 +58,7 @@ def render_objects(objects, screen):
                     screen.addch(cpos.y, cpos.x, image)
 
 
-#FIXME: DEPRECATED.
+# FIXME: DEPRECATED.
 # * Make weapon shells as separate entities
 # * Implement Compound Object Rendering Protocol
 # * Use render_objects function for rendering scene.

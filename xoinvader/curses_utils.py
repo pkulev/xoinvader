@@ -1,5 +1,6 @@
 """Create and destroy curses windows."""
 
+
 import curses
 
 
@@ -29,14 +30,15 @@ class _Color(object):
 
 Color = _Color()
 
-#TODO: rewrite this shit
+
+# TODO: rewrite this shit
 class Style(object):
     """Container for style mappings."""
     def __init__(self):
-        self._style = {
-            "gui" : {},
-            "obj" : {},
-        }
+        self._style = dict(
+            gui={},
+            obj={},
+        )
 
     def init_styles(self, curses):
         """Initialize styles.
@@ -67,10 +69,12 @@ class Style(object):
 
 style = Style()
 
-#TODO: refactor
+
+# TODO: refactor
 def get_styles():
     """Return Style object."""
     return Style()
+
 
 def create_curses_window(ncols, nlines, begin_x=0, begin_y=0):
     """Initialize curses, colors, make and return window.

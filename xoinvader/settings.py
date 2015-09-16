@@ -21,4 +21,3 @@ class Settings(dict):
         for key, value in self.items():
             if isinstance(value, dict):
                 self[key] = Settings(value)
-

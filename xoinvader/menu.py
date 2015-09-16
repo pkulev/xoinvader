@@ -2,7 +2,7 @@
 
 
 from xoinvader.gui import TextWidget, MenuItemWidget
-from xoinvader.keys import *
+from xoinvader.keys import K_ESCAPE, K_R
 from xoinvader.state import State
 from xoinvader.utils import Point
 from xoinvader.render import render_objects
@@ -22,8 +22,8 @@ class MainMenuInputHandler(Handler):
         super(MainMenuInputHandler, self).__init__(owner)
 
         self._command_map = {
-            K_ESCAPE : to_ingame_command,
-            K_R : exit_game_command
+            K_ESCAPE: to_ingame_command,
+            K_R: exit_game_command
         }
 
     def handle(self):
@@ -48,7 +48,8 @@ class MainMenuEventHandler(Handler):
 
 
 # Compound renderable object
-# Contains renderables as InGame state contains. Or Playership object contains weapons.
+# Contains renderables as InGame state contains.
+# Or Playership object contains weapons.
 class Menu(object):
     """
     Represents menu.
@@ -66,6 +67,7 @@ class Menu(object):
     def move_down(self):
         pass
 
+
 # recursion?
 class SubMenu(Menu):
     pass
@@ -75,17 +77,17 @@ class MainMenuState(State):
     def __init__(self, owner):
         super(MainMenuState, self).__init__(owner)
         self._screen = owner.screen
-        self._actor = None # Should be some of Menu instances?
+        self._actor = None  # Should be some of Menu instances?
 
-        self._objects = [TextWidget(Point(4,4), "Whoooch"),
+        self._objects = [TextWidget(Point(4, 4), "Whoooch"),
                          MenuItemWidget(Point(10, 10), "First menu item"),
                          MenuItemWidget(Point(10, 11), "Second menu item")]
         self._objects[1].select()
 
-        self._currentMenu = None
+        self._current_menu = None
         self._events = MainMenuEventHandler(self)
 
-#    def register_menu_item(self, caption, item_action_list):
+#   def register_menu_item(self, caption, item_action_list):
     def events(self):
         self._events.handle()
 
@@ -96,5 +98,5 @@ class MainMenuState(State):
     def render(self):
         self._screen.erase()
         self._screen.border(0)
-        #render_objects(self._actor.get_objects, self._screen)
+        # render_objects(self._actor.get_objects, self._screen)
         render_objects(self._objects, self._screen)

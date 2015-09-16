@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """ Graphical user interface widgets."""
 
-#TODO: make working with styles pretty
+
+# TODO: make working with styles pretty
 from xoinvader.curses_utils import style as Style
 from xoinvader.render import Renderable
 from xoinvader.utils import Surface
@@ -234,9 +235,10 @@ class Bar(Renderable):
         self._stylemap = stylemap
         self._callback = callback
 
-        self._template = u"".join([str(val) for val in
-                                  [self._prefix, self._left, "{blocks}",
-                                   self._right, self._postfix]])
+        self._template = u"".join(
+            [str(val) for val in [
+                self._prefix, self._left, "{blocks}", self._right,
+                self._postfix]])
 
         self._current_count = self._count
         self._image = None

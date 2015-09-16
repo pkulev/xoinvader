@@ -1,5 +1,17 @@
+"""Base handler class."""
+
+
 class Command(object):
+    """Base command class."""
+
     def execute(self, actor):
+        """Execute command with actor.
+
+        :param actor: actor
+        :type: actor: object
+
+        .. note:: Make actor base class.
+        """
         raise NotImplementedError
 
 
@@ -9,9 +21,8 @@ class Handler(object):
 
     Provides accessing to main State's fields and handle function stub.
 
-    :_owner : pointer to master State instance;
-    :_screen : pointer to State's curses.Window instance;
-    :_actor : pointer to State's actor instance;
+    :param owner: handler's owner
+    :type owner: :class:`xoinvader.state.State`
     """
     def __init__(self, owner):
         self._owner = owner
@@ -19,4 +30,5 @@ class Handler(object):
         self._actor = owner.actor
 
     def handle(self):
+        """Handle event."""
         raise NotImplementedError

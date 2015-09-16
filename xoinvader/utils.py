@@ -181,7 +181,8 @@ class Surface(object):
         """
         for y, row in enumerate(self._image):
             for x, image in enumerate(row):
-                yield (Point(x=x, y=y), image, self._style[y][x] if self._style else None)
+                yield (Point(x=x, y=y), image,
+                       self._style[y][x] if self._style else None)
 
 
 class InfiniteList(list):
@@ -271,7 +272,7 @@ class Timer(object):
 
     def update(self):
         """Public method for using in loops."""
-        if self.running == False:
+        if not self.running:
             return
 
         self._tick()
