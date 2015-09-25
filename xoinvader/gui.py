@@ -5,7 +5,7 @@
 # TODO: make working with styles pretty
 from xoinvader.curses_utils import style as Style
 from xoinvader.render import Renderable
-from xoinvader.utils import Surface
+from xoinvader.utils import Surface, Timer
 
 
 class TextWidget(Renderable):
@@ -133,10 +133,55 @@ class MenuItemWidget(TextWidget):
         return [self._pos], self._image.get_image()
 
 
+class PopUpNotificationWidget(TextWidget):
+    """Widget that allows to show short messages with timeout.
+
+    .. warning:: Experimental stuff. Fix constructor 6/5.
+
+    :param pos: global position
+    :type pos: :class:`xoinvader.utils.Point`
+
+    :param text: text for display
+    :type text: string
+
+    :param style: curses style
+    :type style: int | [int]
+
+    :param timeout: timer timeout
+    :type timeout: float
+
+    :param callback: callback for removal object
+    :type callback: function
+    """
+
+    def __init__(self, pos, text, style=None, timeout=1.0, callback=None):
+        super(self.__class__, self).__init__(pos, text, style)
+
+        self._callback = callback
+        self._timer = Timer(timeout, self._finalize_cb)
+        self._update_text = super(self.__class__, self).update
+        self._timer.start()
+
+    def _finalize_cb(self):
+        """Finalize callback, e.g. pass to it self for removal."""
+        if self._callback:
+            self._callback(self)
+
+    def update(self, text=None, style=None):
+        self._update_text(text, style)
+        self._timer.update()
+
+
 class WeaponWidget(Renderable):
     """Widget for displaying weapon information.
 
+    .. warning:: !!! Duplicates TextWidget !!!
 
+    :param pos: global position
+    :type pos: :class:`xoinvader.utils.Point`
+
+    :param get_data: callback for getting data
+    :type get_data: function
     """
 
     render_priority = 1
