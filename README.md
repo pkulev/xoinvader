@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/pankshok/xoinvader.svg?branch=master)](https://travis-ci.org/pankshok/xoinvader)    [![Coverage Status](https://coveralls.io/repos/pankshok/xoinvader/badge.svg?branch=master&service=github)](https://coveralls.io/github/pankshok/xoinvader?branch=master)
+[![Build Status](https://travis-ci.org/pankshok/xoinvader.svg?branch=master)](https://travis-ci.org/pankshok/xoinvader)    [![codecov.io](http://codecov.io/github/pankshok/xoinvader/coverage.svg?branch=master)](http://codecov.io/github/pankshok/xoinvader?branch=master)
 
 XOInvader
 =========
