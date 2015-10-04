@@ -28,6 +28,8 @@ def rootify(root, config):
 
 __all__ = ["Settings"]
 
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
 WIDTH = 90
 HEIGHT = 34
 

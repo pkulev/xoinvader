@@ -8,36 +8,32 @@ Prepare environment for starting game and start it."""
 import curses
 import argparse
 
+import pygame
+
 from xoinvader.menu import MainMenuState
 from xoinvader.ingame import InGameState
 from xoinvader.render import Renderer
 from xoinvader.common import Settings
-from xoinvader.application import get_application
-from xoinvader.curses_utils import deinit_curses
+from xoinvader.application import CursesApplication, PygameApplication
 from xoinvader.curses_utils import style
 
-
-class XOInvader(get_application()):
-    """Main game class."""
-    def __init__(self, startup_args=None):
-        super(XOInvader, self).__init__(startup_args)
-
-        # Ms per frame
-        self._mspf = 16
-
-        style.init_styles(curses)
-        Settings.renderer = Renderer(Settings.layout.field.border)
-
-    def stop(self):
-        deinit_curses(self.screen)
-        super(XOInvader, self).stop()
+from xoinvader.teststate import TestState
 
 
 def create_game(args=None):
     """Create XOInvader game instance."""
-    app = XOInvader(args)
+    app = CursesApplication(args)
+    style.init_styles(curses)
+    Settings.renderer = Renderer(Settings.layout.field.border)
     app.register_state(InGameState)
     app.register_state(MainMenuState)
+    return app
+
+
+def create_test_game(args):
+    app = PygameApplication((800, 600), 0, 32)
+    pygame.key.set_repeat(50, 50)
+    app.register_state(TestState)
     return app
 
 
@@ -49,9 +45,14 @@ def parse_args():
         no_sound=dict(
             default=False,
             action="store_true",
-            help="Disable sounds."))
+            help="Disable sounds."),
+        pygame=dict(
+            default=False,
+            action="store_true",
+            help="Use pygame"))
 
     parser.add_argument("-ns", "--no-sound", **add_args["no_sound"])
+    parser.add_argument("-pg", "--pygame", **add_args["pygame"])
 
     args = parser.parse_args()
     return args
@@ -61,7 +62,10 @@ def main():
     """Start the game!"""
     args = parse_args()
 
-    game = create_game(args.__dict__)
+    if args.pygame:
+        game = create_test_game(args.__dict__)
+    else:
+        game = create_game(args.__dict__)
     return game.loop()
 
 

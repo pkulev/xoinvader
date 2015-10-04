@@ -132,9 +132,10 @@ class CursesApplication(Application):
         # Maybe we can update text via terminal API
         pass
 
-    def _tick(self):
-        """Update clock."""
-        self._clock.tick(self._fps)
+    def stop(self):
+        """Stop the loop."""
+        xoinvader.curses_utils.deinit_curses(self._screen)
+        super(CursesApplication, self).stop()
 
     def loop(self):
         """Start main application loop.
@@ -155,6 +156,10 @@ class CursesApplication(Application):
             self._tick()
 
         return os.EX_OK
+
+    def _tick(self):
+        """Update clock."""
+        self._clock.tick(self._fps)
 
 
 class PygameApplication(Application):
@@ -191,6 +196,9 @@ class PygameApplication(Application):
     def _tick(self):
         """Update clock."""
         self._clock.tick(self._fps)
+
+    def stop(self):
+        pass
 
     def loop(self):
         """Start main application loop.
