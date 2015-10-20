@@ -5,6 +5,7 @@ from xoinvader.settings import Settings
 
 
 class TestSettings(unittest.TestCase):
+
     def setUp(self):
         self.settings = Settings()
 
@@ -24,4 +25,4 @@ class TestSettings(unittest.TestCase):
         self.assertEqual(42, self.settings.test_thing)
 
     def test_get_nonexistent_value(self):
-        self.assertRaises(AttributeError, lambda : self.settings.test_thing)
+        self.assertRaises(AttributeError, lambda: self.settings.test_thing)

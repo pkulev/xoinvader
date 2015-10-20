@@ -8,6 +8,7 @@ from xoinvader.state import State
 
 class TestState(unittest.TestCase):
     """xoinvader.state.State"""
+
     def test_base_class(self):
         """base_class"""
         state = State("owner")

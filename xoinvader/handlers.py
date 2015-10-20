@@ -24,6 +24,7 @@ class Handler(object):
     :param owner: handler's owner
     :type owner: :class:`xoinvader.state.State`
     """
+
     def __init__(self, owner):
         self._owner = owner
         self._screen = owner.screen

@@ -31,6 +31,7 @@ def create_game(args=None):
 
 
 def create_test_game(args):
+    """Temporary function to create Pygame."""
     app = PygameApplication((800, 600), 0, 32)
     pygame.key.set_repeat(50, 50)
     app.register_state(TestState)

@@ -47,6 +47,7 @@ def to_mainmenu_command(actor):
 
 
 class InGameInputHandler(Handler):
+
     def __init__(self, owner):
         super(InGameInputHandler, self).__init__(owner)
 
@@ -74,6 +75,7 @@ class InGameInputHandler(Handler):
 
 
 class InGameEventHandler(Handler):
+
     def __init__(self, owner):
         super(InGameEventHandler, self).__init__(owner)
 
@@ -85,6 +87,7 @@ class InGameEventHandler(Handler):
 
 
 class InGameState(State):
+
     def __init__(self, owner):
         super(InGameState, self).__init__(owner)
         self._objects = []

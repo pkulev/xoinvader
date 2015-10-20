@@ -15,6 +15,7 @@ from xoinvader.utils import (
 
 
 class TestLogger(unittest.TestCase):
+
     def test_create_logger(self):
         logger = create_logger("test", "test.log")
         self.assertTrue(logger)
@@ -33,6 +34,7 @@ def test_isclose(left, right, kwargs, expected):
 
 
 class TestPoint(unittest.TestCase):
+
     def test_point_operations(self):
         ax, ay, az = 10, 10, 10
         bx, by, bz = 20, 20, 20
@@ -46,7 +48,12 @@ class TestPoint(unittest.TestCase):
         self.assertEqual(b.y, by)
         self.assertEqual(b.z, bz)
 
-        self.assertEqual(a.__repr__(), "Point(x={0}, y={1}, z={2})".format(a.x, a.y, a.z))
+        self.assertEqual(
+            a.__repr__(),
+            "Point(x={0}, y={1}, z={2})".format(
+                a.x,
+                a.y,
+                a.z))
 
         self.assertEqual(a + b, Point(ax + bx, ay + by, az + bz))
 
@@ -67,6 +74,7 @@ class TestPoint(unittest.TestCase):
 
 
 class TestInfiniteList(unittest.TestCase):
+
     def test_infinite_list_operations(self):
         # Test empty InfiniteList behaviour
 
@@ -88,10 +96,11 @@ class TestInfiniteList(unittest.TestCase):
 
 
 class TestSurface(unittest.TestCase):
+
     def setUp(self):
         self.image = [
-                [" ", "O", " "],
-                ["x", "X", "x"]]
+            [" ", "O", " "],
+            ["x", "X", "x"]]
 
         self.style = []
 
@@ -110,6 +119,7 @@ class TestSurface(unittest.TestCase):
 
 
 class TestTimer(unittest.TestCase):
+
     def _func(self):
         self.check = True
 
@@ -119,8 +129,8 @@ class TestTimer(unittest.TestCase):
         self.timer = Timer(5.0, self._func)
         self.timer.start()
         while self.timer.running:
-            self.assertGreaterEqual(self.timer.get_elapsed(), 0.0,
-                    msg="check={0}\n".format(str(self.check)) + pprint.pformat(vars(self.timer)))
+            self.assertGreaterEqual(self.timer.get_elapsed(), 0.0, msg="check={0}\n".format(
+                str(self.check)) + pprint.pformat(vars(self.timer)))
             self.timer.update()
-            self.assertGreaterEqual(self.timer.get_elapsed(), 0.0,
-                    msg="check={0}\n".format(str(self.check)) + pprint.pformat(vars(self.timer)))
+            self.assertGreaterEqual(self.timer.get_elapsed(), 0.0, msg="check={0}\n".format(
+                str(self.check)) + pprint.pformat(vars(self.timer)))

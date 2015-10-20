@@ -2,6 +2,7 @@
 
 
 import os
+import sys
 
 import pygame
 
@@ -51,10 +52,21 @@ class Application(object):
 
     @state.setter
     def state(self, name):
+        """Setter."""
         if name in self._states:
             self._state = self._states[name]
         else:
             raise KeyError("No such state: '{0}'.".format(name))
+
+    @property
+    def states(self):
+        """State names to State classes mapping.
+
+        :getter: yes
+        :setter: no
+        :type: dict
+        """
+        return self._states
 
     def register_state(self, state):
         """Add new state and initiate it with owner.
@@ -79,6 +91,7 @@ class Application(object):
 
     @fps.setter
     def fps(self, val):
+        """Setter."""
         self._fps = int(val)
 
     @property
@@ -103,6 +116,23 @@ class Application(object):
     def stop(self):
         """Stop application."""
         self._running = False
+
+    def on_destroy(self):
+        """Overload this to do something on destroy."""
+        pass
+
+    def destroy(self, exit_code=os.EX_OK):
+        """Aggressively destroy application and exit with given exit code.
+
+        Normally Application lets the loop finish current iteration and
+        after it deinits graphic backend and returns EX_OK. In this case
+        Application deinits backend immidiately and exits with given exit code.
+
+        :param integer exit_code: exit code for exit with
+        """
+        self.stop()
+        self.on_destroy()
+        sys.exit(exit_code)
 
 
 class CursesApplication(Application):
@@ -181,8 +211,7 @@ class PygameApplication(Application):
         self._screen = pygame.display.set_mode(resolution, flags, depth)
         self._clock = xoinvader.pygame_utils.get_clock()
 
-    @staticmethod
-    def set_caption(caption, icontitle=""):
+    def set_caption(self, caption, icontitle=""):
         """Set window caption.
 
         :param caption: window caption
@@ -191,14 +220,16 @@ class PygameApplication(Application):
         :param icontitle: short title
         :type icontitle: str
         """
-        pygame.display.set_caption(caption, icontitle)
+        if self._screen:
+            pygame.display.set_caption(caption, icontitle)
 
     def _tick(self):
         """Update clock."""
         self._clock.tick(self._fps)
 
-    def stop(self):
-        pass
+    def on_destroy(self):
+        """Deinit pygame."""
+        pygame.quit()
 
     def loop(self):
         """Start main application loop.

@@ -1,18 +1,20 @@
+"""Setup manifest for XOInvader."""
+
 import os
 
 from setuptools import setup, find_packages
 
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 
 def description():
-    with open(os.path.join(basedir, "README.md")) as fd:
+    """Read description."""
+    with open(os.path.join(BASEDIR, "README.md")) as fd:
         return fd.read()
 
 
-#TODO:
-#Think about pygame installing.
+# TODO: Think about pygame installing.
 
 setup(
     name="XOInvader",

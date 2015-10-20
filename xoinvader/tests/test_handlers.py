@@ -13,12 +13,14 @@ class OwnerMock:
 
 
 class TestCommand(unittest.TestCase):
+
     def test_base_class(self):
         command = Command()
         self.assertRaises(NotImplementedError, command.execute, "actor")
 
 
 class TestHandler(unittest.TestCase):
+
     def test_base_class(self):
         handler = Handler(OwnerMock())
         self.assertRaises(NotImplementedError, handler.handle)

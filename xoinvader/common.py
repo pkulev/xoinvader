@@ -76,4 +76,3 @@ def update_system_settings(args):
             Settings.system[arg] = val
         else:
             raise KeyError("No such argument: '{0}'.".format(arg))
-

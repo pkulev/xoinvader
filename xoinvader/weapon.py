@@ -110,6 +110,7 @@ class Weapon(Renderable):
 
 class Blaster(Weapon):
     """Basic player's weapon. Low damage, fast cooldown."""
+
     def __init__(self):
         super(Blaster, self).__init__(**CONFIG[self.__class__.__name__])
         self._image = Surface([["^"]], style=[[curses.A_BOLD]])
@@ -117,6 +118,7 @@ class Blaster(Weapon):
 
 class EBlaster(Weapon):
     """Basic enemy blaster. Almost identical to Blaster."""
+
     def __init__(self):
         super(EBlaster, self).__init__(**CONFIG[self.__class__.__name__])
         self._image = Surface([[":"]])
@@ -124,6 +126,7 @@ class EBlaster(Weapon):
 
 class Laser(Weapon):
     """Basic player's laser. Medium damage, medium cooldown."""
+
     def __init__(self):
         super(Laser, self).__init__(**CONFIG[self.__class__.__name__])
         self._image = Surface([["|"]], style=[[curses.A_BOLD]])
@@ -131,6 +134,7 @@ class Laser(Weapon):
 
 class UM(Weapon):
     """Player's unguided missile. High damage, slow cooldown."""
+
     def __init__(self):
         super(UM, self).__init__(**CONFIG[self.__class__.__name__])
         self._image = Surface([["^"],

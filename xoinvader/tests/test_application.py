@@ -1,6 +1,7 @@
 """xoinvader.application.Application unit test."""
 
 
+import os
 import time
 
 import pygame
@@ -10,37 +11,7 @@ import xoinvader.curses_utils
 from xoinvader.application import (
     Application, CursesApplication, PygameApplication, get_application
 )
-
-
-class StateMock(object):
-    """Mocks State interface."""
-    on_event = lambda: None
-
-    def __init__(self, owner):
-        self.owner = owner
-        self.one_loop_passed = False
-
-    def events(self):
-        """Event stub."""
-        StateMock.on_event()
-        time.sleep(0.5)
-
-    def update(self):
-        """Update stub."""
-        time.sleep(0.5)
-
-    def render(self):
-        """Render stub."""
-        time.sleep(0.5)
-        if self.one_loop_passed:
-            self.owner.stop()
-        else:
-            self.one_loop_passed = True
-
-
-class AnotherStateMock(StateMock):
-    """YAS."""
-    pass
+from xoinvader.tests.common import StateMock, AnotherStateMock
 
 
 # TODO: add new cases after func implementation
@@ -61,14 +32,14 @@ def test_application():
 
     # One element
     app.register_state(StateMock)
-    assert len(app._states) ==  1
+    assert len(app._states) == 1
     assert app.state == StateMock.__name__
 
-    assert pytest.raises(KeyError, lambda: app.__setattr__("state", "test"))
+    assert pytest.raises(KeyError, lambda: setattr(app, "state", "test"))
 
     # Many elements
     app.register_state(AnotherStateMock)
-    assert len(app._states) == 2
+    assert len(app.states) == 2
     # Ensure that Application._state hasn't changed
     assert app.state == StateMock.__name__
 
@@ -80,6 +51,9 @@ def test_curses_application(monkeypatch):
     """xoinvader.application.CursesApplication"""
     monkeypatch.setattr(
         xoinvader.curses_utils, "create_window",
+        lambda *args, **kwargs: True)
+    monkeypatch.setattr(
+        xoinvader.curses_utils, "deinit_curses",
         lambda *args, **kwargs: True)
 
     app = CursesApplication()
@@ -96,7 +70,7 @@ def test_pygame_application():
     app.set_caption("test")
     assert pygame.display.get_caption()[0] == "test"
     assert app.screen is not None
-    assert pytest.raises(ValueError, lambda: app.__setattr__("fps", "thirty"))
+    assert pytest.raises(ValueError, lambda: setattr(app, "fps", "thirty"))
     assert pytest.raises(AttributeError, lambda: app.state)
     assert app.running is False
 
@@ -111,10 +85,11 @@ def _test_application_loop(app):
         assert app.running is True
 
     assert pytest.raises(AttributeError, app.loop)
-    state_mock = StateMock
-    state_mock.on_events = check_running_is_true
+    StateMock.on_events = check_running_is_true
     app.register_state(StateMock)
     assert app.running is False
-    app.loop()
+    with pytest.raises(SystemExit) as context:
+        app.loop()
+    assert context.value.code == os.EX_OK
     assert app.running is False
     return True

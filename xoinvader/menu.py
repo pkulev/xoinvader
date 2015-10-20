@@ -22,6 +22,7 @@ def show_popup(actor):
 
 
 class MainMenuInputHandler(Handler):
+
     def __init__(self, owner):
         super(MainMenuInputHandler, self).__init__(owner)
 
@@ -42,6 +43,7 @@ class MainMenuInputHandler(Handler):
 
 
 class MainMenuEventHandler(Handler):
+
     def __init__(self, owner):
         super(MainMenuEventHandler, self).__init__(owner)
 
@@ -79,6 +81,7 @@ class SubMenu(Menu):
 
 
 class MainMenuState(State):
+
     def __init__(self, owner):
         super(MainMenuState, self).__init__(owner)
         self._screen = owner.screen
@@ -93,8 +96,11 @@ class MainMenuState(State):
         self._events = MainMenuEventHandler(self)
 
     def notify(self, text, pos=Point(15, 15)):
-        self._objects.append(PopUpNotificationWidget(pos, text or "ololo",
-            callback=lambda identity: self._objects.remove(identity)))
+        self._objects.append(
+            PopUpNotificationWidget(
+                pos,
+                text or "ololo",
+                callback=lambda identity: self._objects.remove(identity)))
 
 #   def register_menu_item(self, caption, item_action_list):
     def events(self):

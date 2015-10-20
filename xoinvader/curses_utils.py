@@ -37,6 +37,7 @@ Color = _Color()
 # TODO: rewrite this shit
 class Style(object):
     """Container for style mappings."""
+
     def __init__(self):
         self._style = dict(
             gui={},
@@ -146,7 +147,7 @@ class Clock():
     def __init__(self):
         self._mspf = 0
         self._previous_tick = 0
-        self._current_tick = time.perf_counter()
+        self._current_tick = int(time.perf_counter())
         self._tick_time = 0
 
     def tick(self, framerate=0.0):
@@ -159,7 +160,7 @@ class Clock():
         self._current_tick = int(time.perf_counter())
         delta = self._current_tick - self._previous_tick
 
-        self._mspf = 1.0 / framerate * 1000.0 if framerate else delta
+        self._mspf = int(1.0 / framerate * 1000.0) if framerate else delta
 
         time_s = (self._mspf - delta) / 1000.0
         time.sleep(time_s)

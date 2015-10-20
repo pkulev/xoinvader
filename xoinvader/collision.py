@@ -2,6 +2,7 @@
 
 
 class SettingsManager(object):
+
     def __init__(self, settings_map={}):
         self._smap = settings_map
 
@@ -10,6 +11,7 @@ class SettingsManager(object):
 
 
 class UpdatableSettings(object):
+
     def __init__(self, settings_manager, settings={}):
         self._settings = settings
         self._settings_manager = settings_manager
@@ -22,6 +24,7 @@ class UpdatableSettings(object):
 
 
 class CollisionDetector(UpdatableSettings):
+
     def __init__(self, settings={}):
         self._settings = settings
 
