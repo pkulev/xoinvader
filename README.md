@@ -4,6 +4,7 @@ XOInvader
 =========
 
 Attempt to create small but serious game using **python** and **ncurses**.
+**Migrating from curses to PyGame.**
 
 Requrements
 -----------
@@ -17,7 +18,7 @@ Documentation can be found [here](http://www.g-v.im/).
 
 Tests
 -----
-* Coverage ~30%
+* Coverage ~40%
 
 Installation
 ------------
