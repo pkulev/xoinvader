@@ -15,5 +15,10 @@
                 "engine" : "/res/snd/playership_engine.ogg"
             }
         }
+    },
+    "image" : {
+        "ship" : {
+            "TestShip" : "/res/gfx/ship.png"
+        }
     }
 }

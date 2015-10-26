@@ -5,29 +5,11 @@ from pygame.locals import K_a, K_d, K_ESCAPE
 
 from xoinvader.common import _ROOT
 
-#from xoinvader.ship import TestShip
-
-
-class TestShip():
-
-    def __init__(self):
-        self._image = pygame.image.load(_ROOT + "/res/gfx" + "/ship.png")
-
-    def render(self):
-        pass
-
-    def move_left(self):
-        print("MOVE: <LEFT>")
-
-    def move_right(self):
-        print("MOVE: <RIGHT>")
-
-    def update(self):
-        pass
-
-
+from xoinvader.ship import TestShip
 from xoinvader.handlers import Handler
 from xoinvader.state import State
+from xoinvader.utils import Point
+from xoinvader.common import Settings
 
 
 class TestStateInputHandler(Handler):
@@ -71,7 +53,8 @@ class TestState(State):
         self._objects = []
         self._screen = self._owner.screen
 
-        self._actor = TestShip()
+        self._actor = TestShip(Settings.layout.field.player,
+                               Settings.layout.field.edge, Settings)
 
         self._objects.append(self._actor)
         self._events = TestStateEventHandler(self)
@@ -84,5 +67,7 @@ class TestState(State):
             obj.update()
 
     def render(self):
+        self._screen.fill(pygame.Color(0, 0, 0, 1))
+#        self._screen.blit(self._background, (0, 0))
         for obj in self._objects:
-            obj.render()
+            self._screen.blit(obj.image, (obj.pos.x, obj.pos.y))
