@@ -15,7 +15,7 @@
 		"max_shield" : 100
 	},
     "TestShip" : {
-        "dx" : 2,
+        "dx" : 10,
         "dy" : 2,
         "hull" : 100,
         "shield" : 100,

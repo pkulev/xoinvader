@@ -13,11 +13,28 @@ from xoinvader.common import Settings, get_json_config
 CONFIG = get_json_config(Settings.path.config.ships)
 
 
-class TestShip(object):
+class Entity(pygame.Rect):
+    """Base class for all game objects."""
+
+    def __init__(self, pos, image=None):
+        self._image = image or pygame.Surface((0, 0))
+        super(Entity, self).__init__((pos.x, pos.y), self._image.get_size())
+
+    @property
+    def image(self):
+        return self._image
+
+    def render(self, screen):
+        screen.blit(self.image, self.topleft)
+
+
+class TestShip(Entity):
     # TODO: border? settings?
     def __init__(self, pos, border=None, settings=None):
         self._type = self.__class__.__name__
         self._image = pygame.image.load(Settings.path.image.ship.TestShip) #None
+
+        super(TestShip, self).__init__(pos, self._image)
 
         self._pos = pos
         self._border = border
@@ -73,15 +90,18 @@ class TestShip(object):
 
     def update(self):
         """Update ship object's state."""
-
+        print("border {0}".format(self._border))
+        print("image: <width: {0}><height: {1}>".format(*self._image.get_size()))
+        print("pos {0}".format(self._pos))
+        print("real {0}".format(*self.topleft))
         # TODO:
         # think about those who has dx > 1
-        if self._pos.x == self._border.x - self._image.get_width() - 1 and self._dx > 0:
-            self._pos.x = 0
-        elif self._pos.x == 1 and self._dx < 0:
-            self._pos.x = self._border.x - self._image.get_width()
+        if self.x == self._border.x - self._image.get_width() - 1 and self._dx > 0:
+            self.x = 0
+        elif self.x == 1 and self._dx < 0:
+            self.x = self._border.x - self._image.get_width()
 
-        self._pos.x += self._direction * self._dx
+        self.x += self._direction * self._dx
         self._direction = 0
 
         for weapon in self._weapons:

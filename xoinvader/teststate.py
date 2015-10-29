@@ -40,7 +40,7 @@ class TestStateEventHandler(Handler):
     def handle(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self._owner.stop()
+                self._owner._owner.stop()
             elif event.type in [pygame.KEYUP, pygame.KEYDOWN]:
                 self._input_handler.handle(event)
         # Some other event logic
@@ -49,7 +49,7 @@ class TestStateEventHandler(Handler):
 class TestState(State):
 
     def __init__(self, owner):
-        super(self.__class__, self).__init__(owner)
+        super(TestState, self).__init__(owner)
         self._objects = []
         self._screen = self._owner.screen
 
@@ -70,4 +70,4 @@ class TestState(State):
         self._screen.fill(pygame.Color(0, 0, 0, 1))
 #        self._screen.blit(self._background, (0, 0))
         for obj in self._objects:
-            self._screen.blit(obj.image, (obj.pos.x, obj.pos.y))
+            obj.render(self._screen)
