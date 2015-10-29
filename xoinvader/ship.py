@@ -3,6 +3,7 @@
 
 import pygame
 
+from xoinvader.entity import Entity
 from xoinvader.sound import Mixer
 from xoinvader.render import Renderable
 from xoinvader.weapon import Blaster, Laser, UM, EBlaster
@@ -13,28 +14,12 @@ from xoinvader.common import Settings, get_json_config
 CONFIG = get_json_config(Settings.path.config.ships)
 
 
-class Entity(pygame.Rect):
-    """Base class for all game objects."""
-
-    def __init__(self, pos, image=None):
-        self._image = image or pygame.Surface((0, 0))
-        super(Entity, self).__init__((pos.x, pos.y), self._image.get_size())
-
-    @property
-    def image(self):
-        return self._image
-
-    def render(self, screen):
-        screen.blit(self.image, self.topleft)
-
-
 class TestShip(Entity):
     # TODO: border? settings?
     def __init__(self, pos, border=None, settings=None):
         self._type = self.__class__.__name__
-        self._image = pygame.image.load(Settings.path.image.ship.TestShip) #None
 
-        super(TestShip, self).__init__(pos, self._image)
+        super(TestShip, self).__init__(pos, Settings.path.image.ship.TestShip)
 
         self._pos = pos
         self._border = border
@@ -69,14 +54,10 @@ class TestShip(Entity):
     def pos(self):
         return self._pos
 
-    @property
-    def image(self):
-        return self._image
-
-    def move_left(self, amount=None):
+    def move_left(self):
         self._direction = -1
 
-    def move_right(self, amount=None):
+    def move_right(self):
         self._direction = 1
 
     def toggle_fire(self):
@@ -93,12 +74,12 @@ class TestShip(Entity):
         print("border {0}".format(self._border))
         print("image: <width: {0}><height: {1}>".format(*self._image.get_size()))
         print("pos {0}".format(self._pos))
-        print("real {0}".format(*self.topleft))
+        print("real {0} : {1}".format(*self.topleft))
         # TODO:
         # think about those who has dx > 1
-        if self.x == self._border.x - self._image.get_width() - 1 and self._dx > 0:
+        if self.x >= self._border.x - self._image.get_width() - 1 and self._dx > 0:
             self.x = 0
-        elif self.x == 1 and self._dx < 0:
+        elif self.x <= 0 and self._direction < 0:
             self.x = self._border.x - self._image.get_width()
 
         self.x += self._direction * self._dx
