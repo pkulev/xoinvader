@@ -76,7 +76,7 @@ def get_styles():
     return Style()
 
 
-def create_curses_window(ncols, nlines, begin_x=0, begin_y=0):
+def create_window(ncols, nlines, begin_x=0, begin_y=0):
     """Initialize curses, colors, make and return window.
 
     :param ncols: number of columns

@@ -62,3 +62,16 @@ DEFAUT_XOI_SETTINGS = dict(
 )
 
 Settings = Entry(DEFAUT_XOI_SETTINGS)
+
+
+def update_system_settings(args):
+    """Update system settings from startup arguments.
+
+    :param dict args: arguments
+    """
+    for arg, val in args.items():
+        if arg in Settings.system:
+            Settings.system[arg] = val
+        else:
+            raise KeyError("No such argument: '{0}'.".format(arg))
+

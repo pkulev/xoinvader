@@ -12,19 +12,15 @@ from xoinvader.menu import MainMenuState
 from xoinvader.ingame import InGameState
 from xoinvader.render import Renderer
 from xoinvader.common import Settings
-from xoinvader.application import Application
-from xoinvader.curses_utils import create_curses_window
+from xoinvader.application import get_application
 from xoinvader.curses_utils import deinit_curses
 from xoinvader.curses_utils import style
 
 
-class XOInvader(Application):
+class XOInvader(get_application()):
     """Main game class."""
     def __init__(self, startup_args=None):
         super(XOInvader, self).__init__(startup_args)
-        self.screen = create_curses_window(
-            ncols=Settings.layout.field.border.x,
-            nlines=Settings.layout.field.border.y)
 
         # Ms per frame
         self._mspf = 16
