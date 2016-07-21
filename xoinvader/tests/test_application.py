@@ -62,8 +62,13 @@ def test_curses_application(monkeypatch):
     assert _test_application_loop(app)
 
 
-def test_pygame_application():
+def test_pygame_application(monkeypatch):
     """xoinvader.application.PygameApplication"""
+
+    monkeypatch.setattr(pygame, "init", lambda: (0, 6))
+    monkeypatch.setattr(pygame, "quit", lambda: True)
+    monkeypatch.setattr(pygame.display, "set_mode", lambda *a: True)
+    monkeypatch.setattr(pygame.display, "update", lambda: True)
 
     # Empty object
     app = PygameApplication((800, 600), 0, 32)
@@ -86,10 +91,15 @@ def _test_application_loop(app):
 
     assert pytest.raises(AttributeError, app.loop)
     StateMock.on_events = check_running_is_true
+    AnotherStateMock.on_events = check_running_is_true
     app.register_state(StateMock)
+    app.register_state(AnotherStateMock)
     assert app.running is False
     with pytest.raises(SystemExit) as context:
         app.loop()
     assert context.value.code == os.EX_OK
+    assert app.running is False
+    app.state = AnotherStateMock.__name__
+    assert app.loop() == os.EX_OK
     assert app.running is False
     return True

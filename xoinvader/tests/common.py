@@ -27,10 +27,19 @@ class StateMock(State):
         self.on_render()
         if self.loop_count <= 0:
             self.owner.destroy()
-        else:
-            self.loop_count -= 1
+
+        self.loop_count -= 1
 
 
 class AnotherStateMock(StateMock):
     """Class for test with two instances."""
-    pass
+
+    def __init__(self, owner):
+        super(AnotherStateMock, self).__init__(owner)
+
+    def render(self):
+        self.on_render()
+        if self.loop_count <= 0:
+            self.owner.stop()
+
+        self.loop_count -= 1
