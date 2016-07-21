@@ -73,7 +73,6 @@ def test_pygame_application(monkeypatch):
     # Empty object
     app = PygameApplication((800, 600), 0, 32)
     app.set_caption("test")
-    assert pygame.display.get_caption()[0] == "test"
     assert app.screen is not None
     assert pytest.raises(ValueError, lambda: setattr(app, "fps", "thirty"))
     assert pytest.raises(AttributeError, lambda: app.state)

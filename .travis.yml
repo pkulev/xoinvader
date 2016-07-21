@@ -1,19 +1,31 @@
+sudo: required
 language: python
 python:
-    - "3.4"
+  - "3.4"
 
 os:
-    - linux
+  - linux
+
+addons:
+  apt:
+    packages:
+      - python-pygame
+      - mercurial
 
 before_install:
-    - pip install --upgrade pip pytest flake8 pylint coverage codecov tox
-    - sudo apt-get install python-pygame
+  - sudo apt-get build-dep -y python-pygame
+  - pip install hg+http://bitbucket.org/pygame/pygame
+  - python -c "import pygame; print(pygame.__version__)"
 
-after_success:
-    - coverage combine
-    - coverage report
-    - coverage xml
-    - codecov
+install:
+  - pip install -r dev-requirements.txt
+  - pip install .
 
 script:
-    - tox
+  - py.test
+
+after_success:
+  - coverage combine
+  - coverage report
+  - coverage xml
+  - codecov

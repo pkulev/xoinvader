@@ -1,0 +1,6 @@
+codecov
+coverage
+flake8
+pytest
+pylint
+tox
