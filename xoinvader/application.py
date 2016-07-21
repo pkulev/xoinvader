@@ -2,12 +2,12 @@
 
 
 import os
-import time
 
 import pygame
 
 import xoinvader.curses_utils
-from xoinvader.constants import DEFAULT_FPS, SECOND_MILLISECONDS
+import xoinvader.pygame_utils
+from xoinvader.constants import DEFAULT_FPS
 from xoinvader.common import Settings, update_system_settings
 
 
@@ -118,6 +118,8 @@ class CursesApplication(Application):
             ncols=Settings.layout.field.border.x,
             nlines=Settings.layout.field.border.y)
 
+        self._clock = xoinvader.curses_utils.get_clock()
+
     def set_caption(self, caption, icontitle=None):
         """Set window caption.
 
@@ -130,10 +132,9 @@ class CursesApplication(Application):
         # Maybe we can update text via terminal API
         pass
 
-    # TODO: implement
-    # def _tick(self):
-    #     """Update clock."""
-    #     self._clock.tick(self._fps)
+    def _tick(self):
+        """Update clock."""
+        self._clock.tick(self._fps)
 
     def loop(self):
         """Start main application loop.
@@ -146,21 +147,12 @@ class CursesApplication(Application):
         else:
             raise AttributeError("There is no avalable state.")
 
-        ms_per_frame = 1 / self._fps * 1000.0
-
         while self._running:
-            start_ms = time.perf_counter()
             self._state.events()
             self._state.update()
             self._state.render()
 
-            finish_ms = time.perf_counter()
-            current_frame_ms = finish_ms - start_ms
-            next_s = (ms_per_frame - current_frame_ms) / SECOND_MILLISECONDS
-
-            # TODO: log or warn user
-            if current_frame_ms <= ms_per_frame:
-                time.sleep(next_s)
+            self._tick()
 
         return os.EX_OK
 
@@ -182,8 +174,7 @@ class PygameApplication(Application):
         super(PygameApplication, self).__init__()
 
         self._screen = pygame.display.set_mode(resolution, flags, depth)
-
-        self._clock = pygame.time.Clock()
+        self._clock = xoinvader.pygame_utils.get_clock()
 
     @staticmethod
     def set_caption(caption, icontitle=""):

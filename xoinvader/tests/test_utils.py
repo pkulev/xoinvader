@@ -2,17 +2,34 @@ import sys
 import unittest
 import pprint
 
-from xoinvader.utils import create_logger
-from xoinvader.utils import InfiniteList
-from xoinvader.utils import Point
-from xoinvader.utils import Surface
-from xoinvader.utils import Timer
+import pytest
+
+from xoinvader.utils import (
+    create_logger,
+    isclose,
+    InfiniteList,
+    Point,
+    Surface,
+    Timer,
+)
 
 
 class TestLogger(unittest.TestCase):
     def test_create_logger(self):
         logger = create_logger("test", "test.log")
         self.assertTrue(logger)
+
+
+@pytest.mark.parametrize(("left", "right", "kwargs", "expected"), (
+    (0.0, 0.0, {}, True),
+    (1.0, 0.0, {}, False),
+    (0.1, 0.0, {}, False),
+    (0.1, 0.0, {"abs_tol": 0.1}, True),
+    (0.1, 0.0, {"rel_tol": 0.1}, False),
+))
+def test_isclose(left, right, kwargs, expected):
+    """xoinvader.utils.isclose"""
+    assert isclose(left, right, **kwargs) is expected
 
 
 class TestPoint(unittest.TestCase):
