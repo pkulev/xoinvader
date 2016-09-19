@@ -142,7 +142,7 @@ class CursesApplication(Application):
     """
 
     def __init__(self, startup_args=None):
-        super(CursesApplication, self).__init__()
+        super(CursesApplication, self).__init__(startup_args)
 
         self._screen = xoinvader.curses_utils.create_window(
             ncols=Settings.layout.field.border.x,
@@ -205,8 +205,8 @@ class PygameApplication(Application):
     :type depth: int
     """
 
-    def __init__(self, resolution=(0, 0), flags=0, depth=0):
-        super(PygameApplication, self).__init__()
+    def __init__(self, resolution=(0, 0), flags=0, depth=0, startup_args=None):
+        super(PygameApplication, self).__init__(startup_args)
 
         self._screen = pygame.display.set_mode(resolution, flags, depth)
         self._clock = xoinvader.pygame_utils.get_clock()

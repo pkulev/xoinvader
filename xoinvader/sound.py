@@ -4,17 +4,18 @@
 import pygame
 
 from xoinvader.common import Settings
+from xoinvader.utils import Singleton
 
 
 pygame.mixer.init()
 
 
-class _Mixer(object):
+class Mixer(object, metaclass=Singleton):
     """Handle sound files."""
 
     def __init__(self):
         self._sounds = dict()
-        self._mute = True  # Settings.system.no_sound
+        self._mute = Settings.system.no_sound
 
     def register(self, object_id, sound_path):
         """Map object classname to sound object."""
@@ -34,5 +35,3 @@ class _Mixer(object):
 
     def unmute(self):
         self._mute = False
-
-Mixer = _Mixer()

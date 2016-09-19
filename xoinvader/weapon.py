@@ -36,7 +36,7 @@ class Weapon(Renderable):
         self._coords = []
         self._loud = True
 
-        Mixer.register(self._type, Settings.path.sound.weapon[self._type])
+        Mixer().register(self._type, Settings.path.sound.weapon[self._type])
 
     def _reload(self):
         """Calls by timer when weapon is ready to fire."""
@@ -67,7 +67,7 @@ class Weapon(Renderable):
         self.ready = False
         self._timer.start()
         if self._loud:
-            Mixer.play(self._type)
+            Mixer().play(self._type)
 
     def get_render_data(self):
         return (self._coords, self._image.get_image())

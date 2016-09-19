@@ -30,7 +30,7 @@ def create_game(args=None):
     return app
 
 
-def create_test_game(args):
+def create_test_game(args=None):
     """Temporary function to create Pygame."""
     app = PygameApplication((800, 600), 0, 32)
     pygame.key.set_repeat(50, 50)
@@ -42,18 +42,10 @@ def parse_args():
     """Parse incoming arguments."""
     parser = argparse.ArgumentParser()
 
-    add_args = dict(
-        no_sound=dict(
-            default=False,
-            action="store_true",
-            help="Disable sounds."),
-        pygame=dict(
-            default=False,
-            action="store_true",
-            help="Use pygame"))
-
-    parser.add_argument("-ns", "--no-sound", **add_args["no_sound"])
-    parser.add_argument("-pg", "--pygame", **add_args["pygame"])
+    parser.add_argument(
+        "-ns", "--no-sound", action="store_true", help="disable sounds")
+    parser.add_argument(
+        "-pg", "--pygame", action="store_true", help="use pygame")
 
     args = parser.parse_args()
     return args
