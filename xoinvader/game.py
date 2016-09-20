@@ -10,6 +10,7 @@ import argparse
 
 import pygame
 
+from xoinvader import constants
 from xoinvader.menu import MainMenuState
 from xoinvader.ingame import InGameState
 from xoinvader.render import Renderer
@@ -55,10 +56,16 @@ def main():
     """Start the game!"""
     args = parse_args()
 
+    # TODO: backend-drivers; implement proper choosing
     if args.pygame:
-        game = create_test_game(args.__dict__)
+        args = args.__dict__
+        del args["pygame"]
+        args["video_driver"] = constants.DRIVER_SDL
+        game = create_test_game(args)
     else:
-        game = create_game(args.__dict__)
+        args = args.__dict__
+        del args["pygame"]
+        game = create_game(args)
     return game.loop()
 
 

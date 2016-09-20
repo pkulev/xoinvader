@@ -5,6 +5,7 @@ import json
 from os.path import dirname
 
 import xoinvader
+from xoinvader import constants
 from xoinvader.settings import Settings as Entry
 from xoinvader.utils import Point
 
@@ -59,7 +60,8 @@ DEFAUT_XOI_SETTINGS = dict(
         gui=None,
         weapon=None),
     system=dict(
-        no_sound=False
+        no_sound=False,
+        video_driver=constants.DRIVER_NCURSES,
     )
 )
 

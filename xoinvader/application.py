@@ -8,7 +8,7 @@ import pygame
 
 import xoinvader.curses_utils
 import xoinvader.pygame_utils
-from xoinvader.constants import DEFAULT_FPS
+from xoinvader.constants import DEFAULT_FPS, DRIVER_NCURSES, DRIVER_SDL
 from xoinvader.common import Settings, update_system_settings
 
 
@@ -18,7 +18,13 @@ def get_application():
 
     :return: application class based on environment
     """
-    return CursesApplication
+
+    driver_map = {
+        DRIVER_NCURSES: CursesApplication,
+        DRIVER_SDL: PygameApplication,
+    }
+
+    return driver_map[Settings.system.video_driver]
 
 
 class Application(object):
