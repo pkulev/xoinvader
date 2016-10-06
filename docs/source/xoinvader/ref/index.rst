@@ -9,5 +9,10 @@ Reference
 
    application
    curses_utils
+   handlers
+   gui
+   render
+   ship
    state
    utils
+   weapon
