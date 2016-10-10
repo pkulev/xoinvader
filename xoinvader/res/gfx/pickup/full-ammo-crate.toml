@@ -1,0 +1,10 @@
+[meta]
+name = "full-ammo-crate"
+
+[layers]
+image = [
+    "+----+",
+    "|Ammo|",
+    "| || |",
+    "+----+",
+]

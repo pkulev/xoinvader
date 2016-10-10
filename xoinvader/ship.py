@@ -1,14 +1,16 @@
 """Enemy and player ships."""
 
 import logging
+import random
 
 from xo1 import Surface, Renderable
 
 from xoinvader import app
 from xoinvader import collision
 from xoinvader.animation import AnimationManager
-from xoinvader.weapon import Blaster, Laser, UM, EBlaster
-from xoinvader.utils import Point, InfiniteList
+from xoinvader.pickup import Pickup
+from xoinvader.weapon import Blaster, Laser, UM, EBlaster, Weapon
+from xoinvader.utils import clamp, Point, InfiniteList
 from xoinvader.collision import Collider
 from xoinvader.common import Settings, get_config, _ROOT
 
@@ -75,6 +77,10 @@ class Ship(Renderable):
             self._direction = 1 if value > 0 else -1
 
     @property
+    def pos(self):
+        return self._pos
+
+    @property
     def max_hull(self):
         return self._max_hull
 
@@ -133,7 +139,7 @@ class Ship(Renderable):
         self._pos.x += self._direction * self._dx * dt
         self._direction = 0
 
-    def update(self, dt):
+    def update(self, dt: int):
         """Update ship object's state."""
 
         self.update_position(dt)
@@ -164,10 +170,12 @@ class Ship(Renderable):
             LOG.debug("Destroying ship %s", self)
 
             self._destroy = True
+            if self._destroyed_by_player:
+                self._maybe_drop_something()
             app.current().state.collision.remove(self._collider)
             app.current().state.remove(self)
 
-    def out_of_border(self):
+    def out_of_border(self) -> bool:
         border = Settings.layout.field.border
         pos = self._pos[int]
         return (
@@ -200,21 +208,51 @@ class Ship(Renderable):
         else:
             self._shield += amount
 
+    def collect(self, collectible):
+        """Collect bonus or power-up and apply it now or later.
+
+        :param xoinvader.Collectible collectible:
+        """
+
+        if collectible.instantaneous:
+            collectible.apply(self)
+        else:
+            raise Exception("_collectibles not implemented")
+
+    def refill_hull(self, amount: int = 0):
+        """Refill hull."""
+
+        self._hull = clamp(self._hull + amount, 0, self._max_hull)
+
+    def refill_all_weapons(self, percent: int):
+        """Refill all mounted weapons with provided persentage."""
+
+        for weapon in self.weapons:
+            self.refill_weapon(weapon, percent * weapon.max_ammo / 100)
+
+    def refill_weapon(self, weapon: Weapon, amount: int):
+        """Refill provided or current weapon."""
+
+        if not weapon:
+            weapon = self._weapon
+
+        weapon.refill(amount)
+
 
 class GenericXEnemy(Ship):
     """Generic X enemy class."""
 
     def __init__(self, pos):
         super(GenericXEnemy, self).__init__(pos)
-        # fmt: off
         self._image = Surface.from_file(_ROOT / (CONFIG[self.type]["image"]))
-        # fmt: on
 
         self._collider = Collider.simple(self)
 
         self._fire = True
         self._wbay = Point(x=self._image.width // 2, y=1)
         self.add_weapon(EBlaster(self._wbay))
+
+        self._destroyed_by_player = False
 
         self._animgr = AnimationManager()
 
@@ -223,6 +261,22 @@ class GenericXEnemy(Ship):
     #       of creating and configuring GameObjects.
     def add_animation(self, *args, **kwargs):
         self._animgr.add(*args, **kwargs)
+
+    def _maybe_drop_something(self):
+        drop_chance = 0.4
+        if 1 - random.random() > drop_chance:
+            return
+
+        drop = Pickup.from_droptable(self)
+        if drop is not None:
+            app.current().state.add(drop(self.pos))
+
+    def take_damage(self, amount: int):
+        """Naive wrapper to distinguish destroy by player and out of boundary."""
+
+        super().take_damage(amount)
+        if self._hull <= 0:
+            self._destroyed_by_player = True
 
     def update(self, dt):
         if self._hull <= 0:

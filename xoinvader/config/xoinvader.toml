@@ -65,3 +65,24 @@ dy = -25
 damage = 50
 radius = 3
 dy = -15
+
+[pickup.defaults]
+instant = true
+dy = 10
+
+[pickup.droptable.GenericXEnemy]
+one_of = [
+    {item = "HullCratePickup", weight = 85},
+    {item = "FullAmmoCratePickup", weight = 10},
+    {item = "WeaponUpgradePickup", weight = 5},
+]
+
+[pickup.FullAmmoCratePickup]
+image = "res/gfx/pickup/full-ammo-crate.toml"
+
+[pickup.HullCratePickup]
+image = "res/gfx/pickup/hull-crate.toml"
+amount = 40
+
+[pickup.WeaponUpgradePickup]
+image = "res/gfx/pickup/weapon-upgrade.toml"

@@ -1,0 +1,10 @@
+[meta]
+name = "hull-crate"
+
+[layers]
+image = [
+    " ___  ",
+    "/   \\",
+    "\\ S /",
+    " \\_/ ",
+]

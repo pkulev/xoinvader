@@ -1,0 +1,10 @@
+[meta]
+name = "weapon-upgrade"
+
+[layers]
+image = [
+    "   ===   ",
+    "+_/___\\_+",
+    "|  -@-  |",
+    "+_______+",
+]

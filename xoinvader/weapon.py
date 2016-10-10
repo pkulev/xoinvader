@@ -10,7 +10,7 @@ from xoinvader.charge import (
     BasicUnguidedMissile,
 )
 from xoinvader.common import get_config
-from xoinvader.utils import Point, Timer
+from xoinvader.utils import clamp, Point, Timer
 
 
 CONFIG = get_config().weapon
@@ -82,6 +82,14 @@ class Weapon(Renderable):
     def max_ammo(self):
         """Return maximal ammo."""
         return 999 if self._max_ammo == INFINITE else self._max_ammo
+
+    def refill(self, amount: int):
+        """Refill this weapon."""
+
+        if self._ammo == INFINITE:
+            return
+
+        self._ammo = clamp(self._ammo + amount, 0, self._max_ammo)
 
     def load_percentage(self):
         """Return weapon load percentage."""
