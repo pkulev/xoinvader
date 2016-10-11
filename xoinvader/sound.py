@@ -1,19 +1,53 @@
 """Sound files handling."""
 
 
-import pygame
-
 from xoinvader.common import Settings
 from xoinvader.utils import Singleton
 
 
-pygame.mixer.init()
+def get_mixer():
+    """Returns appropriate mixer class.
+
+    :return: mixer implementation
+    :rtype: class
+    """
+
+    choises = {
+        True: DummyMixer,
+        False: PygameMixer
+    }
+
+    return choises[Settings.system.no_sound]
 
 
-class Mixer(object, metaclass=Singleton):
+class DummyMixer(object):
+    """Mixer stub for no-sound mode."""
+
+    def __init__(self):
+        pass
+
+    def register(self, *args, **kwargs):
+        """Dummy register."""
+        pass  # TODO: logging: [sound::DummyMixer] Registering ...
+
+    def play(self, *args, **kwargs):
+        """Dummy play."""
+        pass
+
+    def mute(self):
+        """Dummy mute."""
+        pass
+
+    def unmute(self):
+        """Dummy unmute."""
+        pass
+
+
+class PygameMixer(object, metaclass=Singleton):
     """Handle sound files."""
 
     def __init__(self):
+        pygame.mixer.init()
         self._sounds = dict()
         self._mute = Settings.system.no_sound
 
@@ -31,7 +65,15 @@ class Mixer(object, metaclass=Singleton):
             self._sounds[object_id].play(*args, **kwargs)
 
     def mute(self):
+        """Mute."""
         self._mute = True
 
     def unmute(self):
+        """Unmute."""
         self._mute = False
+
+
+Mixer = get_mixer()  # pylint: disable=invalid-name
+
+if Mixer is PygameMixer:
+    import pygame  # Don't require pygame.mixer for no-sound

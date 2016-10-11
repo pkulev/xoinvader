@@ -10,6 +10,9 @@ Requrements
 -----------
 * Python3 (Tested with 3.4.1)
 * pygame >=1.9.0 (pygame.Mixer)
+  * SDL with devel
+  * gcc with devel
+  * python devel files
 * ncurses >=5.9
 
 Documentation
