@@ -1,11 +1,13 @@
 """Curses helper module."""
 
 import time
-
 import curses
 
+from xoinvader.common import Settings
+from xoinvader.utils import Singleton
 
-class _Color(object):
+
+class _Color(object, metaclass=Singleton):
     """Curses color mapping."""
 
     def __init__(self):
@@ -31,11 +33,12 @@ class _Color(object):
     def __getattr__(self, name):
         return self._color_map[name]
 
-Color = _Color()
+
+Color = _Color()  # noqa
 
 
 # TODO: rewrite this shit
-class Style(object):
+class Style(object, metaclass=Singleton):
     """Container for style mappings."""
 
     def __init__(self):
@@ -50,6 +53,11 @@ class Style(object):
         :param curses: curses module to initialize pairs
         :type curses: module
         """
+
+        if Settings.system.no_color:
+            for key in Color._color_names:
+                self.gui[key] = None
+
         self.gui["normal"] = curses.color_pair(Color.ui_norm)          \
             | curses.A_BOLD
         self.gui["yellow"] = curses.color_pair(Color.ui_yellow)        \
@@ -71,13 +79,31 @@ class Style(object):
     def __getattr__(self, name):
         return self._style[name]
 
-style = Style()
-
 
 # TODO: refactor
 def get_styles():
     """Return Style object."""
     return Style()
+
+
+def init_curses_pairs(curses):
+
+    # User interface
+    curses.init_pair(Color.ui_norm, curses.COLOR_WHITE, curses.COLOR_BLACK)
+    curses.init_pair(Color.ui_yellow, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+
+    # Damage panel
+    curses.init_pair(Color.dp_blank, curses.COLOR_BLACK, curses.COLOR_BLACK)
+    curses.init_pair(Color.dp_ok, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(Color.dp_middle, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    curses.init_pair(Color.dp_critical, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(Color.sh_ok, curses.COLOR_BLUE, curses.COLOR_BLACK)
+    curses.init_pair(Color.sh_mid, curses.COLOR_CYAN, curses.COLOR_BLACK)
+
+    # Weapons
+    curses.init_pair(Color.blaster, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(Color.laser, curses.COLOR_BLACK, curses.COLOR_RED)
+    curses.init_pair(Color.um, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
 
 
 def create_window(ncols, nlines, begin_x=0, begin_y=0):
@@ -101,22 +127,11 @@ def create_window(ncols, nlines, begin_x=0, begin_y=0):
     curses.initscr()
     curses.start_color()
 
-    # User interface
-    curses.init_pair(Color.ui_norm, curses.COLOR_WHITE, curses.COLOR_BLACK)
-    curses.init_pair(Color.ui_yellow, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    if not Settings.system.no_color:
+        init_curses_pairs(curses)
 
-    # Damage panel
-    curses.init_pair(Color.dp_blank, curses.COLOR_BLACK, curses.COLOR_BLACK)
-    curses.init_pair(Color.dp_ok, curses.COLOR_GREEN, curses.COLOR_BLACK)
-    curses.init_pair(Color.dp_middle, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-    curses.init_pair(Color.dp_critical, curses.COLOR_RED, curses.COLOR_BLACK)
-    curses.init_pair(Color.sh_ok, curses.COLOR_BLUE, curses.COLOR_BLACK)
-    curses.init_pair(Color.sh_mid, curses.COLOR_CYAN, curses.COLOR_BLACK)
-
-    # Weapons
-    curses.init_pair(Color.blaster, curses.COLOR_GREEN, curses.COLOR_BLACK)
-    curses.init_pair(Color.laser, curses.COLOR_BLACK, curses.COLOR_RED)
-    curses.init_pair(Color.um, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+    # XXX: is this must be the first call of Style?
+    Style().init_styles(curses)
 
     screen = curses.newwin(nlines, ncols, begin_x, begin_y)
     screen.keypad(0)

@@ -3,7 +3,7 @@
 
 
 # TODO: make working with styles pretty
-from xoinvader.curses_utils import style as Style
+from xoinvader.curses_utils import Style
 from xoinvader.render import Renderable
 from xoinvader.utils import Surface, Timer
 
@@ -37,7 +37,7 @@ class TextWidget(Renderable):
         :return: Surface instance
         :rtype: `xoinvader.utils.Surface`
         """
-        _style = self._style or Style.gui["normal"]
+        _style = self._style or Style().gui["normal"]
         return Surface([[ch for ch in self._text]],
                        [[_style for _ in range(len(self._text))]])
 
@@ -94,7 +94,7 @@ class MenuItemWidget(TextWidget):
         :return: Surface instance
         :rtype: `xoinvader.utils.Surface`
         """
-        _style = self._style or Style.gui["yellow"]
+        _style = self._style or Style().gui["yellow"]
         if self._selected:
             _full_text = "".join([self._left, self._text, self._right])
         else:
@@ -195,7 +195,7 @@ class WeaponWidget(Renderable):
     def _make_image(self):
         """Return Surface object."""
         return Surface([[ch for ch in self._data]],
-                       [[Style.gui["yellow"] for _ in range(len(self._data))]])
+                       [[Style().gui["yellow"] for _ in range(len(self._data))]])
 
     def update(self):
         """Obtain new data and refresh image."""

@@ -12,11 +12,11 @@ import pygame
 
 from xoinvader import constants
 from xoinvader.menu import MainMenuState
+from xoinvader.application import CursesApplication, PygameApplication
+from xoinvader.common import Settings
+from xoinvader.curses_utils import Style
 from xoinvader.ingame import InGameState
 from xoinvader.render import Renderer
-from xoinvader.common import Settings
-from xoinvader.application import CursesApplication, PygameApplication
-from xoinvader.curses_utils import style
 
 from xoinvader.teststate import TestState
 
@@ -24,7 +24,7 @@ from xoinvader.teststate import TestState
 def create_game(args=None):
     """Create XOInvader game instance."""
     app = CursesApplication(args)
-    style.init_styles(curses)
+    Style().init_styles(curses)
     Settings.renderer = Renderer(Settings.layout.field.border)
     app.register_state(InGameState)
     app.register_state(MainMenuState)
@@ -45,6 +45,8 @@ def parse_args():
 
     parser.add_argument(
         "-ns", "--no-sound", action="store_true", help="disable sounds")
+    parser.add_argument(
+        "-nc", "--no-color", action="store_true", help="disable colors")
     parser.add_argument(
         "-pg", "--pygame", action="store_true", help="use pygame")
 

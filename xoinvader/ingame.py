@@ -9,9 +9,9 @@ from xoinvader.ship import GenericXEnemy, Playership
 from xoinvader.state import State
 from xoinvader.utils import Point
 from xoinvader.common import Settings
+from xoinvader.curses_utils import Style
 from xoinvader.render import render_objects
 from xoinvader.handlers import Handler
-from xoinvader.curses_utils import style
 
 
 def move_left_command(actor):
@@ -116,19 +116,19 @@ class InGameState(State):
         return [
             Bar(pos=Settings.layout.gui.bar.health, prefix="Hull: ",
                 general_style=curses.A_BOLD, stylemap={
-                    high: style.gui["dp_ok"],
-                    normal: style.gui["dp_middle"],
-                    low: style.gui["dp_critical"]
+                    high: Style().gui["dp_ok"],
+                    normal: Style().gui["dp_middle"],
+                    low: Style().gui["dp_critical"]
                 }, callback=self._actor.get_hull_percentage),
             Bar(pos=Settings.layout.gui.bar.shield, prefix="Shield: ",
                 general_style=curses.A_BOLD, stylemap={
-                    high: style.gui["sh_ok"],
-                    normal: style.gui["sh_mid"],
-                    low: style.gui["dp_critical"]
+                    high: Style().gui["sh_ok"],
+                    normal: Style().gui["sh_mid"],
+                    low: Style().gui["dp_critical"]
                 }, callback=self._actor.get_shield_percentage),
             Bar(pos=Settings.layout.gui.bar.weapon,
                 stylemap={
-                    whatever: style.gui["dp_ok"]
+                    whatever: Style().gui["dp_ok"]
                 }, callback=self._actor.get_weapon_percentage),
             WeaponWidget(Settings.layout.gui.info.weapon,
                          self.actor.get_weapon_info)
