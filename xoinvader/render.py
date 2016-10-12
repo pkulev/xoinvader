@@ -53,9 +53,9 @@ def render_objects(objects, screen):
                     continue
 
                 if style:
-                    screen.addch(cpos.y, cpos.x, image, style)
+                    screen.addstr(cpos.y, cpos.x, image, style)
                 else:
-                    screen.addch(cpos.y, cpos.x, image)
+                    screen.addstr(cpos.y, cpos.x, image)
 
 
 # FIXME: DEPRECATED.
@@ -95,6 +95,6 @@ class Renderer(object):
                         continue
 
                     if style:
-                        screen.addch(cpos.y, cpos.x, image, style)
+                        screen.addstr(cpos.y, cpos.x, image, style)
                     else:
-                        screen.addch(cpos.y, cpos.x, image)
+                        screen.addstr(cpos.y, cpos.x, image)
