@@ -3,16 +3,11 @@
 """
 
 
-def dotdict(*args, **kwargs):
-    """Wrapper."""
-    return Settings(*args, **kwargs)
-
-
-class Settings(dict):
-    """Container for storing all game settings."""
+class dotdict(dict):  # pylint: disable=invalid-name
+    """Container for dot elements access."""
 
     def __init__(self, *args, **kwargs):
-        super(Settings, self).__init__(*args, **kwargs)
+        super(dotdict, self).__init__(*args, **kwargs)
         self.__dict__ = self
         self._wrap_nested()
 
@@ -20,4 +15,4 @@ class Settings(dict):
         """Wrap nested dicts for deep dot access."""
         for key, value in self.items():
             if isinstance(value, dict):
-                self[key] = Settings(value)
+                self[key] = dotdict(value)

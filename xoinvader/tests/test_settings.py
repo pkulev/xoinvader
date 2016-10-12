@@ -1,28 +1,15 @@
-import sys
-import unittest
+import pytest
 
-from xoinvader.settings import Settings
+from xoinvader.settings import dotdict
 
 
-class TestSettings(unittest.TestCase):
+def test_settings_setattr():
+    settings = dotdict()
+    settings.test_entry = 42
+    assert settings["test_entry"] == 42
+    assert settings.test_entry == 42
 
-    def setUp(self):
-        self.settings = Settings()
+    settings["test_entry_2"] = 42
+    assert settings.test_entry == 42
 
-    def tearDown(self):
-        del self.settings
-
-    def test_setattr(self):
-        self.settings.test_thing = 42
-        self.assertEqual(42, self.settings["test_thing"])
-
-    def test_getattr(self):
-        self.settings["test_thing"] = 42
-        self.assertEqual(42, self.settings.test_thing)
-
-    def test_setattr_with_getattr(self):
-        self.settings.test_thing = 42
-        self.assertEqual(42, self.settings.test_thing)
-
-    def test_get_nonexistent_value(self):
-        self.assertRaises(AttributeError, lambda: self.settings.test_thing)
+    assert pytest.raises(AttributeError, lambda: settings.bad_key)

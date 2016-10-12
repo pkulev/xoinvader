@@ -6,14 +6,14 @@ from os.path import dirname
 
 import xoinvader
 from xoinvader import constants
-from xoinvader.settings import Settings as Entry
+from xoinvader.settings import dotdict
 from xoinvader.utils import Point
 
 
 def get_json_config(path):
     """Return Settings object made from json."""
     with open(path) as fd:
-        config = Entry(json.load(fd))
+        config = dotdict(json.load(fd))
     return config
 
 
@@ -66,7 +66,7 @@ DEFAUT_XOI_SETTINGS = dict(
     )
 )
 
-Settings = Entry(DEFAUT_XOI_SETTINGS)
+Settings = dotdict(DEFAUT_XOI_SETTINGS)
 
 
 def update_system_settings(args):
