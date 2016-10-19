@@ -185,11 +185,14 @@ class CursesApplication(Application):
             raise AttributeError("There is no avalable state.")
 
         while self._running:
-            self._state.events()
-            self._state.update()
-            self._state.render()
+            try:
+                self._state.events()
+                self._state.update()
+                self._state.render()
 
-            self._tick()
+                self._tick()
+            except KeyboardInterrupt:
+                pass
 
         return os.EX_OK
 

@@ -36,8 +36,6 @@ HEIGHT = 34
 
 _ROOT = dirname(xoinvader.__file__)
 _CONFIG = _ROOT + "/config"
-_RES = _ROOT + "/res"
-_SND = _RES + "/snd"
 
 DEFAUT_XOI_SETTINGS = dict(
     layout=dict(
