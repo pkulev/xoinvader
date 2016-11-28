@@ -2,15 +2,18 @@
 
 
 import os
-import time
 
 import pygame
 import pytest
 
 import xoinvader.curses_utils
 from xoinvader.application import (
-    Application, CursesApplication, PygameApplication, get_application
+    get_ncurses_application, get_pygame_application, get_application,
+    Application
 )
+from xoinvader.application.ncurses_app import CursesApplication
+from xoinvader.application.pygame_app import PygameApplication
+
 from xoinvader.tests.common import StateMock, AnotherStateMock
 
 
@@ -23,7 +26,7 @@ def test_get_application():
 def test_application():
     """xoinvader.application.Application"""
 
-    app = Application(startup_args={"no_sound": True})
+    app = Application()
     assert pytest.raises(AttributeError, lambda: app.state)
     assert app.screen is None
     assert app.running is False
@@ -71,6 +74,7 @@ def test_pygame_application(monkeypatch):
     monkeypatch.setattr(pygame.display, "update", lambda: True)
 
     # Empty object
+    assert PygameApplication == get_pygame_application()
     app = PygameApplication((800, 600), 0, 32)
     app.set_caption("test")
     assert app.screen is not None
