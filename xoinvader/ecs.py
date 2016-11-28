@@ -1,10 +1,11 @@
 import uuid
 
+
 class Entity(object):
     Catalog = {}
     __slots__ = ("name", "uid", "components")
 
-    def __new__(cls, name=None, uid=None):
+    def __new__(cls, name, uid=None):
         if name not in cls.Catalog:
             entity = super(Entity, cls).__new(cls)
             cls.Catalog[name] = entity
@@ -43,3 +44,11 @@ class Entity(object):
     def __setitem__(self, key, val):
         if isinstance(val, Component):
             self.components[key] = val
+
+
+class Component(object):
+    pass
+
+
+class System(object):
+    pass
