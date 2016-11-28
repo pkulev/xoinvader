@@ -47,7 +47,9 @@ class PygameMixer(object, metaclass=Singleton):
     """Handle sound files."""
 
     def __init__(self):
+        import pygame
         pygame.mixer.init()
+
         self._sounds = dict()
         self._mute = Settings.system.no_sound
 
@@ -74,6 +76,3 @@ class PygameMixer(object, metaclass=Singleton):
 
 
 Mixer = get_mixer()  # pylint: disable=invalid-name
-
-if Mixer is PygameMixer:
-    import pygame  # Don't require pygame.mixer for no-sound

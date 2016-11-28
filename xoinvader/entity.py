@@ -1,7 +1,15 @@
 """Basic Entity."""
 # TODO: better module docstring
 
-import pygame
+from xoinvader import constants
+from xoinvader.common import Settings
+
+if Settings.system.video_driver == constants.DRIVER_SDL:
+    import pygame
+else:
+    class pygame:
+        Rect = object
+        Surface = lambda *args: 0
 
 
 # TODO: document

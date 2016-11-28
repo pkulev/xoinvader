@@ -1,8 +1,5 @@
 """Enemy and player ships."""
 
-
-import pygame
-
 from xoinvader.entity import Entity
 from xoinvader.sound import Mixer
 from xoinvader.render import Renderable
