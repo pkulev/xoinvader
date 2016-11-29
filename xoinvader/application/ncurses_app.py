@@ -1,3 +1,5 @@
+"""NCurses application class."""
+
 import os
 
 import xoinvader.curses_utils
@@ -34,7 +36,6 @@ class CursesApplication(Application):
 
     def stop(self):
         """Stop the loop."""
-        import xoinvader.curses_utils
 
         xoinvader.curses_utils.deinit_curses(self._screen)
         super(CursesApplication, self).stop()

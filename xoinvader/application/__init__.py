@@ -43,7 +43,7 @@ def get_pygame_application():
     from .pygame_app import PygameApplication
 
     return PygameApplication
-    
+
 
 class Application(object):
     """Base application class for backend-specific application classes.
@@ -57,7 +57,7 @@ class Application(object):
         self._screen = None
         self._fps = DEFAULT_FPS
         self._running = False
-        
+
     @property
     def state(self):
         """Current state.

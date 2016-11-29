@@ -1,3 +1,5 @@
+"""Pygame application class."""
+
 import os
 
 import pygame
@@ -35,7 +37,6 @@ class PygameApplication(Application):
         :param icontitle: short title
         :type icontitle: str
         """
-        import pygame
 
         if self._screen:
             pygame.display.set_caption(caption, icontitle)
@@ -46,7 +47,6 @@ class PygameApplication(Application):
 
     def on_destroy(self):
         """Deinit pygame."""
-        import pygame
 
         pygame.quit()
 
@@ -56,7 +56,6 @@ class PygameApplication(Application):
         :return: execution status code
         :rtype: int
         """
-        import pygame
 
         if self._state:
             self._running = True

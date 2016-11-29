@@ -2,7 +2,7 @@ import pytest
 
 import xoinvader
 from xoinvader.common import Settings
-from xoinvader.settings import dotdict
+from xoinvader.utils import dotdict
 
 
 def test_init():

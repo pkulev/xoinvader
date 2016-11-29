@@ -53,6 +53,21 @@ def isclose(left, right, rel_tol=1e-9, abs_tol=0.0):
                                      max(abs(left), abs(right)), abs_tol))
 
 
+class dotdict(dict):  # pylint: disable=invalid-name
+    """Container for dot elements access."""
+
+    def __init__(self, *args, **kwargs):
+        super(dotdict, self).__init__(*args, **kwargs)
+        self.__dict__ = self
+        self._wrap_nested()
+
+    def _wrap_nested(self):
+        """Wrap nested dicts for deep dot access."""
+        for key, value in self.items():
+            if isinstance(value, dict):
+                self[key] = dotdict(value)
+
+
 class Point(object):
     """3D point representation.
 
@@ -293,7 +308,7 @@ class Singleton(type):
 
     _instances = {}
 
-    def __call__(cls, *args, **kwargs):
+    def __call__(cls, *args, **kwds):
         if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwds)
         return cls._instances[cls]

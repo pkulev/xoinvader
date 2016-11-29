@@ -1,4 +1,3 @@
-import sys
 import unittest
 import pprint
 
@@ -6,6 +5,7 @@ import pytest
 
 from xoinvader.utils import (
     create_logger,
+    dotdict,
     isclose,
     InfiniteList,
     Point,
@@ -19,6 +19,18 @@ class TestLogger(unittest.TestCase):
     def test_create_logger(self):
         logger = create_logger("test", "test.log")
         self.assertTrue(logger)
+
+
+def test_dotdict_setattr():
+    settings = dotdict()
+    settings.test_entry = 42
+    assert settings["test_entry"] == 42
+    assert settings.test_entry == 42
+
+    settings["test_entry_2"] = 42
+    assert settings.test_entry == 42
+
+    assert pytest.raises(AttributeError, lambda: settings.bad_key)
 
 
 @pytest.mark.parametrize(("left", "right", "kwargs", "expected"), (

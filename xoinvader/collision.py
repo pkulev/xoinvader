@@ -30,7 +30,7 @@ class CollisionDetector(UpdatableSettings):
 
 
 if __name__ == "__main__":
-    from settings import dotdict
+    from utils import dotdict
 
     settings = dotdict({
         "setting1": True,

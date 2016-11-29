@@ -16,8 +16,8 @@ DRIVER_SDL2 = "pygame-sdl2"
 """PyGame SDLv2 video driver."""
 
 VIDEO_DRIVERS = [
-	DRIVER_NCURSES,
-	DRIVER_SDL,
-#	DRIVER_SDL2,
+    DRIVER_NCURSES,
+    DRIVER_SDL,
+    # DRIVER_SDL2,
 ]
 """Supported video drivers."""

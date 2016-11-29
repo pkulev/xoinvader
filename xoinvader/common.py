@@ -6,8 +6,7 @@ from os.path import dirname
 
 import xoinvader
 from xoinvader import constants
-from xoinvader.settings import dotdict
-from xoinvader.utils import Point
+from xoinvader.utils import dotdict, Point
 
 
 def get_json_config(path):
