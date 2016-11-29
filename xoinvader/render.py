@@ -15,11 +15,11 @@ class Renderable(object):
         """Renderable.get_render_data(None) -> (gpos_list, data_gen)
 
         Every renderable object must return tuple consist of:
-        * gpos_list: list of every Surface's global positions (List of Points)
-          Example: [Point(x=5, y=5), Point(x=10, y=10)]
+            * gpos_list: list of every Surface's global positions [Points]
+            Example: [Point(x=5, y=5), Point(x=10, y=10)]
 
-        * data_gen: generator which yields tuple (lpos, image, style)
-          Example: (Point(x=5, y=5), "*", curses.A_BOLD)
+            * data_gen: generator which yields tuple (lpos, image, style)
+            Example: (Point(x=5, y=5), "*", curses.A_BOLD)
         """
         raise NotImplementedError
 

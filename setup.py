@@ -19,10 +19,10 @@ def read(filename):
 setup(
     name="XOInvader",
     description="Curses/Pygame space game",
-    version="0.1",
+    version="0.1.1",
     author="Pavel Kulyov",
     author_email="kulyov.pavel@gmail.com",
-    long_description=read("README.md"),
+    long_description=read("README.rst"),
     url="http://www.g-v.im/",
     packages=find_packages(),
     license="MIT",
