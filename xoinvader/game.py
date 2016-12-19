@@ -85,7 +85,7 @@ def main():
     else:
         game = create_game(args.__dict__)
 
-    return game.loop()
+    return game.start()
 
 
 if __name__ == "__main__":

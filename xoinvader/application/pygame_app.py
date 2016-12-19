@@ -1,7 +1,5 @@
 """Pygame application class."""
 
-import os
-
 import pygame
 
 import xoinvader.pygame_utils
@@ -43,32 +41,24 @@ class PygameApplication(Application):
 
     def _tick(self):
         """Update clock."""
-        self._clock.tick(self._fps)
+        self._state.events()
+        self._state.update()
+        self._state.render()
+
+        pygame.display.update()
+#        self._clock.tick(self._fps)
 
     def on_destroy(self):
         """Deinit pygame."""
 
         pygame.quit()
 
-    def loop(self):
-        """Start main application loop.
+    def stop(self):
+        self._pc.stop()
 
-        :return: execution status code
-        :rtype: int
-        """
+        def _stop():
+            self._ioloop.add_callback(self._ioloop.stop)
+            pygame.quit()
 
-        if self._state:
-            self._running = True
-        else:
-            raise AttributeError("There is no avalable state.")
+        self._ioloop.add_callback(_stop)
 
-        while self._running:
-            self._state.events()
-            self._state.update()
-            self._state.render()
-
-            pygame.display.update()
-            self._tick()
-
-        pygame.quit()
-        return os.EX_OK
