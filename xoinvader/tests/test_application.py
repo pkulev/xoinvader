@@ -28,6 +28,7 @@ def test_application():
 
     app = Application()
     assert pytest.raises(AttributeError, lambda: app.state)
+    assert pytest.raises(AttributeError, app.start)
     assert app.screen is None
     assert app.running is False
     app.fps = 40
@@ -39,6 +40,7 @@ def test_application():
     assert app.state == StateMock.__name__
 
     assert pytest.raises(KeyError, lambda: setattr(app, "state", "test"))
+    assert pytest.raises(SystemExit, app.start)
 
     # Many elements
     app.register_state(AnotherStateMock)
@@ -92,17 +94,18 @@ def _test_application_loop(app):
         """Assert running."""
         assert app.running is True
 
-    assert pytest.raises(AttributeError, app.loop)
+    assert pytest.raises(AttributeError, app.start)
     StateMock.on_events = check_running_is_true
     AnotherStateMock.on_events = check_running_is_true
     app.register_state(StateMock)
     app.register_state(AnotherStateMock)
     assert app.running is False
-    with pytest.raises(SystemExit) as context:
-        app.loop()
-    assert context.value.code == os.EX_OK
+    # with pytest.raises(SystemExit) as context:
+    #    app.start()
+    # assert context.value.code == os.EX_OK
     assert app.running is False
     app.state = AnotherStateMock.__name__
-    assert app.loop() == os.EX_OK
+    assert app.start() is None
     assert app.running is False
+    app.stop()
     return True

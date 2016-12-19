@@ -4,6 +4,8 @@
 import os
 import sys
 
+from tornado import ioloop
+
 from xoinvader.constants import DEFAULT_FPS, DRIVER_NCURSES, DRIVER_SDL
 from xoinvader.common import Settings
 
@@ -57,6 +59,17 @@ class Application(object):
         self._screen = None
         self._fps = DEFAULT_FPS
         self._running = False
+        self._ioloop = ioloop.IOLoop.instance()
+
+        self._pc = ioloop.PeriodicCallback(self.tick, 30, self._ioloop)
+        self._pc.start()
+
+    def tick(self):
+        """Callback to execute at every frame."""
+
+        self._state.events()
+        self._state.update()
+        self._state.render()
 
     @property
     def state(self):
@@ -122,7 +135,7 @@ class Application(object):
         :getter: get application status
         :type: bool
         """
-        return self._running
+        return self._ioloop._running
 
     @property
     def screen(self):
@@ -134,13 +147,23 @@ class Application(object):
         """
         return self._screen
 
+    def start(self):
+        """Start main application loop."""
+
+        if self._state:
+            self._running = True
+        else:
+            raise AttributeError("There is no avalable state.")
+
+        self._ioloop.start()
+
     def stop(self):
         """Stop application."""
         self._running = False
 
     def on_destroy(self):
         """Overload this to do something on destroy."""
-        pass
+        self._ioloop.stop()
 
     def destroy(self, exit_code=os.EX_OK):
         """Aggressively destroy application and exit with given exit code.

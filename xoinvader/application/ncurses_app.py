@@ -1,7 +1,5 @@
 """NCurses application class."""
 
-import os
-
 import xoinvader.curses_utils
 from xoinvader.common import Settings
 from xoinvader.application import Application
@@ -37,32 +35,15 @@ class CursesApplication(Application):
     def stop(self):
         """Stop the loop."""
 
+        self._ioloop.add_callback(self._ioloop.stop)
         xoinvader.curses_utils.deinit_curses(self._screen)
         super(CursesApplication, self).stop()
 
-    def loop(self):
-        """Start main application loop.
-
-        :return: execution status code
-        :rtype: int
-        """
-        if self._state:
-            self._running = True
-        else:
-            raise AttributeError("There is no avalable state.")
-
-        while self._running:
-            try:
-                self._state.events()
-                self._state.update()
-                self._state.render()
-
-                self._tick()
-            except KeyboardInterrupt:
-                pass
-
-        return os.EX_OK
-
     def _tick(self):
         """Update clock."""
-        self._clock.tick(self._fps)
+
+        self._state.events()
+        self._state.update()
+        self._state.render()
+
+#        self._clock.tick(self._fps)
