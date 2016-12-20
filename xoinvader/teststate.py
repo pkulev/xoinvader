@@ -3,12 +3,9 @@ import pygame.locals
 
 from pygame.locals import K_a, K_d, K_ESCAPE
 
-from xoinvader.common import _ROOT
-
 from xoinvader.ship import TestShip
 from xoinvader.handlers import Handler
 from xoinvader.state import State
-from xoinvader.utils import Point
 from xoinvader.common import Settings
 
 
@@ -71,3 +68,5 @@ class TestState(State):
 #        self._screen.blit(self._background, (0, 0))
         for obj in self._objects:
             obj.render(self._screen)
+
+        pygame.display.update()

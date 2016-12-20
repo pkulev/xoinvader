@@ -2,7 +2,6 @@
 
 import pygame
 
-import xoinvader.pygame_utils
 from xoinvader.application import Application
 
 
@@ -23,7 +22,6 @@ class PygameApplication(Application):
         super(PygameApplication, self).__init__()
 
         self._screen = pygame.display.set_mode(resolution, flags, depth)
-        self._clock = xoinvader.pygame_utils.get_clock()
         pygame.key.set_repeat(50, 50)
 
     def set_caption(self, caption, icontitle=""):
@@ -39,26 +37,6 @@ class PygameApplication(Application):
         if self._screen:
             pygame.display.set_caption(caption, icontitle)
 
-    def _tick(self):
-        """Update clock."""
-        self._state.events()
-        self._state.update()
-        self._state.render()
-
-        pygame.display.update()
-#        self._clock.tick(self._fps)
-
-    def on_destroy(self):
-        """Deinit pygame."""
-
-        pygame.quit()
-
     def stop(self):
-        self._pc.stop()
-
-        def _stop():
-            self._ioloop.add_callback(self._ioloop.stop)
-            pygame.quit()
-
-        self._ioloop.add_callback(_stop)
-
+        self._ioloop.add_callback(pygame.quit)
+        super(PygameApplication, self).stop()
