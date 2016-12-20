@@ -33,17 +33,6 @@ class CursesApplication(Application):
         pass
 
     def stop(self):
-        """Stop the loop."""
-
-        self._ioloop.add_callback(self._ioloop.stop)
-        xoinvader.curses_utils.deinit_curses(self._screen)
+        self._ioloop.add_callback(
+            lambda: xoinvader.curses_utils.deinit_curses(self._screen))
         super(CursesApplication, self).stop()
-
-    def _tick(self):
-        """Update clock."""
-
-        self._state.events()
-        self._state.update()
-        self._state.render()
-
-#        self._clock.tick(self._fps)

@@ -11,7 +11,9 @@ class StateMock(State):
         super(StateMock, self).__init__(owner)
         self.loop_count = 1
 
-        nop = lambda: None
+        def nop():
+            pass
+
         # Hooks for loop testing
         self.on_events = nop
         self.on_update = nop
@@ -26,20 +28,11 @@ class StateMock(State):
     def render(self):
         self.on_render()
         if self.loop_count <= 0:
-            self.owner.destroy()
+            self.owner.stop()
 
         self.loop_count -= 1
 
 
 class AnotherStateMock(StateMock):
     """Class for test with two instances."""
-
-    def __init__(self, owner):
-        super(AnotherStateMock, self).__init__(owner)
-
-    def render(self):
-        self.on_render()
-        if self.loop_count <= 0:
-            self.owner.stop()
-
-        self.loop_count -= 1
+    pass
