@@ -4,22 +4,30 @@ XOInvader
 =========
 
 Attempt to create small but serious game using **python** and
-**ncurses**. **Migrating from curses to PyGame.**
+**ncurses**.
 
 Requrements
 -----------
 
--  Python3 (Tested with 3.4.1)
--  pygame >=1.9.0 (pygame.Mixer)
+-  Python3
+-  Pygame >=1.9.0 (pygame.Mixer)
+-  Tornado 3.x
+-  ncurses >=5.9
+
+Optional requirements (for graphics)
+------------------------------------
+
 -  SDL with devel
 -  gcc with devel
 -  python devel files
--  ncurses >=5.9
+
 
 Documentation
 -------------
 
 Documentation can be found `here <http://www.g-v.im/>`__.
+
+Development `wiki <https://github.com/pkulev/xoinvader/wiki/>`_.
 
 Tests
 -----

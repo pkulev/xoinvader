@@ -8,17 +8,9 @@
 
 **Reviewers:** [ ]
 
-**Test Plan:**
-
-  * ...
-
-**Upgrade Path:**
-
-  * ...
-
 **Task list:**
 
 - [x] submit pull request
 - [ ] review
 - [ ] testing
-- [ ] prepare for merge
+- [ ] fixes after review, squashing, rebasing to master
