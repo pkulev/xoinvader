@@ -132,17 +132,11 @@ class TestSurface(unittest.TestCase):
 
 class TestTimer(unittest.TestCase):
 
-    def _func(self):
-        self.check = True
 
-    @unittest.skip("Need to fix timer or test.")
-    def test_timer_get_elapsed(self):
-        self.check = False
-        self.timer = Timer(5.0, self._func)
-        self.timer.start()
-        while self.timer.running:
-            self.assertGreaterEqual(self.timer.get_elapsed(), 0.0, msg="check={0}\n".format(
-                str(self.check)) + pprint.pformat(vars(self.timer)))
-            self.timer.update()
-            self.assertGreaterEqual(self.timer.get_elapsed(), 0.0, msg="check={0}\n".format(
-                str(self.check)) + pprint.pformat(vars(self.timer)))
+def test_timer_get_elapsed():
+    timer = Timer(5.0, lambda: True)
+    timer.start()
+    while timer.running:
+        assert timer.get_elapsed() >= 0.0
+        timer.update()
+        assert timer.get_elapsed() >= 0.0

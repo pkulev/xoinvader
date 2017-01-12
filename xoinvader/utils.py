@@ -264,13 +264,11 @@ class Timer(object):
         if not self.running:
             return
 
+        # Timer's accuracy depends on owner's loop
         self._tick()
         if self._time_is_up() and self.running:
             self._func()
             self.stop()
-
-            # Timer's accuracy depends on owner's loop
-            self._current = self._end
 
     @property
     def running(self):
