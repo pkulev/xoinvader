@@ -7,7 +7,9 @@ Prepare environment for starting game and start it."""
 
 import argparse
 
+from xoinvader import application
 from xoinvader import constants
+from xoinvader import Settings
 
 
 def create_game(args=None):
@@ -17,9 +19,7 @@ def create_game(args=None):
     import xoinvader
     xoinvader.init(args)
 
-    from xoinvader import application
     from xoinvader.curses_utils import Style
-    from xoinvader.common import Settings
     from xoinvader.render import Renderer
 
     # TODO: config-management: remove import order dependency
@@ -50,7 +50,6 @@ def create_test_game(args=None):
     import xoinvader
     xoinvader.init(args)
 
-    from xoinvader import application
     from xoinvader.teststate import TestState
 
     app = application.get_application()((800, 600), 0, 32)

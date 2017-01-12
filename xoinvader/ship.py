@@ -69,12 +69,15 @@ class TestShip(Entity):
     def update(self):
         """Update ship object's state."""
         print("border {0}".format(self._border))
-        print("image: <width: {0}><height: {1}>".format(*self._image.get_size()))
+        print("img: <width: {0}><height: {1}>".format(*self._image.get_size()))
         print("pos {0}".format(self._pos))
         print("real {0} : {1}".format(*self.topleft))
         # TODO:
         # think about those who has dx > 1
-        if self.x >= self._border.x - self._image.get_width() - 1 and self._dx > 0:
+        if (
+                self.x >= self._border.x - self._image.get_width() - 1 and
+                self._dx > 0
+        ):
             self.x = 0
         elif self.x <= 0 and self._direction < 0:
             self.x = self._border.x - self._image.get_width()
@@ -124,6 +127,7 @@ class Ship(Renderable):
 
     def _load_config(self, config):
         """Load config from mapping."""
+
         if not config:
             raise ValueError
 
@@ -192,7 +196,10 @@ class Ship(Renderable):
 
         # TODO:
         # think about those who has dx > 1
-        if self._pos.x == self._border.x - self._image.width - 1 and self._dx > 0:
+        if (
+                self._pos.x == self._border.x - self._image.width - 1 and
+                self._dx > 0
+        ):
             self._pos.x = 0
         elif self._pos.x == 1 and self._dx < 0:
             self._pos.x = self._border.x - self._image.width
@@ -255,12 +262,14 @@ class Playership(Ship):
     def __init__(self, pos, border, settings):
         super(Playership, self).__init__(pos, border, settings)
 
-        self._image = Surface([[' ', ' ', 'O', ' ', ' '],
-                               ['<', '=', 'H', '=', '>'],
-                               [' ', '*', ' ', '*', ' ']])
+        self._image = Surface([
+            [' ', ' ', 'O', ' ', ' '],
+            ['<', '=', 'H', '=', '>'],
+            [' ', '*', ' ', '*', ' ']])
 
-        self._pos = Point(x=pos.x - self._image.width // 2,
-                          y=pos.y - self._image.height)
+        self._pos = Point(
+            x=pos.x - self._image.width // 2,
+            y=pos.y - self._image.height)
         self._border = border
         self._settings = settings
 
@@ -278,6 +287,7 @@ class Playership(Ship):
 
     def get_weapon_info(self):
         """Return information about current weapon."""
-        return "Weapon: {w} | [{c}/{m}]".format(w=self._weapon.type,
-                                                c=self._weapon.ammo,
-                                                m=self._weapon.max_ammo)
+        return "Weapon: {w} | [{c}/{m}]".format(
+            w=self._weapon.type,
+            c=self._weapon.ammo,
+            m=self._weapon.max_ammo)

@@ -1,6 +1,3 @@
-import unittest
-import pprint
-
 import pytest
 
 from xoinvader.utils import (
@@ -14,11 +11,10 @@ from xoinvader.utils import (
 )
 
 
-class TestLogger(unittest.TestCase):
-
-    def test_create_logger(self):
-        logger = create_logger("test", "test.log")
-        self.assertTrue(logger)
+# TODO: feature-logging: refactor this
+def test_create_logger():
+    logger = create_logger("test", "test.log")
+    assert logger
 
 
 def test_dotdict_setattr():
@@ -45,104 +41,85 @@ def test_isclose(left, right, kwargs, expected):
     assert isclose(left, right, **kwargs) is expected
 
 
-class TestPoint(unittest.TestCase):
+def test_point_operations():
+    ax, ay, az = 10, 10, 10
+    bx, by, bz = 20, 20, 20
+    a = Point(ax, ay, az)
+    b = Point(bx, by, bz)
 
-    def test_point_operations(self):
-        ax, ay, az = 10, 10, 10
-        bx, by, bz = 20, 20, 20
-        a = Point(ax, ay, az)
-        b = Point(bx, by, bz)
+    assert a.x == ax
+    assert a.y == ay
+    assert a.z == az
+    assert b.x == bx
+    assert b.y == by
+    assert b.z == bz
 
-        self.assertEqual(a.x, ax)
-        self.assertEqual(a.y, ay)
-        self.assertEqual(a.z, az)
-        self.assertEqual(b.x, bx)
-        self.assertEqual(b.y, by)
-        self.assertEqual(b.z, bz)
+    assert a.__repr__() == "Point(x={0}, y={1}, z={2})".format(
+        a.x, a.y, a.z)
 
-        self.assertEqual(
-            a.__repr__(),
-            "Point(x={0}, y={1}, z={2})".format(
-                a.x,
-                a.y,
-                a.z))
+    assert a + b == Point(ax + bx, ay + by, az + bz)
 
-        self.assertEqual(a + b, Point(ax + bx, ay + by, az + bz))
+    a.x = bx
+    a.y = by
+    a.z = bz
 
-        a.x = bx
-        a.y = by
-        a.z = bz
+    assert a.x == bx
+    assert a.y == by
+    assert a.z == bz
 
-        self.assertEqual(a.x, bx)
-        self.assertEqual(a.y, by)
-        self.assertEqual(a.z, bz)
+    b.x = -bx
+    b.y = -by
+    b.z = -bz
 
-        b.x = -bx
-        b.y = -by
-        b.z = -bz
-
-        self.assertEqual(a + b, Point(0, 0, 0))
-        self.assertEqual(a + Point(-50, -50, -50), Point(-30, -30, -30))
+    assert a + b == Point(0, 0, 0)
+    assert a + Point(-50, -50, -50) == Point(-30, -30, -30)
 
 
-class TestInfiniteList(unittest.TestCase):
+def test_infinite_list_operations():
+    # Test empty InfiniteList behaviour
 
-    def test_infinite_list_operations(self):
-        # Test empty InfiniteList behaviour
+    inf_list = InfiniteList()
+    for func in [inf_list.current, inf_list.next, inf_list.prev]:
+        with pytest.raises(IndexError):
+            func()
 
-        inf_list = InfiniteList()
-        for func in [inf_list.current, inf_list.next, inf_list.prev]:
-            self.assertRaises(IndexError, func)
+    # Test one element behaviour
+    data = "test1"
+    inf_list = InfiniteList([data])
 
-        # Test one element behaviour
-        data = "test1"
-        inf_list = InfiniteList([data])
+    assert len(inf_list) == 1
+    assert inf_list[0] == data
+    assert inf_list.current() == data
+    assert inf_list.next() == data
+    assert inf_list.prev() == data
 
-        self.assertEqual(len(inf_list), 1)
-        self.assertEqual(inf_list[0], data)
-        self.assertEqual(inf_list.current(), data)
-        self.assertEqual(inf_list.next(), data)
-        self.assertEqual(inf_list.prev(), data)
-
-        # Test many elements behaviour
-
-
-class TestSurface(unittest.TestCase):
-
-    def setUp(self):
-        self.image = [
-            [" ", "O", " "],
-            ["x", "X", "x"]]
-
-        self.style = []
-
-    def test_surface_attributes(self):
-        surface = Surface(self.image)
-        self.assertEqual(surface.height, len(self.image))
-        self.assertEqual(surface.width, len(self.image[0]))
-        self.assertEqual(surface._image, self.image)
-
-    def test_image_generator(self):
-        surface = Surface(self.image)
-        image_gen = surface.get_image()
-        for lpos, image, style in image_gen:
-            self.assertEqual(self.image[lpos.y][lpos.x], image)
-            self.assertEqual(style, None)
+    # Test many elements behaviour
 
 
-class TestTimer(unittest.TestCase):
+_image = [
+    [" ", "O", " "],
+    ["x", "X", "x"]]
 
-    def _func(self):
-        self.check = True
 
-    @unittest.skip("Need to fix timer or test.")
-    def test_timer_get_elapsed(self):
-        self.check = False
-        self.timer = Timer(5.0, self._func)
-        self.timer.start()
-        while self.timer.running:
-            self.assertGreaterEqual(self.timer.get_elapsed(), 0.0, msg="check={0}\n".format(
-                str(self.check)) + pprint.pformat(vars(self.timer)))
-            self.timer.update()
-            self.assertGreaterEqual(self.timer.get_elapsed(), 0.0, msg="check={0}\n".format(
-                str(self.check)) + pprint.pformat(vars(self.timer)))
+def test_surface_attributes():
+    surface = Surface(_image)
+    assert surface.height == len(_image)
+    assert surface.width == len(_image[0])
+    assert surface._image == _image
+
+
+def test_image_generator():
+    surface = Surface(_image)
+    image_gen = surface.get_image()
+    for lpos, image, style in image_gen:
+        assert _image[lpos.y][lpos.x] == image
+        assert style is None
+
+
+def test_timer_get_elapsed():
+    timer = Timer(5.0, lambda: True)
+    timer.start()
+    while timer.running:
+        assert timer.get_elapsed() >= 0.0
+        timer.update()
+        assert timer.get_elapsed() >= 0.0
