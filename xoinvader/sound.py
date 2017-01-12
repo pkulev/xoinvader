@@ -46,16 +46,17 @@ class DummyMixer(object):
 class PygameMixer(object, metaclass=Singleton):
     """Handle sound files."""
 
+    import pygame
+
     def __init__(self):
-        import pygame
-        pygame.mixer.init()
+        self.pygame.mixer.init()
 
         self._sounds = dict()
         self._mute = Settings.system.no_sound
 
     def register(self, object_id, sound_path):
         """Map object classname to sound object."""
-        sound = pygame.mixer.Sound(sound_path)
+        sound = self.pygame.mixer.Sound(sound_path)
         self._sounds.update({object_id: sound})
 
     def play(self, object_id, *args, **kwargs):

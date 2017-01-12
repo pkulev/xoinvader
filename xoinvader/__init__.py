@@ -8,8 +8,8 @@
     :license: MIT, see LICENSE for more details.
 """
 
-
-from .common import update_system_settings
+from .common import Settings
+from .common import update_system_settings as _update_system_settings
 
 
 __version__ = "0.1.1"
@@ -29,8 +29,10 @@ def init(settings=None):
     # TODO: config-management: update this stub
     try:
         if settings:
-            update_system_settings(settings)
+            _update_system_settings(settings)
     except Exception as exc:
         print(dir(exc))
         raise XOInitializationError(exc)
 
+
+__all__ = ["Settings"]
