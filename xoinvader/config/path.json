@@ -20,5 +20,6 @@
         "ship" : {
             "TestShip" : "/res/gfx/ship.png"
         }
-    }
+    },
+    "level1bg" : "/res/level1.bg"
 }
