@@ -6,17 +6,16 @@ XOInvader
 Attempt to create small but serious game using **python** and
 **ncurses**.
 
-Requrements
+Requirements
 -----------
 
 -  Python3
--  Pygame >=1.9.0 (pygame.Mixer)
--  Tornado 3.x
+-  Tornado 4.x
 -  ncurses >=5.9
 
 Optional requirements (for graphics)
 ------------------------------------
-
+-  Pygame >=1.9.0 (pygame.Mixer)
 -  SDL with devel
 -  gcc with devel
 -  python devel files
@@ -31,17 +30,23 @@ Development `wiki <https://github.com/pkulev/xoinvader/wiki/>`_.
 
 Tests
 -----
+-  To run tests use `make tests`
+-  To show coverage use `make view_cov`
 
--  Coverage ~40%
 
-Installation
-------------
+Development Environment
+-----------------------
 
-Installation across linux distributives is quite painful because of
-pygame dependency and lack of Python2.x support. The only way is to try
-``python3 setup.py install`` and contact me if something goes wrong. The
-best way to install pygame apparently is to clone repo, compile and
-install using **python3** and **make**.
+.. console::
+   # install virtualenv
+   $ make devel
+   $ source .venv/bin/activate
+   $ pip install -e .
+
+   $ xoigame  # ASCII with sound (Pygame.Mixer required)
+   $ xoigame -ns  # ASCII without sound (pygame not required)
+   $ xoigame -vd pygame-sdl  # Pygame-based version
+
 
 .. |Build Status| image:: https://travis-ci.org/pkulev/xoinvader.svg?branch=master
    :target: https://travis-ci.org/pkulev/xoinvader
