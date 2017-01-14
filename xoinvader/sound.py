@@ -46,9 +46,12 @@ class DummyMixer(object):
 class PygameMixer(object, metaclass=Singleton):
     """Handle sound files."""
 
-    import pygame
-
     def __init__(self):
+        # TODO: make 'sound' package alike 'application'
+        # TODO: import appropriate sound class from separate files
+        import pygame
+        self.pygame = pygame  # Do not try it home
+
         self.pygame.mixer.init()
 
         self._sounds = dict()
