@@ -8,6 +8,7 @@ Reference
    :maxdepth: 4
 
    application
+   background
    curses_utils
    handlers
    gui

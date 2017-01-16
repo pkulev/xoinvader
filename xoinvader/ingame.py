@@ -3,6 +3,7 @@
 
 import curses
 
+from xoinvader.background import Background
 from xoinvader.gui import TextWidget, WeaponWidget, Bar
 from xoinvader.keys import K_A, K_D, K_E, K_F, K_R, K_SPACE, K_ESCAPE, K_Q
 from xoinvader.ship import GenericXEnemy, Playership
@@ -92,6 +93,12 @@ class InGameState(State):
         super(InGameState, self).__init__(owner)
         self._objects = []
         self._screen = self._owner.screen
+
+        self.bg = Background(Settings.path.level1bg)
+        self.bg.start(True)
+        self.bg.speed = 10
+        self.bg.loop = True
+        self._objects.append(self.bg)
 
         self._actor = Playership(Settings.layout.field.player,
                                  Settings.layout.field.edge, Settings)
