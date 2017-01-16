@@ -137,7 +137,7 @@ class Application(object):
         """Start main application loop."""
 
         if not self._state:
-            raise AttributeError("There is no avalable state.")
+            raise AttributeError("There is no available state.")
 
         self._ioloop.start()
 

@@ -8,7 +8,7 @@ import xoinvader.curses_utils
 from xoinvader.application import get_application, Application
 from xoinvader.application.ncurses_app import CursesApplication
 
-from xoinvader.tests.common import StateMock, AnotherStateMock, no_pygame
+from xoinvader.tests.common import StateMock, AnotherStateMock
 
 
 def test_application():
@@ -54,11 +54,10 @@ def test_curses_application(monkeypatch):
     assert _test_application_loop(app)
 
 
-@pytest.mark.skipif(no_pygame(), reason="Pygame is not accessible")
 def test_pygame_application(monkeypatch):
     """xoinvader.application.PygameApplication"""
 
-    import pygame
+    pygame = pytest.importorskip("pygame")
 
     from xoinvader.application.pygame_app import PygameApplication
 
