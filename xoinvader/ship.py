@@ -138,6 +138,17 @@ class Ship(Renderable):
         self._max_shield = int(config.max_shield)
 
     @property
+    def direction(self):
+        return self._direction
+
+    @direction.setter
+    def direction(self, value):
+        if value == 0:
+            self._direction = 0
+        else:
+            self._direction = 1 if value > 0 else -1
+
+    @property
     def max_hull(self):
         return self._max_hull
 
@@ -254,6 +265,22 @@ class GenericXEnemy(Ship):
         self._settings.renderer.add_object(self._weapon)
         self._fire = True
         self._wbay = Point(x=self._image.width // 2, y=1)
+
+        from xoinvader.animation import AnimationManager
+        self._animgr = AnimationManager()
+        self._animgr.add(
+            name="chaotic", bind=self, attr="direction",
+            loop=True, keyframes=[
+                (0.0, 0),
+                (1.0, -1),
+                (2.0, 1),
+                (3.0, 0),
+            ])
+
+    def update(self):
+        self._animgr.update()
+
+        super(GenericXEnemy, self).update()
 
 
 class Playership(Ship):
