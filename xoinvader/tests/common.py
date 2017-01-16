@@ -36,3 +36,14 @@ class StateMock(State):
 class AnotherStateMock(StateMock):
     """Class for test with two instances."""
     pass
+
+
+def no_pygame():
+    """Test if pygame accessible of not."""
+
+    try:
+        import pygame  # noqa
+    except ImportError:
+        return True
+
+    return False

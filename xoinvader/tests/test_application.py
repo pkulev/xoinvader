@@ -1,6 +1,5 @@
 """xoinvader.application.Application unit test."""
 
-import pygame
 import pytest
 
 from xoinvader import constants
@@ -8,9 +7,8 @@ from xoinvader.common import Settings
 import xoinvader.curses_utils
 from xoinvader.application import get_application, Application
 from xoinvader.application.ncurses_app import CursesApplication
-from xoinvader.application.pygame_app import PygameApplication
 
-from xoinvader.tests.common import StateMock, AnotherStateMock
+from xoinvader.tests.common import StateMock, AnotherStateMock, no_pygame
 
 
 def test_application():
@@ -56,8 +54,13 @@ def test_curses_application(monkeypatch):
     assert _test_application_loop(app)
 
 
+@pytest.mark.skipif(no_pygame(), reason="Pygame is not accessible")
 def test_pygame_application(monkeypatch):
     """xoinvader.application.PygameApplication"""
+
+    import pygame
+
+    from xoinvader.application.pygame_app import PygameApplication
 
     monkeypatch.setattr(pygame, "init", lambda: (0, 6))
     monkeypatch.setattr(pygame, "quit", lambda: True)
