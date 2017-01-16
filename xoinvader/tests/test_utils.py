@@ -116,6 +116,7 @@ def test_image_generator():
         assert style is None
 
 
+@pytest.mark.slow
 def test_timer_get_elapsed():
     timer = Timer(5.0, lambda: True)
     timer.start()

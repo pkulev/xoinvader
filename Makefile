@@ -30,7 +30,7 @@ lint:
 	@find . -name "*.py" -exec pylint -f colorized {} \;
 
 test:
-	@$(PYTEST) --cov=./xoinvader --cov-report=html --strict -v
+	@$(PYTEST) --cov=./xoinvader --cov-report=html --strict -v $(PYTEST_ARGS)
 
 view_cov: test
 	@xdg-open ./htmlcov/index.html
