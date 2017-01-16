@@ -32,6 +32,9 @@ htmlcov/
 nosetests.xml
 coverage.xml
 
+# Virtualenv
+.venv/
+
 # Translations
 *.mo
 
@@ -39,8 +42,3 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
-
-# Temporary IDE files
-*~
-\#*
-*.swp
