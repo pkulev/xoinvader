@@ -3,20 +3,21 @@ from copy import copy
 
 from xoinvader.background import Background, Chunk, load_chunks
 from xoinvader.common import Settings
-from xoinvader.utils import Point, Surface
+from xoinvader.utils import Point
 
 
 PREFIX = "xoinvader/tests/fixtures/"
 
+
 def test_chunk():
     c = Chunk("test")
     assert not c.lines
-    assert not c.length
+    assert len(c) == 0
     assert c.name == "test"
 
     c.add_line("wut")
     assert c.lines[0] == "wut"
-    assert c.length == 1
+    assert len(c) == 1
 
     c[0] = "ugh"
     assert c[0] == "ugh"
@@ -35,7 +36,7 @@ def test_load_chunks():
     c = load_chunks(PREFIX + "chunk_normal.bg")
     assert len(c) == 3
     assert c[0][0] == "qweqwe"
-    assert c[0].length == 1
+    assert len(c[0]) == 1
 
     d = load_chunks(PREFIX + "chunk_normal.bg", 3)
     assert d[0][0] == "qwe"
@@ -67,7 +68,7 @@ def test_background():
 
     b = Background(PREFIX + "chunk_normal.bg")
     assert len(b.chunks) == 3
-    assert len(b.chunks[2].lines) == 3
+    assert len(b.chunks[2]) == 3
 
     b.start()
     assert b._current_chunk is b.chunks[0]
@@ -113,16 +114,16 @@ def test_background():
     assert b._advance_chunk(1) == "!@#"
     assert b._advance_chunk(1) == "   "
 
-    P, S = b.get_render_data()
-    assert P == [Point(0,0)]
-    assert next(S) == (Point(0,0,0), "q", None)
-    assert next(S) == (Point(1,0,0), "w", None)
-    assert next(S) == (Point(2,0,0), "e", None)
-    assert next(S) == (Point(0,1,0), "a", None)
-    assert next(S) == (Point(1,1,0), "s", None)
-    assert next(S) == (Point(2,1,0), "d", None)
+    pos, gen = b.get_render_data()
+    assert pos == [Point(0, 0)]
+    assert next(gen) == (Point(0, 0, 0), "q", None)
+    assert next(gen) == (Point(1, 0, 0), "w", None)
+    assert next(gen) == (Point(2, 0, 0), "e", None)
+    assert next(gen) == (Point(0, 1, 0), "a", None)
+    assert next(gen) == (Point(1, 1, 0), "s", None)
+    assert next(gen) == (Point(2, 1, 0), "d", None)
     with pytest.raises(StopIteration):
-        next(S)
+        next(gen)
 
     assert not b.update()
     b.speed = 40

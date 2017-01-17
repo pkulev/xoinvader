@@ -15,14 +15,11 @@ class Chunk(object):
 
     :param str name: name of the chunk
     :param list lines: list of all chunk lines
-    :param int length: length of lines list (for convenience)
-
     """
 
     def __init__(self, name):
         self._name = name
         self._lines = []
-        self._length = 0
 
     @property
     def name(self):
@@ -32,23 +29,21 @@ class Chunk(object):
     def lines(self):
         return self._lines
 
-    @property
-    def length(self):
-        return self._length
-
     def add_line(self, line):
-        """Add line to `lines` list of the chunk. Increases `length` by 1.
+        """Add line to `lines` list of the chunk.
 
         :param str line: line to add
         """
         self._lines.append(line)
-        self._length += 1
 
     def __getitem__(self, index):
         return self._lines[index]
 
     def __setitem__(self, index, item):
         self._lines[index] = item
+
+    def __len__(self):
+        return len(self._lines)
 
 
 def load_chunks(filename, trim_width=None):
@@ -93,7 +88,7 @@ def load_chunks(filename, trim_width=None):
                 chunks.append(current_chunk)
                 names.append(name)
                 continue
-            elif not current_chunk:
+            elif current_chunk is None:
                 continue
             # ok, now we got both chunk and something to store in it
             line_add = line[:trim_width] if trim_width else line
@@ -246,7 +241,7 @@ class Background(Renderable):
             return " " * self._w
 
         # start checks
-        if (self._chunk_line < self._current_chunk.length and
+        if (self._chunk_line < len(self._current_chunk) and
                 self._chunk_line >= 0):
             line = self._current_chunk[self._chunk_line]
             self._chunk_line += advance
@@ -255,7 +250,7 @@ class Background(Renderable):
         # chunk ended! now we decide what to do
         if self._loop:
             if self._chunk_line < 0:
-                self._chunk_line = self._current_chunk.length - 1
+                self._chunk_line = len(self._current_chunk) - 1
             else:
                 self._chunk_line = 0
             line = self._current_chunk[self._chunk_line]
@@ -277,7 +272,7 @@ class Background(Renderable):
             if self._current_chunk_num < 0:
                 self._current_chunk_num = len(self._chunks) - 1
                 self._current_chunk = self._chunks[-1]
-                self._chunk_line = self._current_chunk.length - 1
+                self._chunk_line = len(self._current_chunk) - 1
             else:
                 self._current_chunk_num = 0
                 self._current_chunk = self._chunks[0]
