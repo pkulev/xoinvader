@@ -11,12 +11,12 @@ PREFIX = "xoinvader/tests/fixtures/"
 def test_chunk():
     c = Chunk("test")
     assert not c.lines
-    assert not c.length
+    assert len(c) == 0
     assert c.name == "test"
 
     c.add_line("wut")
     assert c.lines[0] == "wut"
-    assert c.length == 1
+    assert len(c) == 1
 
     c[0] = "ugh"
     assert c[0] == "ugh"
@@ -35,7 +35,7 @@ def test_load_chunks():
     c = load_chunks(PREFIX + "chunk_normal.bg")
     assert len(c) == 3
     assert c[0][0] == "qweqwe"
-    assert c[0].length == 1
+    assert len(c[0]) == 1
 
     d = load_chunks(PREFIX + "chunk_normal.bg", 3)
     assert d[0][0] == "qwe"
@@ -67,7 +67,7 @@ def test_background():
 
     b = Background(PREFIX + "chunk_normal.bg")
     assert len(b.chunks) == 3
-    assert len(b.chunks[2].lines) == 3
+    assert len(b.chunks[2]) == 3
 
     b.start()
     assert b._current_chunk is b.chunks[0]
