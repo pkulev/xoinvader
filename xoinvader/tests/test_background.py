@@ -3,10 +3,11 @@ from copy import copy
 
 from xoinvader.background import Background, Chunk, load_chunks
 from xoinvader.common import Settings
-from xoinvader.utils import Point, Surface
+from xoinvader.utils import Point
 
 
 PREFIX = "xoinvader/tests/fixtures/"
+
 
 def test_chunk():
     c = Chunk("test")
@@ -113,16 +114,16 @@ def test_background():
     assert b._advance_chunk(1) == "!@#"
     assert b._advance_chunk(1) == "   "
 
-    P, S = b.get_render_data()
-    assert P == [Point(0,0)]
-    assert next(S) == (Point(0,0,0), "q", None)
-    assert next(S) == (Point(1,0,0), "w", None)
-    assert next(S) == (Point(2,0,0), "e", None)
-    assert next(S) == (Point(0,1,0), "a", None)
-    assert next(S) == (Point(1,1,0), "s", None)
-    assert next(S) == (Point(2,1,0), "d", None)
+    pos, gen = b.get_render_data()
+    assert pos == [Point(0, 0)]
+    assert next(gen) == (Point(0, 0, 0), "q", None)
+    assert next(gen) == (Point(1, 0, 0), "w", None)
+    assert next(gen) == (Point(2, 0, 0), "e", None)
+    assert next(gen) == (Point(0, 1, 0), "a", None)
+    assert next(gen) == (Point(1, 1, 0), "s", None)
+    assert next(gen) == (Point(2, 1, 0), "d", None)
     with pytest.raises(StopIteration):
-        next(S)
+        next(gen)
 
     assert not b.update()
     b.speed = 40
