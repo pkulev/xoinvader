@@ -9,6 +9,7 @@ from xoinvader.keys import K_A, K_D, K_E, K_F, K_R, K_SPACE, K_ESCAPE, K_Q
 from xoinvader.ship import GenericXEnemy, Playership
 from xoinvader.state import State
 from xoinvader.utils import Point
+from xoinvader.collision import CollisionManager
 from xoinvader.common import Settings
 from xoinvader.curses_utils import Style
 from xoinvader.render import render_objects
@@ -92,6 +93,7 @@ class InGameState(State):
     def __init__(self, owner):
         super(InGameState, self).__init__(owner)
         self._objects = []
+        self._collision_manager = CollisionManager()
         self._screen = self._owner.screen
 
         self.bg = Background(Settings.path.level1bg)
@@ -110,6 +112,12 @@ class InGameState(State):
             Point(x=15, y=3), Settings.layout.field.edge)
 
         self.add(self.enemy)
+
+        self.enemy_2 = GenericXEnemy(
+            Settings.layout.field.edge - Point(20, 4),
+            Settings.layout.field.edge)
+
+        self.add(self.enemy_2)
 
     # TODO: [object-system]
     #  * implement GameObject common class for using in states
@@ -175,6 +183,7 @@ class InGameState(State):
         self._events.handle()
 
     def update(self):
+        self._collision_manager.update()
         for obj in self._objects:
             obj.update()
 
