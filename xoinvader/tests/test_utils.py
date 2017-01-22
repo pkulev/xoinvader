@@ -54,10 +54,11 @@ def test_point_operations():
     assert b.y == by
     assert b.z == bz
 
-    assert a.__repr__() == "Point(x={0}, y={1}, z={2})".format(
+    assert repr(a) == "Point(x={0}, y={1}, z={2})".format(
         a.x, a.y, a.z)
 
     assert a + b == Point(ax + bx, ay + by, az + bz)
+    assert a - b == Point(ax - bx, ay - by, az - bz)
 
     a.x = bx
     a.y = by

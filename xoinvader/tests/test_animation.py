@@ -12,6 +12,7 @@ class GameObject(object):
         self.attr = 0
 
 
+@pytest.mark.slow
 def test_animation():
 
     with pytest.raises(ValueError):
@@ -44,6 +45,7 @@ def test_animation():
         anim.update()  # It's time to switch animation
 
 
+@pytest.mark.slow
 def test_animation_loop():
     obj = GameObject()
     animgr = AnimationManager()
@@ -64,6 +66,7 @@ def test_animation_loop():
     assert obj.attr == 1
 
 
+@pytest.mark.slow
 def test_animation_manager():
     obj = GameObject()
     animgr = AnimationManager()
