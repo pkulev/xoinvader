@@ -102,6 +102,12 @@ class Point(object):
             y=self.y + other.y,
             z=self.z + other.z)
 
+    def __sub__(self, other):
+        return Point(
+            x=self.x - other.x,
+            y=self.y - other.y,
+            z=self.z - other.z)
+
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y and self.z == other.z
 

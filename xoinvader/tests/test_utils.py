@@ -58,6 +58,7 @@ def test_point_operations():
         a.x, a.y, a.z)
 
     assert a + b == Point(ax + bx, ay + by, az + bz)
+    assert a - b == Point(ax - bx, ay - by, az - bz)
 
     a.x = bx
     a.y = by
