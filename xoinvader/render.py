@@ -2,6 +2,7 @@
     Module that renders graphics to screen.
 """
 
+from operator import attrgetter
 
 from xoinvader.utils import Point
 
@@ -38,7 +39,10 @@ class Renderable(object):
 def render_objects(objects, screen):
     """Render all renderable objects."""
     border = Point(*screen.getmaxyx()[::-1])
-    for obj in objects:
+
+    # TODO: Move sorting to some kind of object manager
+    # Must be sorted on adding objects
+    for obj in sorted(objects, key=attrgetter("render_priority")):
         gpos_list, data_gen = obj.get_render_data()
 
         for data in data_gen:
