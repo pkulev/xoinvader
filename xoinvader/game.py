@@ -9,7 +9,6 @@ import argparse
 
 from xoinvader import application
 from xoinvader import constants
-from xoinvader import Settings
 
 
 def create_game(args=None):
