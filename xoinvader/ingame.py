@@ -182,10 +182,5 @@ class InGameState(State):
         self._screen.erase()
         self._screen.border(0)
 
-        # FIXME:
-        # crutch to render shells
-        # TODO:
-        # ObjectManager with compound objects support.
-        Settings.renderer.render_all(self._screen)
         render_objects(self._objects, self._screen)
         self._screen.refresh()

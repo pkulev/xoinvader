@@ -20,7 +20,6 @@ def create_game(args=None):
     xoinvader.init(args)
 
     from xoinvader.curses_utils import Style
-    from xoinvader.render import Renderer
 
     # TODO: config-management: remove import order dependency
     # problem: importing of .common creates settings dict on import time
@@ -39,7 +38,6 @@ def create_game(args=None):
     from xoinvader.menu import MainMenuState
 
     Style().init_styles(curses)
-    Settings.renderer = Renderer(Settings.layout.field.border)
     app.register_state(InGameState)
     app.register_state(MainMenuState)
     return app
