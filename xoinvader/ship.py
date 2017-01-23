@@ -13,14 +13,13 @@ CONFIG = get_json_config(Settings.path.config.ships)
 
 class TestShip(Entity):
     # TODO: border? settings?
-    def __init__(self, pos, border=None, settings=None):
+    def __init__(self, pos, border=None):
         self._type = self.__class__.__name__
 
         super(TestShip, self).__init__(pos, Settings.path.image.ship.TestShip)
 
         self._pos = pos
         self._border = border
-        self._settings = settings
 
         self._dx = None
         self._dy = None
@@ -102,13 +101,14 @@ class TestShip(Entity):
 class Ship(Renderable):
     """Base class for all ships. Contains basic ship logic."""
 
-    def __init__(self, pos, border, settings):
+    compound = True
+
+    def __init__(self, pos, border):
         self._type = self.__class__.__name__
         self._image = None
 
         self._pos = pos
         self._border = border
-        self._settings = settings
 
         self._dx = None
         self._fire = False
@@ -200,7 +200,6 @@ class Ship(Renderable):
         """Add new weapon."""
         self._weapons.append(weapon)
         self._weapon = weapon
-        self._settings.renderer.add_object(self._weapon)
 
     def update(self):
         """Update ship object's state."""
@@ -255,14 +254,13 @@ class Ship(Renderable):
 class GenericXEnemy(Ship):
     """Generic X enemy class."""
 
-    def __init__(self, pos, border, settings):
-        super(GenericXEnemy, self).__init__(pos, border, settings)
+    def __init__(self, pos, border):
+        super(GenericXEnemy, self).__init__(pos, border)
         self._image = Surface([['x', '^', 'x'],
                                [' ', 'X', ' '],
                                [' ', '*', ' ']])
 
         self.add_weapon(EBlaster())
-        self._settings.renderer.add_object(self._weapon)
         self._fire = True
         self._wbay = Point(x=self._image.width // 2, y=1)
 
@@ -286,8 +284,8 @@ class GenericXEnemy(Ship):
 class Playership(Ship):
     """Playership class. Contains additional methods for HUD."""
 
-    def __init__(self, pos, border, settings):
-        super(Playership, self).__init__(pos, border, settings)
+    def __init__(self, pos, border):
+        super(Playership, self).__init__(pos, border)
 
         self._image = Surface([
             [' ', ' ', 'O', ' ', ' '],
@@ -298,13 +296,9 @@ class Playership(Ship):
             x=pos.x - self._image.width // 2,
             y=pos.y - self._image.height)
         self._border = border
-        self._settings = settings
 
         self._fire = False
         self._weapons = InfiniteList([Blaster(), Laser(), UM()])
-        for weapon in self._weapons:
-            self._settings.renderer.add_object(weapon)
-
         self._weapon = self._weapons.current()
         self._wbay = Point(x=self._image.width // 2, y=-1)
 

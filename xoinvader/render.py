@@ -2,8 +2,13 @@
     Module that renders graphics to screen.
 """
 
+from operator import attrgetter
 
 from xoinvader.utils import Point
+
+
+INVISIBLE_SYMBOLS = " "
+"""Symbols that renderer must not render on the screen."""
 
 
 class Renderable(object):
@@ -38,7 +43,10 @@ class Renderable(object):
 def render_objects(objects, screen):
     """Render all renderable objects."""
     border = Point(*screen.getmaxyx()[::-1])
-    for obj in objects:
+
+    # TODO: Move sorting to some kind of object manager
+    # Must be sorted on adding objects
+    for obj in sorted(objects, key=attrgetter("render_priority")):
         gpos_list, data_gen = obj.get_render_data()
 
         for data in data_gen:
@@ -52,49 +60,10 @@ def render_objects(objects, screen):
                     obj.remove_obsolete(gpos)
                     continue
 
+                if image in INVISIBLE_SYMBOLS:
+                    continue
+
                 if style:
                     screen.addstr(cpos.y, cpos.x, image, style)
                 else:
                     screen.addstr(cpos.y, cpos.x, image)
-
-
-# FIXME: DEPRECATED.
-# * Make weapon shells as separate entities
-# * Implement Compound Object Rendering Protocol
-# * Use render_objects function for rendering scene.
-class Renderer(object):
-    """Handles collection of renderable objects, renders them to screen."""
-
-    def __init__(self, border):
-        self._objects = []
-        self._border = border
-
-    def add_object(self, obj):
-        """Add renderable object."""
-        self._objects.append(obj)
-        self._objects.sort(key=lambda x: x.render_priority)
-
-    def remove_object(self, obj):
-        """Remove renderable object."""
-        self._objects.remove(obj)
-
-    def render_all(self, screen):
-        """Render all renderable objects."""
-        for obj in self._objects:
-            gpos_list, data_gen = obj.get_render_data()
-
-            for data in data_gen:
-                for gpos in gpos_list:
-                    lpos, image, style = data
-                    cpos = gpos + lpos
-
-                    if (cpos.x >= self._border.x or cpos.y >= self._border.y) \
-                       or (cpos.x <= 0 or cpos.y <= 0):
-
-                        obj.remove_obsolete(gpos)
-                        continue
-
-                    if style:
-                        screen.addstr(cpos.y, cpos.x, image, style)
-                    else:
-                        screen.addstr(cpos.y, cpos.x, image)

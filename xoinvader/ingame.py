@@ -98,20 +98,46 @@ class InGameState(State):
         self.bg.start(True)
         self.bg.speed = 10
         self.bg.loop = True
-        self._objects.append(self.bg)
+        self.add(self.bg)
 
-        self._actor = Playership(Settings.layout.field.player,
-                                 Settings.layout.field.edge, Settings)
+        self._actor = Playership(
+            Settings.layout.field.player, Settings.layout.field.edge)
 
-        self._objects.append(self._actor)
+        self.add(self._actor)
         self._events = InGameEventHandler(self)
-        self._objects.extend(self._create_gui())
+        self.add(self._create_gui())
         self.enemy = GenericXEnemy(
-            Point(x=15, y=3),
-            Settings.layout.field.edge,
-            Settings)
+            Point(x=15, y=3), Settings.layout.field.edge)
 
-        self._objects.append(self.enemy)
+        self.add(self.enemy)
+
+    # TODO: [object-system]
+    #  * implement GameObject common class for using in states
+    #  * generalize interaction with game objects and move `add` to base class
+    # ATTENTION: renderables that added by another objects in runtime will not
+    #  render at the screen, because the must register in state via this func
+    #  as others. This is temporary decision as attempt to create playable game
+    #  due to deadline.
+    def add(self, obj):
+        """Add GameObject to State's list of objects.
+
+        Adding via this method means that objects will be
+        updated and rendered in main IOLoop.
+
+        :param object obj: GameObject
+        """
+
+        obj = obj if isinstance(obj, (list, tuple)) else [obj]
+        self._objects.extend(obj)
+
+        # TODO: Because we don't have common GameObject interface
+        # This is temporary smellcode
+        try:
+            for item in obj:
+                if item.compound:
+                    self._objects.extend(item.get_renderable_objects())
+        except AttributeError:
+            pass
 
     def _create_gui(self):
         """Create user intarface."""
@@ -156,10 +182,5 @@ class InGameState(State):
         self._screen.erase()
         self._screen.border(0)
 
-        # FIXME:
-        # crutch to render shells
-        # TODO:
-        # ObjectManager with compound objects support.
-        Settings.renderer.render_all(self._screen)
         render_objects(self._objects, self._screen)
         self._screen.refresh()
