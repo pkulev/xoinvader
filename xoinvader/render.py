@@ -7,6 +7,10 @@ from operator import attrgetter
 from xoinvader.utils import Point
 
 
+INVISIBLE_SYMBOLS = " "
+"""Symbols that renderer must not render on the screen."""
+
+
 class Renderable(object):
     """Base for renderable objects."""
 
@@ -54,6 +58,9 @@ def render_objects(objects, screen):
                    or (cpos.x <= 0 or cpos.y <= 0):
 
                     obj.remove_obsolete(gpos)
+                    continue
+
+                if image in INVISIBLE_SYMBOLS:
                     continue
 
                 if style:
