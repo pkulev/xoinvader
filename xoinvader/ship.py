@@ -5,6 +5,7 @@ from xoinvader.sound import Mixer
 from xoinvader.render import Renderable
 from xoinvader.weapon import Blaster, Laser, UM, EBlaster
 from xoinvader.utils import Point, Surface, InfiniteList
+from xoinvader.collision import Collider
 from xoinvader.common import Settings, get_json_config
 
 
@@ -259,6 +260,11 @@ class GenericXEnemy(Ship):
         self._image = Surface([['x', '^', 'x'],
                                [' ', 'X', ' '],
                                [' ', '*', ' ']])
+        self._collider = Collider(self.__class__.__name__,
+                                  ["###",
+                                   ".#.",
+                                   ".#."],  # benis :DDD
+                                  self._pos)
 
         self.add_weapon(EBlaster())
         self._fire = True
@@ -295,6 +301,16 @@ class Playership(Ship):
         self._pos = Point(
             x=pos.x - self._image.width // 2,
             y=pos.y - self._image.height)
+
+        self._collider = Collider(self.__class__.__name__,
+                                  ["  #  ",
+                                   "#####",
+                                   " # # "],
+                                  self._pos)
+        def enemy_clash(_):
+            self.take_damage(10)
+
+        self._collider.add_handler(GenericXEnemy.__name__, enemy_clash)
         self._border = border
 
         self._fire = False
