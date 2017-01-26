@@ -12,6 +12,7 @@ from xoinvader.utils import Point
 from xoinvader.collision import CollisionManager
 from xoinvader.common import Settings
 from xoinvader.curses_utils import Style
+from xoinvader.enemy_wave import EnemyWave
 from xoinvader.render import render_objects
 from xoinvader.handlers import Handler
 
@@ -88,6 +89,85 @@ class InGameEventHandler(Handler):
         # Some other event logic
 
 
+class TestWave(EnemyWave):
+    def __init__(self, state_object_adder, speed):
+        super(TestWave, self).__init__(speed)
+        self._state_object_adder = state_object_adder
+        self.add_event(1, self.spawn4)
+        self.add_event(100, lambda: None)
+
+    @staticmethod
+    def get_keyframes(y_offset, x_start, direction):
+        """Generate keyframe list.
+
+        :param int y_offset: y of top left corner of image
+        :param int x_start: x level of left corner of image
+        :param int direction: -1 or 1, depending of direction of moving: left or
+        right
+        """
+
+        def new_x(d):
+            return x_start - d * direction
+
+        return [
+            (0,   Point(x_start,   y_offset)),
+            (0.5, Point(x_start,   y_offset + 1)),
+            (1.0, Point(x_start,   y_offset + 2)),
+            (1.5, Point(x_start,   y_offset + 3)),
+            (2.0, Point(x_start,   y_offset + 4)),
+            (3.0, Point(new_x(1),  y_offset + 4)),
+            (3.5, Point(new_x(2),  y_offset + 5)),
+            (4.0, Point(new_x(4),  y_offset + 5)),
+            (4.3, Point(new_x(7),  y_offset + 6)),
+            (4.5, Point(new_x(9),  y_offset + 6)),
+            (4.7, Point(new_x(10), y_offset + 7)),
+            (4.7, Point(new_x(11), y_offset + 7)),
+            (4.7, Point(new_x(12), y_offset + 7)),
+            (4.9, Point(new_x(13), y_offset + 7)),
+            (5.0, Point(new_x(14), y_offset + 7)),
+            (5.1, Point(new_x(15), y_offset + 7)),
+            (5.2, Point(new_x(16), y_offset + 7)),
+            (5.3, Point(new_x(17), y_offset + 7)),
+            (5.4, Point(new_x(18), y_offset + 7)),
+            (5.5, Point(new_x(19), y_offset + 7)),
+            (5.6, Point(new_x(20), y_offset + 7)),
+            (5.7, Point(new_x(21), y_offset + 7)),
+            (5.8, Point(new_x(22), y_offset + 7)),
+        ]
+
+    def spawn4(self):
+        right_side = Settings.layout.field.edge.x
+
+        e1 = GenericXEnemy(
+            Point(10, 1),
+            Settings.layout.field.edge)
+        e2 = GenericXEnemy(
+            Point(25, 1),
+            Settings.layout.field.edge)
+
+        e3 = GenericXEnemy(
+            Point(right_side - 10, 1),
+            Settings.layout.field.edge)
+        e4 = GenericXEnemy(
+            Point(right_side - 25, 1),
+            Settings.layout.field.edge)
+
+        e1.add_animation("", e1, "_pos", self.get_keyframes(1, 10, 1))
+        e2.add_animation("", e2, "_pos", self.get_keyframes(1, 20, 1))
+
+        e3.add_animation(
+            "", e3, "_pos",
+            self.get_keyframes(1, right_side - 10, -1))
+        e4.add_animation(
+            "", e4, "_pos",
+            self.get_keyframes(1, right_side - 20, -1))
+
+        self._state_object_adder(e1)
+        self._state_object_adder(e2)
+        self._state_object_adder(e3)
+        self._state_object_adder(e4)
+
+
 class InGameState(State):
 
     def __init__(self, owner):
@@ -108,16 +188,15 @@ class InGameState(State):
         self.add(self._actor)
         self._events = InGameEventHandler(self)
         self.add(self._create_gui())
-        self.enemy = GenericXEnemy(
-            Point(x=15, y=3), Settings.layout.field.edge)
 
-        self.add(self.enemy)
+        self.wave = TestWave(self.add, speed=1)
+        self.wave.start()
 
-        self.enemy_2 = GenericXEnemy(
+        self.lone_enemy = GenericXEnemy(
             Settings.layout.field.edge - Point(20, 4),
             Settings.layout.field.edge)
 
-        self.add(self.enemy_2)
+        self.add(self.lone_enemy)
 
     # TODO: [object-system]
     #  * implement GameObject common class for using in states
@@ -184,6 +263,10 @@ class InGameState(State):
 
     def update(self):
         self._collision_manager.update()
+        self.wave.update()
+        if not self.wave.running:
+            self.wave.start()
+
         for obj in self._objects:
             obj.update()
 
