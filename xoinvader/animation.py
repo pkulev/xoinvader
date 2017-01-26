@@ -70,7 +70,7 @@ class AnimationManager(object):
         try:
             self._animation.update()
         except StopIteration:
-            raise  # We need to change animation
+            return  # TODO: think about method to change animation
 
 
 class Animation(object):
