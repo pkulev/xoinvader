@@ -272,14 +272,6 @@ class GenericXEnemy(Ship):
 
         from xoinvader.animation import AnimationManager
         self._animgr = AnimationManager()
-        self._animgr.add(
-            name="chaotic", bind=self, attr="direction",
-            loop=True, keyframes=[
-                (0.0, 0),
-                (1.0, -1),
-                (2.0, 1),
-                (3.0, 0),
-            ])
 
     def update(self):
         self._animgr.update()
