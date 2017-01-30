@@ -88,5 +88,5 @@ def test_animation_manager():
 
     animgr.update()
     time.sleep(1)
-    with pytest.raises(StopIteration):
-        animgr.update()
+
+    assert animgr.update() is None

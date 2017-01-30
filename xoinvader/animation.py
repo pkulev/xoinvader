@@ -64,10 +64,13 @@ class AnimationManager(object):
     def update(self):
         """Update manager's state."""
 
+        if not self._animation:
+            return
+
         try:
             self._animation.update()
         except StopIteration:
-            raise  # We need to change animation
+            return  # TODO: think about method to change animation
 
 
 class Animation(object):
