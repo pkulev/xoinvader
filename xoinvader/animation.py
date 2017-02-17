@@ -11,7 +11,26 @@ Objects have animation manager which manages animation graph and switching."""
 
 from operator import itemgetter
 
-from xoinvader.utils import Timer
+from xoinvader.utils import Point, Timer
+
+
+class AnimationBoundariesExceeded(Exception):
+    """Exception to show that interpolated value will be incorrect."""
+
+    def __init__(self, first, current_time, second):
+        super(AnimationBoundariesExceeded, self).__init__(
+            self,
+            "Animation frame boundaries exceeded: {0} <= {1} <= {2}".format(
+                first, current_time, second))
+
+
+class InterpolationUnknownTypes(Exception):
+    """Such type combination is unsupported."""
+
+    def __init__(self, first, second):
+        super(InterpolationUnknownTypes, self).__init__(
+            self, "Unknown types of interpolating values: {0} and {1}".format(
+                first, second))
 
 
 # TODO: Implement animation graph and etc
@@ -134,3 +153,57 @@ class Animation(object):
         if self._timer.get_elapsed() >= keyframe[0]:
             setattr(self._obj, self._attr, keyframe[1])
             self._current += 1
+def linear_equation(val1, val2, time1, time2, current_time):
+    """Linear equation to get interpolated value.
+
+    :param float val1: first keyframe value
+    :param float val2: second keyframe value
+    :param float time1: first keyframe local time
+    :param float time2: second keyframe local time
+    :param float current_time: current animation local time
+    """
+
+    return val1 + (val2 - val1) / (time2 - time1) * (current_time - time1)
+
+
+def same_type(values, types):
+    """Check if values are belongs to same type or type tuple.
+
+    :param collections.Iterable values: values to check type similarity
+    :param tuple|type types: type or tuple of types
+    """
+
+    return all(map(lambda it: isinstance(it, types), values))
+
+
+def interpolate(first, second, current_time):
+    """Interpolate value by two bounding keyframes.
+
+    :param collections.Iterable first: first bounding keyframe
+    :param collections.Iterable second: second bounding keyframe
+    :param float current_time: current animation local time
+
+    :raises AnimationBoundariesExceeded: when time interval is invalid
+    :raises InterpolationUnknownTypes: when interpolating invalid types
+    """
+
+    if not first[0] <= current_time <= second[0]:
+        raise AnimationBoundariesExceeded(first[0], current_time, second[0])
+
+    def frames_of(*args):
+        """If frames both of specified type."""
+        return same_type((first[1], second[1]), args)
+
+    if frames_of(int, float):
+        value = linear_equation(
+            float(first[1]), float(second[1]),
+            float(first[0]), float(second[0]), float(current_time))
+
+    elif frames_of(Point):
+        value = linear_equation(
+            first[1], second[1], float(first[0]), float(second[0]),
+            float(current_time))
+    else:
+        raise InterpolationUnknownTypes(type(first[1]), type(second[1]))
+
+    return value
