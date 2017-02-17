@@ -69,6 +69,36 @@ def test_animation_loop():
 
 
 @pytest.mark.slow
+@pytest.mark.parametrize("loop", (True, False))
+def test_animation_interp_loop(loop):
+    obj = GameObject()
+    animgr = AnimationManager()
+    animgr.add(
+        "test", obj, "attr", keyframes=[(0.0, 0), (0.4, 1)],
+        interp=True, loop=loop)
+
+    animgr.update()
+    assert isclose(obj.attr, 0, abs_tol=0.01)
+    time.sleep(0.2)
+    animgr.update()
+    assert isclose(obj.attr, 0.5, abs_tol=0.01)
+    time.sleep(0.2)
+    animgr.update()
+    assert obj.attr == 1
+    time.sleep(0.2)
+    animgr.update()
+
+    # if not looped - animation stops
+    # TODO: test StopIteration, now animgr suppresses it
+    if loop:
+        assert isclose(obj.attr, 0.5, abs_tol=0.01)
+        animgr.update()
+    else:
+        assert obj.attr == 1
+        animgr.update()
+
+
+@pytest.mark.slow
 def test_animation_manager():
     obj = GameObject()
     animgr = AnimationManager()

@@ -93,14 +93,23 @@ class AnimationManager(object):
 class Animation(object):
     """Animation unit.
 
+    Animation object holds sorted list of (time, value) items and changes
+    selected attribute of bound object according to local animation time.
+    Time measured by timer. When current time is greater or equal then time
+    of next keyframe - animation object changes it to appropriate value.
+    When animation is done and if not looped - raise StopIteration.
+    In case of interpolated animation value calculation occurs within two
+    bounding frames and on frame switch.
+
     :param str name: animation name
     :param object bind: object to bind animation
     :param str attr: attribute to change in frames
     :param list keyframes: (float, object) tuples
+    :param bool interp: interpolate values between frames or not
     :param bool loop: loop animation or not
     """
 
-    def __init__(self, name, bind, attr, keyframes, loop=False):
+    def __init__(self, name, bind, attr, keyframes, interp=False, loop=False):
         self._name = name
         self._obj = bind
         self._attr = attr
@@ -109,6 +118,7 @@ class Animation(object):
             raise ValueError("Animation keyframes must not be empty.")
         self._keyframes = sorted(keyframes, key=itemgetter(0))
 
+        self._interp = interp
         self._loop = loop
 
         # Timer for tracking local time
@@ -117,6 +127,11 @@ class Animation(object):
 
         # Current keyframe index
         self._current = 0
+
+        if self._interp:
+            self.update = self._update_interpolated
+        else:
+            self.update = self._update_discrete
 
     @property
     def name(self):
@@ -128,17 +143,71 @@ class Animation(object):
         """
         return self._name
 
-    def update(self):
-        """Update animation state.
+    def _apply_value(self, value):
+        """Apply new value to linked object.
 
-        Animation object holds sorted list of (time, value) items and changes
-        selected attribute of binded object according to local animation time.
-        Time measured by timer. When current time is greater or equal then time
-        of next keyframe - animation object changes it to appropriate value.
-        When animation is done and if not looped - raise StopIteration.
+        :param obj value: value to apply
         """
 
-        # TODO: feature-animation: approximation
+        setattr(self._obj, self._attr, value)
+
+    def _update_interpolated(self):
+        """Advance animation and interpolate value.
+
+        NOTE: animation frame switching depends on interp mode
+        animation with interpolation switches frame only when current local
+        time exceeds NEXT frames' time border.
+        """
+
+        self._check_animation_state()
+        self._timer.update()
+
+        current_time = self._timer.get_elapsed()
+        keyframe = self._keyframes[self._current]
+        next_keyframe = self._keyframes[self._current + 1]
+
+        # it's time to switch keyframe
+        if current_time >= next_keyframe[0]:
+            self._current += 1
+            keyframe = self._keyframes[self._current]
+
+        if self._current == len(self._keyframes) - 1:
+            self._apply_value(keyframe[1])
+            self._current += 1
+            self._check_animation_state()
+            return
+
+        next_keyframe = self._keyframes[self._current + 1]
+
+        value = interpolate(keyframe, next_keyframe, current_time)
+        self._apply_value(value)
+
+    def _update_discrete(self):
+        """Advance animation without interpolating value.
+
+        NOTE: animation frame switching depends on interp mode
+        discrete animation swiches frame and updates value only if
+        current local time is >= time of current keyframe.
+        No need to worry about calculating value between frames - thus
+        no need to complicate behaviour.
+        """
+
+        self._check_animation_state()
+        self._timer.update()
+
+        keyframe = self._keyframes[self._current]
+
+        # Check if animation need to switch keyframe
+        if self._timer.get_elapsed() >= keyframe[0]:
+            self._apply_value(keyframe[1])
+            self._current += 1
+
+    def _check_animation_state(self):
+        """Check animation state and restart if needed.
+
+        :raise StopIteration: when animation exceeded frames.
+        """
+
         if len(self._keyframes) == self._current:
             if self._loop:
                 self._current = 0
@@ -147,12 +216,7 @@ class Animation(object):
                 self._timer.stop()
                 raise StopIteration
 
-        self._timer.update()
 
-        keyframe = self._keyframes[self._current]
-        if self._timer.get_elapsed() >= keyframe[0]:
-            setattr(self._obj, self._attr, keyframe[1])
-            self._current += 1
 def linear_equation(val1, val2, time1, time2, current_time):
     """Linear equation to get interpolated value.
 
