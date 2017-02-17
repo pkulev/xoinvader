@@ -106,6 +106,8 @@ def test_animation_manager():
     with pytest.raises(AttributeError):
         animgr.animation
 
+    assert not animgr._animation and animgr.update() is None
+
     animgr.add("test1", bind=obj, attr="attr", keyframes=[(0.0, 1)])
     animgr.add("test2", bind=obj, attr="attr", keyframes=[(0.0, 2)])
 
