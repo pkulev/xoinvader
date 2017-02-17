@@ -111,28 +111,8 @@ class TestWave(EnemyWave):
 
         return [
             (0,   Point(x_start,   y_offset)),
-            (0.5, Point(x_start,   y_offset + 1)),
-            (1.0, Point(x_start,   y_offset + 2)),
-            (1.5, Point(x_start,   y_offset + 3)),
-            (2.0, Point(x_start,   y_offset + 4)),
-            (3.0, Point(new_x(1),  y_offset + 4)),
-            (3.5, Point(new_x(2),  y_offset + 5)),
-            (4.0, Point(new_x(4),  y_offset + 5)),
-            (4.3, Point(new_x(7),  y_offset + 6)),
-            (4.5, Point(new_x(9),  y_offset + 6)),
-            (4.7, Point(new_x(10), y_offset + 7)),
-            (4.7, Point(new_x(11), y_offset + 7)),
-            (4.7, Point(new_x(12), y_offset + 7)),
-            (4.9, Point(new_x(13), y_offset + 7)),
-            (5.0, Point(new_x(14), y_offset + 7)),
-            (5.1, Point(new_x(15), y_offset + 7)),
-            (5.2, Point(new_x(16), y_offset + 7)),
-            (5.3, Point(new_x(17), y_offset + 7)),
-            (5.4, Point(new_x(18), y_offset + 7)),
-            (5.5, Point(new_x(19), y_offset + 7)),
-            (5.6, Point(new_x(20), y_offset + 7)),
-            (5.7, Point(new_x(21), y_offset + 7)),
-            (5.8, Point(new_x(22), y_offset + 7)),
+            (4.0, Point(x_start, y_offset + 20)),
+            (7.0, Point(new_x(30), y_offset + 10)),
         ]
 
     def spawn4(self):
@@ -152,15 +132,17 @@ class TestWave(EnemyWave):
             Point(right_side - 25, 1),
             Settings.layout.field.edge)
 
-        e1.add_animation("", e1, "_pos", self.get_keyframes(1, 10, 1))
-        e2.add_animation("", e2, "_pos", self.get_keyframes(1, 20, 1))
+        e1.add_animation(
+            "", e1, "_pos", self.get_keyframes(1, 10, 1), interp=True)
+        e2.add_animation(
+            "", e2, "_pos", self.get_keyframes(1, 20, 1), interp=True)
 
         e3.add_animation(
             "", e3, "_pos",
-            self.get_keyframes(1, right_side - 10, -1))
+            self.get_keyframes(1, right_side - 10, -1), interp=True)
         e4.add_animation(
             "", e4, "_pos",
-            self.get_keyframes(1, right_side - 20, -1))
+            self.get_keyframes(1, right_side - 20, -1), interp=True)
 
         self._state_object_adder(e1)
         self._state_object_adder(e2)
