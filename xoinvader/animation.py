@@ -45,17 +45,15 @@ class AnimationManager(object):
         else:
             raise ValueError("No such animation: '{0}'.".format(name))
 
-    def add(self, name, bind, attr, keyframes, loop=False):
+    def add(self, name, *args, **kwargs):
         """Add new animation, pass args to Animation class.
 
+        See interface of `class::xoinvader.animationAnimation`.
+
         :param str name: animation name
-        :param object bind: object to bind animation
-        :param str attr: attribute to change in frames
-        :param list keyframes: (float, object) tuples
-        :param bool loop: loop animation or not
         """
 
-        animation = Animation(name, bind, attr, keyframes, loop)
+        animation = Animation(name, *args, **kwargs)
         self._animations[name] = animation
 
         if not self._animation:
