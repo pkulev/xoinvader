@@ -64,6 +64,6 @@ def render_objects(objects, screen):
                     continue
 
                 if style:
-                    screen.addstr(cpos.y, cpos.x, image, style)
+                    screen.addstr(int(cpos.y), int(cpos.x), image, style)
                 else:
-                    screen.addstr(cpos.y, cpos.x, image)
+                    screen.addstr(int(cpos.y), int(cpos.x), image)

@@ -59,6 +59,21 @@ def test_point_operations():
 
     assert a + b == Point(ax + bx, ay + by, az + bz)
     assert a - b == Point(ax - bx, ay - by, az - bz)
+    assert a + 5 == Point(ax + 5, ay + 5, az + 5)
+    assert a - 5 == Point(ax - 5, ay - 5, az - 5)
+    assert a * 5 == Point(ax * 5, ay * 5, az * 5)
+    assert a / 5 == Point(ax / 5, ay / 5, az / 5)
+
+    with pytest.raises(ValueError):
+        a + "a"
+    with pytest.raises(ValueError):
+        a - "a"
+    with pytest.raises(ValueError):
+        a * "a"
+    with pytest.raises(ValueError):
+        a / "a"
+    with pytest.raises(ValueError):
+        a == "a"
 
     a.x = bx
     a.y = by

@@ -96,19 +96,62 @@ class Point(object):
 
     __str__ = __repr__
 
+    @staticmethod
+    def _value_error(operation, value):
+        """Raise ValueError with appropriate message."""
+
+        return ValueError(
+            "Wrong type to {0} {1}: {2}".format(operation, type(value), value))
+
     def __add__(self, other):
-        return Point(
-            x=self.x + other.x,
-            y=self.y + other.y,
-            z=self.z + other.z)
+        if isinstance(other, (int, float)):
+            return Point(
+                x=self.x + other,
+                y=self.y + other,
+                z=self.z + other)
+
+        elif isinstance(other, Point):
+            return Point(
+                x=self.x + other.x,
+                y=self.y + other.y,
+                z=self.z + other.z)
+        else:
+            raise self._value_error("add", other)
 
     def __sub__(self, other):
-        return Point(
-            x=self.x - other.x,
-            y=self.y - other.y,
-            z=self.z - other.z)
+        if isinstance(other, (int, float)):
+            return self.__add__(-other)
+        elif isinstance(other, Point):
+            return Point(
+                x=self.x - other.x,
+                y=self.y - other.y,
+                z=self.z - other.z)
+        else:
+            raise self._value_error("sub", other)
+
+    def __mul__(self, other):
+        if isinstance(other, (int, float)):
+            return Point(
+                x=self.x * other,
+                y=self.y * other,
+                z=self.z * other)
+        # What for point
+        else:
+            raise self._value_error("mul", other)
+
+    def __truediv__(self, other):
+        if isinstance(other, (int, float)):
+            return Point(
+                x=self.x / other,
+                y=self.y / other,
+                z=self.z / other)
+        else:
+            raise self._value_error("div", other)
 
     def __eq__(self, other):
+        if not isinstance(other, Point):
+            raise self._value_error("eq", other)
+
         return self.x == other.x and self.y == other.y and self.z == other.z
 
 
