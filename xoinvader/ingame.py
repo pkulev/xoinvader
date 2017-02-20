@@ -184,7 +184,7 @@ class InGameState(State):
     #  * implement GameObject common class for using in states
     #  * generalize interaction with game objects and move `add` to base class
     # ATTENTION: renderables that added by another objects in runtime will not
-    #  render at the screen, because the must register in state via this func
+    #  render at the screen, because they must register in state via this func
     #  as others. This is temporary decision as attempt to create playable game
     #  due to deadline.
     def add(self, obj):

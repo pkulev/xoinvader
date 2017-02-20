@@ -67,7 +67,7 @@ class AnimationManager(object):
     def add(self, name, *args, **kwargs):
         """Add new animation, pass args to Animation class.
 
-        See interface of `class::xoinvader.animationAnimation`.
+        See interface of `class::xoinvader.animation.Animation`.
 
         :param str name: animation name
         """
