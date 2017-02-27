@@ -2,6 +2,7 @@
 
 
 import curses
+import logging
 
 from xoinvader.background import Background
 from xoinvader.gui import TextWidget, WeaponWidget, Bar
@@ -15,6 +16,9 @@ from xoinvader.curses_utils import Style
 from xoinvader.enemy_wave import EnemyWave
 from xoinvader.render import render_objects
 from xoinvader.handlers import Handler
+
+
+LOG = logging.getLogger(__name__)
 
 
 def move_left_command(actor):
@@ -153,11 +157,13 @@ class TestWave(EnemyWave):
 class InGameState(State):
 
     def __init__(self, owner):
+        LOG.info("Instantiating InGame state")
         super(InGameState, self).__init__(owner)
         self._objects = []
         self._collision_manager = CollisionManager()
         self._screen = self._owner.screen
 
+        LOG.debug("Registering renderable entities")
         self.bg = Background(Settings.path.level1bg)
         self.bg.start(True)
         self.bg.speed = 10

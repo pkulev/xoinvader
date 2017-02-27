@@ -57,6 +57,7 @@ DEFAUT_XOI_SETTINGS = dict(
         gui=None,
         weapon=None),
     system=dict(
+        debug=False,
         no_sound=False,
         no_color=False,
         video_driver=constants.DRIVER_NCURSES,

@@ -6,17 +6,20 @@ Prepare environment for starting game and start it."""
 
 
 import argparse
+import logging
 
+import xoinvader
 from xoinvader import application
 from xoinvader import constants
 
 
-def create_game(args=None):
-    """Create XOInvader game instance."""
-    import curses
+LOG = logging.getLogger(__name__)
 
-    import xoinvader
-    xoinvader.init(args)
+
+def create_game():
+    """Create XOInvader game instance."""
+
+    import curses
 
     from xoinvader.curses_utils import Style
 
@@ -42,10 +45,8 @@ def create_game(args=None):
     return app
 
 
-def create_test_game(args=None):
+def create_test_game():
     """Temporary function to create Pygame."""
-    import xoinvader
-    xoinvader.init(args)
 
     from xoinvader.teststate import TestState
 
@@ -58,6 +59,8 @@ def parse_args():
     """Parse incoming arguments."""
     parser = argparse.ArgumentParser()
 
+    parser.add_argument(
+        "-d", "--debug", action="store_true", help="enable debug mode")
     parser.add_argument(
         "-ns", "--no-sound", action="store_true", help="disable sounds")
     parser.add_argument(
@@ -73,14 +76,19 @@ def parse_args():
 
 def main():
     """Start the game!"""
+
     args = parse_args()
+    # apply settings to engine settings
+    xoinvader.init(args.__dict__)
+    LOG.debug("Incoming args: %s", args)
 
     # TODO: backend-drivers; implement proper choosing
     if args.video_driver == constants.DRIVER_SDL:
-        game = create_test_game(args.__dict__)
+        game = create_test_game()
     else:
-        game = create_game(args.__dict__)
+        game = create_game()
 
+    LOG.info("Staring game with '%s' driver", args.video_driver)
     return game.start()
 
 
