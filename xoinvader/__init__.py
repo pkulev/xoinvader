@@ -10,6 +10,7 @@
 
 from .common import Settings
 from .common import update_system_settings as _update_system_settings
+from .utils import setup_logger
 
 
 __version__ = "0.1.1"
@@ -26,12 +27,23 @@ def init(settings=None):
     :param dict settings:
     """
 
+    if settings is None:
+        settings = {}
+
+    try:
+        log = setup_logger(
+            "xoinvader", settings.get("debug", Settings.system.debug))
+    except Exception as exc:
+        raise XOInitializationError(exc)
+
+    log.debug("Updating engine settings")
+
     # TODO: config-management: update this stub
     try:
         if settings:
             _update_system_settings(settings)
     except Exception as exc:
-        print(dir(exc))
+        log.exception(exc)
         raise XOInitializationError(exc)
 
 
