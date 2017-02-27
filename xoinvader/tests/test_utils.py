@@ -1,7 +1,7 @@
 import pytest
 
 from xoinvader.utils import (
-    create_logger,
+    setup_logger,
     dotdict,
     isclose,
     InfiniteList,
@@ -11,9 +11,8 @@ from xoinvader.utils import (
 )
 
 
-# TODO: feature-logging: refactor this
-def test_create_logger():
-    logger = create_logger("test", "test.log")
+def test_setup_logger():
+    logger = setup_logger("test", True)
     assert logger
 
 

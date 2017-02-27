@@ -1,6 +1,7 @@
 """Various useful tools."""
 
 
+import datetime
 import logging
 import time
 try:
@@ -9,36 +10,46 @@ except ImportError:
     time.perf_counter = time.time
 
 
-LOG_FORMAT = "[%(asctime)s] %(levelname)s: %(message)s"
-DATE_FORMAT = "%m/%d/%Y %I:%M:%S %p"
+LOG_FORMAT = (
+    "[%(asctime)s] %(levelname)-8s %(name)s[%(funcName)s]:%(lineno)s:  "
+    "%(message)s"
+)
+"""Log message format string."""
+
+TIME_FORMAT = "%H:%M:%S,%03d"
+"""Log time format string."""
+
+DATE_FORMAT = "%Y-%m-%d %a"
+"""Initial log entry date format string."""
 
 
-def create_logger(lname, fname, fmode="w", level=logging.INFO):
-    """Create simple logger.
+def setup_logger(name, debug=False, msgfmt=None, timefmt=None):
+    """Setup logger with linked log file.
 
-    .. note:: Needs enchancement.
+    Do not use it for getting logger, call this once on init,
+    then use logging.getLogger(__name__) for getting actual logger.
 
-    :param lname: logger name
-    :type lname: string
+    :param str name: logger relative name
+    :param bool debug: debug mode
+    :param str msgfmt: message format
+    :param str timefmt: time format
 
-    :param fname: file name
-    :type fname: string
-
-    :param fmode: file mode
-    :type fmode: string
-
-    :param level: logging level
-    :type level: integer
-
-    :return: logger instance
+    :return: prepared logger instance
     :rtype: `logging.Logger`
     """
-    logging.basicConfig(filename=fname,
-                        filemode=fmode,
-                        format=LOG_FORMAT,
-                        datefmt=DATE_FORMAT,
-                        level=level)
-    return logging.getLogger(lname)
+
+    logger = logging.getLogger(name)
+    level = logging.DEBUG if debug else logging.INFO
+    logger.setLevel(level)
+    handler = logging.FileHandler("{0}.log".format(name))
+    handler.setLevel(level)
+    formatter = logging.Formatter(msgfmt or LOG_FORMAT, timefmt or TIME_FORMAT)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    date = datetime.date.today().strftime(DATE_FORMAT)
+    logger.info("*** (%s) Initializing XOInvader ***", date)
+
+    return logger
 
 
 def isclose(left, right, rel_tol=1e-9, abs_tol=0.0):
