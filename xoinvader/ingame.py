@@ -13,7 +13,7 @@ from xoinvader.utils import Point
 from xoinvader.collision import CollisionManager
 from xoinvader.common import Settings
 from xoinvader.curses_utils import Style
-from xoinvader.enemy_wave import EnemyWave
+from xoinvader.level import Level
 from xoinvader.render import render_objects
 from xoinvader.handlers import Handler
 
@@ -93,12 +93,23 @@ class InGameEventHandler(Handler):
         # Some other event logic
 
 
-class TestWave(EnemyWave):
+class TestLevel(Level):
     def __init__(self, state_object_adder, speed):
-        super(TestWave, self).__init__(speed)
-        self._state_object_adder = state_object_adder
+        super(TestLevel, self).__init__(speed)
+        self._state_add = state_object_adder
+
+        self._player_ship = Playership(
+            Settings.layout.field.player, Settings.layout.field.edge)
+        self._state_add(self._player_ship)
+
         self.add_event(1, self.spawn4)
         self.add_event(100, lambda: None)
+
+        self.bg = Background(Settings.path.level1bg)
+        self.bg.start(True)
+        self.bg.speed = 10
+        self.bg.loop = True
+        self._state_add(self.bg)
 
     @staticmethod
     def get_keyframes(y_offset, x_start, direction):
@@ -148,10 +159,10 @@ class TestWave(EnemyWave):
             "", e4, "_pos",
             self.get_keyframes(1, right_side - 20, -1), interp=True)
 
-        self._state_object_adder(e1)
-        self._state_object_adder(e2)
-        self._state_object_adder(e3)
-        self._state_object_adder(e4)
+        self._state_add(e1)
+        self._state_add(e2)
+        self._state_add(e3)
+        self._state_add(e4)
 
 
 class InGameState(State):
@@ -164,27 +175,14 @@ class InGameState(State):
         self._screen = self._owner.screen
 
         LOG.debug("Registering renderable entities")
-        self.bg = Background(Settings.path.level1bg)
-        self.bg.start(True)
-        self.bg.speed = 10
-        self.bg.loop = True
-        self.add(self.bg)
 
-        self._actor = Playership(
-            Settings.layout.field.player, Settings.layout.field.edge)
+        self.level = TestLevel(self.add, speed=1)
+        self._actor = self.level._player_ship
 
-        self.add(self._actor)
         self._events = InGameEventHandler(self)
+
         self.add(self._create_gui())
-
-        self.wave = TestWave(self.add, speed=1)
-        self.wave.start()
-
-        self.lone_enemy = GenericXEnemy(
-            Settings.layout.field.edge - Point(20, 4),
-            Settings.layout.field.edge)
-
-        self.add(self.lone_enemy)
+        self.level.start()
 
     # TODO: [object-system]
     #  * implement GameObject common class for using in states
@@ -251,9 +249,9 @@ class InGameState(State):
 
     def update(self):
         self._collision_manager.update()
-        self.wave.update()
-        if not self.wave.running:
-            self.wave.start()
+        self.level.update()
+        if not self.level.running:
+            self.level.start()
 
         for obj in self._objects:
             obj.update()

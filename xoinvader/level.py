@@ -1,17 +1,18 @@
-"""Module for creating and maintaining waves of incoming enemies."""
+"""Module for creating and maintaining xoinvader levels."""
 
-class EnemyWave(object):
-    """Container for enemy wave behavior.
+
+class Level(object):
+    """Container for level event sequence and resources.
 
     Intended to use as just container, but may be subclassed. It's useful in
-    order to add methods for creating concrete animations and spawning actual
-    enemies.
+    order to add methods for creating concrete animations and events, such as
+    spawning actual enemies, bonuses, initiating boss fights and so on.
 
     :param int speed: relative speed of the wave. Means how fast time advances.
-    The faster time advances, the shorter the delays between enemy spawns.
-    :param dict events: map from relative time in event to function that spawns
-    the enemies.
-    :param bool running: if wave currently advances.
+    The faster time advances, the shorter the delays between events triggering.
+    :param dict events: map from relative time in event to event starting
+    function.
+    :param bool running: if event sequence currently advances.
     """
 
     def __init__(self, speed=0):
@@ -34,16 +35,16 @@ class EnemyWave(object):
         return self._running
 
     def add_event(self, time, callback):
-        """Add spawning event to some point in time.
+        """Add event to some point in time.
 
-        :param int time: point in time relative to wave start when to run
+        :param int time: point in time relative to level start when to run
         `callback`. Callback is fired when `_counter` exceeds provided value
         :param function callback: callback to be runned when wave reaches `time`
         """
         self._events.setdefault(time, []).append(callback)
 
     def start(self):
-        """Start the enemy wave.
+        """Start the level.
 
         Resets the counter, recomputes the list of event timeouts and sets the
         `running` property to `True`.
@@ -56,8 +57,8 @@ class EnemyWave(object):
     def update(self):
         """Update the counter and fire appropriate events.
 
-        Function is doing anything useful only when the EnemyWave has been
-        started earlier, i.e. currently in running state.
+        Function is doing anything useful only when the Level has been started
+        earlier, i.e. currently in running state.
         Function updates current timer and fires all events, which timeouts have
         expired. If there's no more events in the queue, the running state
         terminates and object goes to sleep.
