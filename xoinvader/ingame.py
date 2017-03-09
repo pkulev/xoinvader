@@ -5,17 +5,17 @@ import curses
 import logging
 
 from xoinvader.background import Background
-from xoinvader.gui import TextWidget, WeaponWidget, Bar
-from xoinvader.keys import K_A, K_D, K_E, K_F, K_R, K_SPACE, K_ESCAPE, K_Q
-from xoinvader.ship import GenericXEnemy, Playership
-from xoinvader.state import State
-from xoinvader.utils import Point
 from xoinvader.collision import CollisionManager
 from xoinvader.common import Settings
 from xoinvader.curses_utils import Style
+from xoinvader.gui import TextWidget, WeaponWidget, Bar
+from xoinvader.handlers import Handler
+from xoinvader.keys import K_A, K_D, K_E, K_F, K_R, K_SPACE, K_ESCAPE, K_Q
 from xoinvader.level import Level
 from xoinvader.render import render_objects
-from xoinvader.handlers import Handler
+from xoinvader.ship import GenericXEnemy, Playership
+from xoinvader.state import State
+from xoinvader.utils import Point
 
 
 LOG = logging.getLogger(__name__)
