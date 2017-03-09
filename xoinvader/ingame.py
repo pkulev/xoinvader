@@ -105,10 +105,8 @@ class TestLevel(Level):
         self.add_event(1, self.spawn4)
         self.add_event(100, lambda: None)
 
-        self.bg = Background(Settings.path.level1bg)
+        self.bg = Background(Settings.path.level1bg, speed=10, loop=True)
         self.bg.start(True)
-        self.bg.speed = 10
-        self.bg.loop = True
         self._state_add(self.bg)
 
     @staticmethod

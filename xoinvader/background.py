@@ -117,10 +117,10 @@ class Background(Renderable):
 
     render_priority = -1000  # TODO: render-priority
 
-    def __init__(self, filename=None):
-        self._loop = False
-        self._loop_all = False
-        self._speed = 0
+    def __init__(self, filename=None, speed=0, loop=False, loop_all=False):
+        self._speed = speed
+        self._loop = loop
+        self._loop_all = loop_all
         self._chunks = []
         self._background = []
 
