@@ -1,10 +1,10 @@
 import pytest
 
-from xoinvader.enemy_wave import EnemyWave
+from xoinvader.level import Level
 
 
 def test_wave():
-    e = EnemyWave()
+    e = Level()
 
     class MockObject(object):
         def __init__(self):
