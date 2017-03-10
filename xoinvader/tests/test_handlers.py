@@ -1,26 +1,24 @@
 """Test xoinvader.handlers module."""
 
-
-import unittest
+import pytest
 
 from xoinvader.handlers import Command
 from xoinvader.handlers import Handler
 
 
+# pylint: disable=missing-docstring,too-few-public-methods
 class OwnerMock:
     screen = "screen"
     actor = "actor"
 
 
-class TestCommand(unittest.TestCase):
+def test_command():
+    command = Command()
+    with pytest.raises(NotImplementedError):
+        command.execute("actor")
 
-    def test_base_class(self):
-        command = Command()
-        self.assertRaises(NotImplementedError, command.execute, "actor")
 
-
-class TestHandler(unittest.TestCase):
-
-    def test_base_class(self):
-        handler = Handler(OwnerMock())
-        self.assertRaises(NotImplementedError, handler.handle)
+def test_handler():
+    handler = Handler(OwnerMock())
+    with pytest.raises(NotImplementedError):
+        handler.handle()
