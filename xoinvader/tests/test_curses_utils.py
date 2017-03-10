@@ -1,4 +1,4 @@
-"""Tests for xoinvader.curses_utils."""
+"""Test xoinvader.curses_utils module."""
 
 import time
 
@@ -6,6 +6,7 @@ from xoinvader.curses_utils import Clock, get_clock
 from xoinvader.utils import isclose
 
 
+# pylint: disable=invalid-name
 def test_clock():
     """xoinvader.curses_utils.Clock"""
 

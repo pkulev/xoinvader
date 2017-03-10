@@ -7,6 +7,7 @@ from xoinvader.common import Settings
 from xoinvader.utils import Singleton
 
 
+# pylint: disable=too-few-public-methods
 class _Color(object, metaclass=Singleton):
     """Curses color mapping."""
 
@@ -27,14 +28,25 @@ class _Color(object, metaclass=Singleton):
             "laser",
             "um",
         ]
-        self._color_map = dict(zip(self._color_names,
-                                   range(1, len(self._color_names) + 1)))
+        self._color_map = dict(
+            zip(self._color_names, range(1, len(self._color_names) + 1))
+        )
+
+    @property
+    def color_names(self):
+        """Color names.
+
+        :getter: yes
+        :setter: no
+        :type: list
+        """
+        return self._color_names
 
     def __getattr__(self, name):
         return self._color_map[name]
 
 
-Color = _Color()  # noqa
+Color = _Color()  # pylint: disable=invalid-name
 
 
 # TODO: rewrite this shit
@@ -47,34 +59,26 @@ class Style(object, metaclass=Singleton):
             obj={},
         )
 
-    def init_styles(self, curses):
+    def init_styles(self, curses_module):
         """Initialize styles.
 
-        :param curses: curses module to initialize pairs
-        :type curses: module
+        :param module curses_module: curses module to initialize pairs
         """
 
         if Settings.system.no_color:
-            for key in Color._color_names:
+            for key in Color.color_names:
                 self.gui[key] = None
 
-        self.gui["normal"] = curses.color_pair(Color.ui_norm)          \
-            | curses.A_BOLD
-        self.gui["yellow"] = curses.color_pair(Color.ui_yellow)        \
-            | curses.A_BOLD
+        cpair = curses_module.color_pair
 
-        self.gui["dp_blank"] = curses.color_pair(Color.dp_blank)       \
-            | curses.A_BOLD
-        self.gui["dp_ok"] = curses.color_pair(Color.dp_ok)             \
-            | curses.A_BOLD
-        self.gui["dp_middle"] = curses.color_pair(Color.dp_middle)     \
-            | curses.A_BOLD
-        self.gui["dp_critical"] = curses.color_pair(Color.dp_critical) \
-            | curses.A_BOLD
-        self.gui["sh_ok"] = curses.color_pair(Color.sh_ok)             \
-            | curses.A_BOLD
-        self.gui["sh_mid"] = curses.color_pair(Color.sh_mid)           \
-            | curses.A_BOLD
+        self.gui["normal"] = cpair(Color.ui_norm) | curses.A_BOLD
+        self.gui["yellow"] = cpair(Color.ui_yellow) | curses.A_BOLD
+        self.gui["dp_blank"] = cpair(Color.dp_blank) | curses.A_BOLD
+        self.gui["dp_ok"] = cpair(Color.dp_ok) | curses.A_BOLD
+        self.gui["dp_middle"] = cpair(Color.dp_middle) | curses.A_BOLD
+        self.gui["dp_critical"] = cpair(Color.dp_critical) | curses.A_BOLD
+        self.gui["sh_ok"] = cpair(Color.sh_ok) | curses.A_BOLD
+        self.gui["sh_mid"] = cpair(Color.sh_mid) | curses.A_BOLD
 
     def __getattr__(self, name):
         return self._style[name]
@@ -86,24 +90,30 @@ def get_styles():
     return Style()
 
 
-def init_curses_pairs(curses):
+def init_curses_pairs(curses_module):
+    """Init curses color pairs.
+
+    :param module curses_module: curses module for pair initialization.
+    """
+
+    init_pair = curses_module.init_pair
 
     # User interface
-    curses.init_pair(Color.ui_norm, curses.COLOR_WHITE, curses.COLOR_BLACK)
-    curses.init_pair(Color.ui_yellow, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    init_pair(Color.ui_norm, curses.COLOR_WHITE, curses.COLOR_BLACK)
+    init_pair(Color.ui_yellow, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
     # Damage panel
-    curses.init_pair(Color.dp_blank, curses.COLOR_BLACK, curses.COLOR_BLACK)
-    curses.init_pair(Color.dp_ok, curses.COLOR_GREEN, curses.COLOR_BLACK)
-    curses.init_pair(Color.dp_middle, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-    curses.init_pair(Color.dp_critical, curses.COLOR_RED, curses.COLOR_BLACK)
-    curses.init_pair(Color.sh_ok, curses.COLOR_BLUE, curses.COLOR_BLACK)
-    curses.init_pair(Color.sh_mid, curses.COLOR_CYAN, curses.COLOR_BLACK)
+    init_pair(Color.dp_blank, curses.COLOR_BLACK, curses.COLOR_BLACK)
+    init_pair(Color.dp_ok, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    init_pair(Color.dp_middle, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    init_pair(Color.dp_critical, curses.COLOR_RED, curses.COLOR_BLACK)
+    init_pair(Color.sh_ok, curses.COLOR_BLUE, curses.COLOR_BLACK)
+    init_pair(Color.sh_mid, curses.COLOR_CYAN, curses.COLOR_BLACK)
 
     # Weapons
-    curses.init_pair(Color.blaster, curses.COLOR_GREEN, curses.COLOR_BLACK)
-    curses.init_pair(Color.laser, curses.COLOR_BLACK, curses.COLOR_RED)
-    curses.init_pair(Color.um, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+    init_pair(Color.blaster, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    init_pair(Color.laser, curses.COLOR_BLACK, curses.COLOR_RED)
+    init_pair(Color.um, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
 
 
 def create_window(ncols, nlines, begin_x=0, begin_y=0):

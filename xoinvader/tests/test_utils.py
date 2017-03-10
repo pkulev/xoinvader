@@ -1,3 +1,5 @@
+"""Test xoinvader.utils module."""
+
 import pytest
 
 from xoinvader.utils import (
@@ -11,6 +13,7 @@ from xoinvader.utils import (
 )
 
 
+# pylint: disable=invalid-name,protected-access,missing-docstring
 def test_setup_logger():
     logger = setup_logger("test", True)
     assert logger
@@ -64,15 +67,15 @@ def test_point_operations():
     assert a / 5 == Point(ax / 5, ay / 5, az / 5)
 
     with pytest.raises(ValueError):
-        a + "a"
+        assert a + "a"
     with pytest.raises(ValueError):
-        a - "a"
+        assert a - "a"
     with pytest.raises(ValueError):
-        a * "a"
+        assert a * "a"
     with pytest.raises(ValueError):
-        a / "a"
+        assert a / "a"
     with pytest.raises(ValueError):
-        a == "a"
+        assert a == "a"
 
     a.x = bx
     a.y = by

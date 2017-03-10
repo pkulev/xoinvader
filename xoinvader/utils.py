@@ -60,8 +60,8 @@ def isclose(left, right, rel_tol=1e-9, abs_tol=0.0):
     :param float rel_tol: relative tolerance (amount of error allowed)
     :param float abs_tol: minimum absolute tolerance level
     """
-    return (abs(left - right) <= max(rel_tol *
-                                     max(abs(left), abs(right)), abs_tol))
+    approx = max(rel_tol * max(abs(left), abs(right)), abs_tol)
+    return abs(left - right) <= approx
 
 
 class dotdict(dict):  # pylint: disable=invalid-name
@@ -79,6 +79,7 @@ class dotdict(dict):  # pylint: disable=invalid-name
                 self[key] = dotdict(value)
 
 
+# pylint: disable=too-few-public-methods
 class Point(object):
     """3D point representation.
 
@@ -230,8 +231,10 @@ class Surface(object):
         """
         for y, row in enumerate(self._image):
             for x, image in enumerate(row):
-                yield (Point(x=x, y=y), image,
-                       self._style[y][x] if self._style else None)
+                yield (
+                    Point(x=x, y=y), image,
+                    self._style[y][x] if self._style else None
+                )
 
 
 class InfiniteList(list):

@@ -1,6 +1,5 @@
 """Module for common shared objects."""
 
-
 import json
 from os.path import dirname
 
@@ -64,7 +63,7 @@ DEFAUT_XOI_SETTINGS = dict(
     )
 )
 
-Settings = dotdict(DEFAUT_XOI_SETTINGS)
+Settings = dotdict(DEFAUT_XOI_SETTINGS)  # pylint: disable=invalid-name
 
 
 def update_system_settings(args):

@@ -1,9 +1,9 @@
 """Test related utilites."""
 
-
 from xoinvader.state import State
 
 
+# pylint: disable=missing-docstring
 class StateMock(State):
     """Mock State interface."""
 
