@@ -24,14 +24,26 @@ class TypePair(object):
 
     @property
     def first(self):
+        """First collider type.
+
+        :getter: yes
+        :setter: no
+        :type: type
+        """
         return self._first
 
     @property
     def second(self):
+        """Second collider type.
+
+        :getter: yes
+        :setter: no
+        :type: type
+        """
         return self._second
 
     def __eq__(self, other):
-        return self._pair == other._pair
+        return self._pair == other._pair  # pylint: disable=protected-access
 
     def __hash__(self):
         return hash(self._pair)
@@ -55,16 +67,20 @@ class CollisionManager(object):
     def __init__(self):
         if Collider.__manager__ is None:
             def null_manager(_):
+                """Manager nuller."""
                 Collider.__manager__ = None
+
             Collider.__manager__ = weakref.ref(self, null_manager)
         self._colliders = []
         self._collisions = {}
 
     def _add(self, collider):
+        """Add collider."""
         self._colliders.append(collider)
 
     def update(self):
         """Detect and process all collisions."""
+
         for pair in self._collisions:
             colliders_type_1 = [
                 item for item in self._colliders
@@ -74,13 +90,14 @@ class CollisionManager(object):
                 if item.col_type == pair.second]
             for collider_1 in colliders_type_1:
                 for collider_2 in colliders_type_2:
-                    collision_rect = self.check_collision(collider_1,
-                                                          collider_2)
+                    collision_rect = self.check_collision(
+                        collider_1, collider_2)
                     if collision_rect:
                         for callback in self._collisions[pair]:
                             if callback:
                                 callback(collision_rect)
 
+    # pylint: disable=too-many-locals
     @staticmethod
     def check_collision(col_1, col_2):
         """Check collisions between two colliders.
@@ -111,10 +128,12 @@ class CollisionManager(object):
             # Definelty not overlapping
             return
         # Now find where exactopleft_y overlapping occured
-        topleft_overlap = Point(max(topleft_1.x, topleft_2.x),
-                                max(topleft_1.y, topleft_2.y))
-        botright_overlap = Point(min(botright_1.x, botright_2.x),
-                                 min(botright_1.y, botright_2.y))
+        topleft_overlap = Point(
+            max(topleft_1.x, topleft_2.x),
+            max(topleft_1.y, topleft_2.y))
+        botright_overlap = Point(
+            min(botright_1.x, botright_2.x),
+            min(botright_1.y, botright_2.y))
         # Now find if they actually collided
         # first, calculate offsets
         overlap_1 = Point()
@@ -151,8 +170,9 @@ class CollisionManager(object):
         """
 
         if collider not in self._colliders:
-            raise ValueError("Attempt to add collision handler for "
-                             "unregistered collider {0}".format(collider))
+            raise ValueError(
+                "Attempt to add collision handler for "
+                "unregistered collider {0}".format(collider))
         type_pair = TypePair(collider.col_type, other_classname)
         self._collisions.setdefault(type_pair, []).append(callback)
 
@@ -167,9 +187,9 @@ class Collider(object):
     :param str col_type: name of the collider type. Used in processing possible
     collisions
     :param list phys_map: list of strings representing collider physical
-    geometry. All strings must be of equal length. Class member __solid_matter__
-    of CollisionManager represents solid geometry, all other chars are treated
-    as void space and may be any.
+    geometry. All strings must be of equal length. Class member
+    __solid_matter__ of CollisionManager represents solid geometry, all other
+    chars are treated as void space and may be any.
     :param pos: left top corner of collider map
     :type pos: :class:`Point`
     """
@@ -178,24 +198,43 @@ class Collider(object):
 
     def __init__(self, col_type, phys_map, pos):
         if Collider.__manager__ is None:
-            raise ValueError("You can't use Collider objects without "
-                             "ColliderManager. Please create it first.")
+            raise ValueError(
+                "You can't use Collider objects without "
+                "ColliderManager. Please create it first.")
         self._mgr = Collider.__manager__()  # manager is weakreaf, thus '()'
         self._col_type = col_type
         self._pos = pos
         self._phys_map = phys_map
-        self._mgr._add(self)
+        self._mgr._add(self)  # pylint: disable=protected-access
 
     @property
     def phys_map(self):
+        """Collider physical geometry.
+
+        :getter: yes
+        :setter: no
+        :type: list
+        """
         return self._phys_map
 
     @property
     def col_type(self):
+        """Collider type name.
+
+        :getter: yes
+        :setter: no
+        :type: str
+        """
         return self._col_type
 
     @property
     def pos(self):
+        """Collider's left top position.
+
+        :getter: yes
+        :setter: no
+        :type: :class:`Point`
+        """
         return self._pos
 
     def add_handler(self, other_type, callback=None):
@@ -212,4 +251,5 @@ class Collider(object):
         with collider of type `other_type`
         """
 
+        # pylint: disable=protected-access
         self._mgr._add_collision(self, other_type, callback)
