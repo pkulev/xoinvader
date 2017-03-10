@@ -1,6 +1,7 @@
 import uuid
 
 
+#pylint: disable=all
 class Entity(object):
     Catalog = {}
     __slots__ = ("name", "uid", "components")
