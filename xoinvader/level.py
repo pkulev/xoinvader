@@ -24,14 +24,27 @@ class Level(object):
 
     @property
     def speed(self):
+        """Relative wave's speed.
+
+        :getter: yes
+        :setter: yes
+        :type: int
+        """
         return self._speed
 
     @speed.setter
     def speed(self, value):
+        """Setter."""
         self._speed = value
 
     @property
     def running(self):
+        """If event sequence currently advances.
+
+        :getter: yes
+        :setter: no
+        :type: bool
+        """
         return self._running
 
     def add_event(self, time, callback):
@@ -39,7 +52,7 @@ class Level(object):
 
         :param int time: point in time relative to level start when to run
         `callback`. Callback is fired when `_counter` exceeds provided value
-        :param function callback: callback to be runned when wave reaches `time`
+        :param function callback: callback to be fired when wave reaches `time`
         """
         self._events.setdefault(time, []).append(callback)
 

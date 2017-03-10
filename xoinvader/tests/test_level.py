@@ -1,11 +1,13 @@
-import pytest
+"""Test xoinvader.level module."""
 
 from xoinvader.level import Level
 
 
+# pylint: disable=invalid-name,protected-access,missing-docstring
 def test_wave():
     e = Level()
 
+    # pylint: disable=too-few-public-methods
     class MockObject(object):
         def __init__(self):
             self.value = 0
