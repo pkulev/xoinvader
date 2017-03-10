@@ -23,7 +23,7 @@ def test_application():
 
     # One element
     app.register_state(StateMock)
-    assert len(app._states) == 1
+    assert len(app._states) == 1  # pylint: disable=protected-access
     assert app.state == StateMock.__name__
 
     assert pytest.raises(KeyError, lambda: setattr(app, "state", "test"))
