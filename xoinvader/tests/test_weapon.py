@@ -1,9 +1,12 @@
+"""Test xoinvader.weapon module."""
+
 import pytest
 
 import xoinvader
 from xoinvader import weapon
 
 
+# pylint: disable=missing-docstring
 @pytest.mark.skip
 def test_weapon(monkeypatch):
     monkeypatch.setattr(weapon, "CONFIG", {})
