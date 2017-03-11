@@ -27,7 +27,7 @@ help:
 	@printf "USAGE: make [params]\n"
 
 lint:
-	@find . -name "*.py" -exec pylint -f colorized {} \;
+	@$(PYTEST) --pylint -m pylint -vvvv $(PYTEST_ARGS)
 
 test:
 	@$(PYTEST) --cov=./xoinvader --cov-report=html --strict -v $(PYTEST_ARGS)
@@ -42,8 +42,10 @@ view_docs: docs
 	@xdg-open $(DOCPATH)/build/html/index.html
 
 count:
-	@find . -name "*.py" -not -path "./xoinvader/tests/*" | xargs wc -l game
-	@find ./xoinvader/tests -name "*.py" | xargs wc -l
-	@find . -name "*.json" | xargs wc -l
+	@printf "Sources:\n" && git ls-files "*.py" | grep -v "tests\/" | xargs wc -l
+	@printf "Tests:\n" && git ls-files "*/tests/*.py" | xargs wc -l
+	@printf "Configs:\n" && git ls-files "*.json" | xargs wc -l
+	@printf "Documentation:\n" && git ls-files "*.rst" | xargs wc -l
+	@printf "All files:\n" && git ls-files "*.rst" "*.py" "*.json" | xargs wc -l | tail -n 1
 
 .PHONY: all clean install devel help lint test view count docs view_docs

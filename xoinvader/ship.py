@@ -9,9 +9,11 @@ from xoinvader.collision import Collider
 from xoinvader.common import Settings, get_json_config
 
 
+# pylint: disable=missing-docstring
 CONFIG = get_json_config(Settings.path.config.ships)
 
 
+# pylint: disable=too-many-instance-attributes
 class TestShip(Entity):
     # TODO: border? settings?
     def __init__(self, pos, border=None):
@@ -46,6 +48,10 @@ class TestShip(Entity):
         self._shield = int(config.shield)
         self._max_hull = int(config.max_hull)
         self._max_shield = int(config.max_shield)
+
+    @property
+    def x(self):
+        return self._x
 
     @property
     def pos(self):
@@ -90,8 +96,7 @@ class TestShip(Entity):
 
         if self._fire:
             try:
-                self._weapon.make_shot(Point(x=self._pos.x + self._wbay.x,
-                                             y=self._pos.y + self._wbay.y))
+                self._weapon.make_shot(self._pos + self._wbay)
             except ValueError:
                 self.next_weapon()
 
@@ -124,7 +129,7 @@ class Ship(Renderable):
         self._shield = None
 
         # first initialization
-        self._load_config(CONFIG[self.__class__.__name__])
+        self._load_config(CONFIG[self._type])
 
     def _load_config(self, config):
         """Load config from mapping."""
@@ -199,6 +204,7 @@ class Ship(Renderable):
 
     def add_weapon(self, weapon):
         """Add new weapon."""
+
         self._weapons.append(weapon)
         self._weapon = weapon
 
@@ -223,8 +229,7 @@ class Ship(Renderable):
 
         if self._fire:
             try:
-                self._weapon.make_shot(Point(x=self._pos.x + self._wbay.x,
-                                             y=self._pos.y + self._wbay.y))
+                self._weapon.make_shot(self._pos + self._wbay)
             except ValueError:
                 self.next_weapon()
 
@@ -232,6 +237,7 @@ class Ship(Renderable):
 
     def take_damage(self, damage):
         """Calculate and apply damage to shield and hull."""
+
         if self._shield < damage:
             rest_damage = damage - self._shield
             self._shield = 0
@@ -243,6 +249,7 @@ class Ship(Renderable):
 
     def refresh_shield(self, amount=1):
         """Refresh shield."""
+
         if self._shield == self._max_shield:
             return
 
@@ -257,14 +264,18 @@ class GenericXEnemy(Ship):
 
     def __init__(self, pos, border):
         super(GenericXEnemy, self).__init__(pos, border)
-        self._image = Surface([['x', '^', 'x'],
-                               [' ', 'X', ' '],
-                               [' ', '*', ' ']])
-        self._collider = Collider(self.__class__.__name__,
-                                  ["###",
-                                   ".#.",
-                                   ".#."],  # benis :DDD
-                                  self._pos)
+        self._image = Surface([
+            "x^x",
+            " X ",
+            " * ",
+        ])
+
+        self._collider = Collider(
+            self._type, [
+                "###",
+                ".#.",
+                ".#.",
+            ], self._pos)
 
         self.add_weapon(EBlaster())
         self._fire = True
@@ -289,23 +300,24 @@ class Playership(Ship):
         super(Playership, self).__init__(pos, border)
 
         self._image = Surface([
-            [' ', ' ', 'O', ' ', ' '],
-            ['<', '=', 'H', '=', '>'],
-            [' ', '*', ' ', '*', ' ']])
+            "  O  ",
+            "<=H=>",
+            " * * ",
+        ])
 
         self._pos = Point(
             x=pos.x - self._image.width // 2,
             y=pos.y - self._image.height)
 
-        self._collider = Collider(self.__class__.__name__,
-                                  ["  #  ",
-                                   "#####",
-                                   " # # "],
-                                  self._pos)
-        def enemy_clash(_):
-            self.take_damage(10)
+        self._collider = Collider(
+            self._type, [
+                "  #  ",
+                "#####",
+                " # # "
+            ], self._pos)
 
-        self._collider.add_handler(GenericXEnemy.__name__, enemy_clash)
+        self._collider.add_handler(
+            GenericXEnemy.__name__, lambda _: self.take_damage(5))
         self._border = border
 
         self._fire = False
@@ -319,6 +331,7 @@ class Playership(Ship):
 
     def get_weapon_info(self):
         """Return information about current weapon."""
+
         return "Weapon: {w} | [{c}/{m}]".format(
             w=self._weapon.type,
             c=self._weapon.ammo,

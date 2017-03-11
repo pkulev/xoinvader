@@ -1,5 +1,7 @@
-import pytest
+"""Test xoinvader.background module."""
+
 from copy import copy
+import pytest
 
 from xoinvader.background import Background, Chunk, load_chunks
 from xoinvader.common import Settings
@@ -9,6 +11,7 @@ from xoinvader.utils import Point
 PREFIX = "xoinvader/tests/fixtures/"
 
 
+# pylint: disable=invalid-name,protected-access,missing-docstring
 def test_chunk():
     c = Chunk("test")
     assert not c.lines
@@ -42,6 +45,7 @@ def test_load_chunks():
     assert d[0][0] == "qwe"
 
 
+# pylint: disable=too-many-statements
 def test_background():
     Settings.layout.field.edge.x = 3
     Settings.layout.field.edge.y = 2

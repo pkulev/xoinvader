@@ -8,7 +8,6 @@ Keyframe:
 
 Objects have animation manager which manages animation graph and switching."""
 
-
 from operator import itemgetter
 
 from xoinvader.utils import Point, Timer
@@ -90,6 +89,8 @@ class AnimationManager(object):
             return  # TODO: think about method to change animation
 
 
+# pylint: disable=too-many-instance-attributes,too-many-arguments
+# pylint: disable=too-few-public-methods
 class Animation(object):
     """Animation unit.
 

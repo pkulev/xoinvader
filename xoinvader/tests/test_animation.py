@@ -1,3 +1,5 @@
+"""Test xoinvader.animation module."""
+
 import time
 
 import pytest
@@ -7,11 +9,14 @@ from xoinvader.animation import Animation, AnimationManager
 from xoinvader.utils import Point, isclose
 
 
+# pylint: disable=invalid-name,protected-access,missing-docstring
+# pylint: disable=too-few-public-methods
 class GameObject(object):
     """Game object mock."""
 
     def __init__(self):
         self.attr = 0
+        self.anim = None
 
 
 @pytest.mark.slow
@@ -104,7 +109,7 @@ def test_animation_manager():
     animgr = AnimationManager()
 
     with pytest.raises(AttributeError):
-        animgr.animation
+        assert animgr.animation
 
     assert not animgr._animation and animgr.update() is None
 

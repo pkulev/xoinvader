@@ -3,10 +3,10 @@
 
 import curses
 
-from xoinvader.render import Renderable
-from xoinvader.utils import Point, Surface, Timer
 from xoinvader.common import Settings, get_json_config
+from xoinvader.render import Renderable
 from xoinvader.sound import Mixer
+from xoinvader.utils import Point, Surface, Timer
 
 
 CONFIG = get_json_config(Settings.path.config.weapons)
@@ -14,11 +14,12 @@ INFINITE = "infinite"
 
 
 # TODO: think about composition
+# pylint: disable=too-many-instance-attributes,too-many-arguments
 class Weapon(Renderable):
-    """
-    Main weapon class that implements main methods and behaviour.
+    """Main weapon class that implements main methods and behaviour.
 
-    Callbacks for rendering: get_render_data(), remove_obsolete(pos)."""
+    Callbacks for rendering: get_render_data(), remove_obsolete(pos).
+    """
 
     def __init__(self, ammo, max_ammo, cooldown, damage, radius, dy):
         self._type = self.__class__.__name__
@@ -40,6 +41,7 @@ class Weapon(Renderable):
 
     def _reload(self):
         """Calls by timer when weapon is ready to fire."""
+
         # TODO: Play sound
         self.ready = True
         self._timer.stop()
@@ -47,6 +49,7 @@ class Weapon(Renderable):
 
     def make_shot(self, pos):
         """Check load and ammo, perform shot if ready."""
+
         if not self.ready:
             return
 
@@ -92,12 +95,14 @@ class Weapon(Renderable):
 
     def load_percentage(self):
         """Return weapon load percentage."""
+
         if self._ammo and self.ready:
             return 100.0
         return self._timer.get_elapsed() * 100.0 / self._cooldown
 
     def update(self):
         """Update coords."""
+
         if self.ready and not self._coords:
             return
 
@@ -113,7 +118,7 @@ class Blaster(Weapon):
 
     def __init__(self):
         super(Blaster, self).__init__(**CONFIG[self.__class__.__name__])
-        self._image = Surface([["^"]], style=[[curses.A_BOLD]])
+        self._image = Surface(["^"], style=[[curses.A_BOLD]])
 
 
 class EBlaster(Weapon):
@@ -121,7 +126,7 @@ class EBlaster(Weapon):
 
     def __init__(self):
         super(EBlaster, self).__init__(**CONFIG[self.__class__.__name__])
-        self._image = Surface([[":"]])
+        self._image = Surface([":"])
 
 
 class Laser(Weapon):
@@ -129,7 +134,7 @@ class Laser(Weapon):
 
     def __init__(self):
         super(Laser, self).__init__(**CONFIG[self.__class__.__name__])
-        self._image = Surface([["|"]], style=[[curses.A_BOLD]])
+        self._image = Surface(["|"], style=[[curses.A_BOLD]])
 
 
 class UM(Weapon):
@@ -137,7 +142,8 @@ class UM(Weapon):
 
     def __init__(self):
         super(UM, self).__init__(**CONFIG[self.__class__.__name__])
-        self._image = Surface([["^"],
-                               ["|"],
-                               ["*"]],
-                              style=[[curses.A_BOLD] for _ in range(3)])
+        self._image = Surface([
+            "^",
+            "|",
+            "*"
+        ], style=[[curses.A_BOLD] for _ in range(3)])

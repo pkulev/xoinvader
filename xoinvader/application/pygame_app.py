@@ -5,6 +5,7 @@ import pygame
 from xoinvader.application import Application
 
 
+# pylint: disable=no-member
 class PygameApplication(Application):
     """Pygame powered application backend.
 

@@ -1,6 +1,7 @@
 """Base handler class."""
 
 
+# pylint: disable=too-few-public-methods
 class Command(object):
     """Base command class."""
 

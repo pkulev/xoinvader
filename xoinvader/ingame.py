@@ -1,6 +1,5 @@
 """InGameState-specific input/event handlers and commands."""
 
-
 import curses
 import logging
 
@@ -15,12 +14,13 @@ from xoinvader.level import Level
 from xoinvader.render import render_objects
 from xoinvader.ship import GenericXEnemy, Playership
 from xoinvader.state import State
-from xoinvader.utils import Point
+from xoinvader.utils import Point, dotdict
 
 
 LOG = logging.getLogger(__name__)
 
 
+# pylint: disable=missing-docstring
 def move_left_command(actor):
     actor.move_left()
 
@@ -45,6 +45,7 @@ def take_damage_command(actor):
     actor.take_damage(5)
 
 
+# pylint: disable=protected-access
 def switch_actor_command(actor):
     actor._actor, actor._owner.enemy = actor._owner.enemy, actor._actor
 
@@ -53,6 +54,7 @@ def to_mainmenu_command(actor):
     actor.owner.state = "MainMenuState"
 
 
+# pylint: disable=too-few-public-methods
 class InGameInputHandler(Handler):
 
     def __init__(self, owner):
@@ -93,6 +95,7 @@ class InGameEventHandler(Handler):
         # Some other event logic
 
 
+# pylint: disable=invalid-name
 class TestLevel(Level):
     def __init__(self, state_object_adder, speed):
         super(TestLevel, self).__init__(speed)
@@ -115,15 +118,14 @@ class TestLevel(Level):
 
         :param int y_offset: y of top left corner of image
         :param int x_start: x level of left corner of image
-        :param int direction: -1 or 1, depending of direction of moving: left or
-        right
+        :param int direction: direction of moving: -1 is left, 1 is right
         """
 
         def new_x(d):
             return x_start - d * direction
 
         return [
-            (0,   Point(x_start,   y_offset)),
+            (0, Point(x_start, y_offset)),
             (4.0, Point(x_start, y_offset + 20)),
             (7.0, Point(new_x(30), y_offset + 10)),
         ]
@@ -211,35 +213,43 @@ class InGameState(State):
             pass
 
     def _create_gui(self):
-        """Create user intarface."""
-        whatever = lambda val: 0.0 <= val <= 100.0
-        high = lambda val: 70.0 <= val <= 100.0
-        normal = lambda val: 35.0 <= val < 70.0
-        low = lambda val: 0.0 <= val < 35.0
+        """Create user interface."""
+
+        comp = dotdict(
+            whatever=lambda val: 0.0 <= val <= 100.0,
+            high=lambda val: 70.0 <= val <= 100.0,
+            normal=lambda val: 35.0 <= val < 70.0,
+            low=lambda val: 0.0 <= val < 35.0,
+        )
 
         return [
-            Bar(pos=Settings.layout.gui.bar.health, prefix="Hull: ",
+            Bar(
+                pos=Settings.layout.gui.bar.health, prefix="Hull: ",
                 general_style=curses.A_BOLD, stylemap={
-                    high: Style().gui["dp_ok"],
-                    normal: Style().gui["dp_middle"],
-                    low: Style().gui["dp_critical"]
+                    comp.high: Style().gui["dp_ok"],
+                    comp.normal: Style().gui["dp_middle"],
+                    comp.low: Style().gui["dp_critical"]
                 }, callback=self._actor.get_hull_percentage),
-            Bar(pos=Settings.layout.gui.bar.shield, prefix="Shield: ",
+            Bar(
+                pos=Settings.layout.gui.bar.shield, prefix="Shield: ",
                 general_style=curses.A_BOLD, stylemap={
-                    high: Style().gui["sh_ok"],
-                    normal: Style().gui["sh_mid"],
-                    low: Style().gui["dp_critical"]
+                    comp.high: Style().gui["sh_ok"],
+                    comp.normal: Style().gui["sh_mid"],
+                    comp.low: Style().gui["dp_critical"]
                 }, callback=self._actor.get_shield_percentage),
-            Bar(pos=Settings.layout.gui.bar.weapon,
+            Bar(
+                pos=Settings.layout.gui.bar.weapon,
                 stylemap={
-                    whatever: Style().gui["dp_ok"]
+                    comp.whatever: Style().gui["dp_ok"]
                 }, callback=self._actor.get_weapon_percentage),
-            WeaponWidget(Settings.layout.gui.info.weapon,
-                         self.actor.get_weapon_info)
+            WeaponWidget(
+                Settings.layout.gui.info.weapon,
+                self.actor.get_weapon_info)
         ] + [
             TextWidget(Point(2, 0), "Score: %s" % 0),
-            TextWidget(Point(Settings.layout.field.edge.x // 2 - 4, 0),
-                       "XOInvader", curses.A_BOLD)
+            TextWidget(
+                Point(Settings.layout.field.edge.x // 2 - 4, 0),
+                "XOInvader", curses.A_BOLD)
         ]
 
     def events(self):

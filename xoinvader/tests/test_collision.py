@@ -1,12 +1,15 @@
+"""Test xoinvader.collision module."""
+
 import pytest
 
 from xoinvader.collision import Collider, CollisionManager, TypePair
 from xoinvader.utils import Point
 
 
+# pylint: disable=invalid-name,protected-access,missing-docstring
 def test_collision():
     with pytest.raises(ValueError):
-        c = Collider("", [], None)
+        c = Collider("", [], None)  # pylint: disable=unused-variable
     cm = CollisionManager()
     c1 = Collider(
         "",
@@ -73,6 +76,7 @@ def test_collision_manager():
     gc.collect()
     assert Collider.__manager__ is None
 
+    # pylint: disable=too-few-public-methods
     class MockManager(object):
         def __call__(self):
             return self
@@ -80,12 +84,15 @@ def test_collision_manager():
         def _add(self, _collider):
             pass
 
+        def _add_collision(self, other_type, callback=None):
+            pass
+
     m = MockManager()
     Collider.__manager__ = m
     c = Collider("", [], None)
     mm = CollisionManager()
     with pytest.raises(ValueError):
-        mm._add_collision(c, "other", lambda: _)
+        mm._add_collision(c, "other", lambda: 0)
     assert not mm._colliders
     assert not mm._collisions
 
@@ -94,30 +101,33 @@ def test_collision_manager():
 
     c1 = Collider("t1", [], None)
     c2 = Collider("t2", [], None)
-    mm._add_collision(c1, "t1", lambda: _)
+    mm._add_collision(c1, "t1", lambda: 0)
     assert len(mm._collisions) == 1
-    mm._add_collision(c2, "t2", lambda: _)
+    mm._add_collision(c2, "t2", lambda: 0)
     assert len(mm._collisions) == 2
-    mm._add_collision(c2, "t1", lambda: _)
+    mm._add_collision(c2, "t1", lambda: 0)
     assert len(mm._collisions) == 3
-    c2.add_handler("t1", lambda: _)
+    c2.add_handler("t1", lambda: 0)
     t = TypePair("t1", "t2")
     assert len(mm._collisions) == 3
     assert len(mm._collisions[t]) == 2
+
 
 def test_manager_update():
     Collider.__manager__ = None
     mm = CollisionManager()
 
+    # pylint: disable=too-few-public-methods
     class Ship(object):
         def __init__(self):
             self.health = 10
             self.pos = Point(0, 10)
-            self.collider = Collider("ship",
-                                     ["..#..",
-                                      "#####",
-                                      ".#.#."],
-                                     Point(0, 10))
+            self.collider = Collider(
+                "ship", [
+                    "..#..",
+                    "#####",
+                    ".#.#."
+                ], Point(0, 10))
 
         def rocket_collision(self):
             def callback(_):
@@ -127,11 +137,12 @@ def test_manager_update():
     ship = Ship()
 
     r_pos = Point(0, 0)
-    rocket = Collider("rocket",
-                      ["#",
-                       "#",
-                       "#"],
-                      r_pos)
+    rocket = Collider(  # pylint: disable=unused-variable
+        "rocket", [
+            "#",
+            "#",
+            "#"
+        ], r_pos)
 
     ship.collider.add_handler("rocket", ship.rocket_collision())
 

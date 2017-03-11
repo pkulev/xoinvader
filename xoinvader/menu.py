@@ -1,6 +1,5 @@
 """MainMenuState-related input and event handlers."""
 
-
 from xoinvader.gui import TextWidget, MenuItemWidget, PopUpNotificationWidget
 from xoinvader.keys import K_ESCAPE, K_R, K_N
 from xoinvader.state import State
@@ -9,6 +8,7 @@ from xoinvader.render import render_objects
 from xoinvader.handlers import Handler
 
 
+# pylint: disable=missing-docstring
 def exit_game_command(actor):
     actor.owner.stop()
 
@@ -21,6 +21,7 @@ def show_popup(actor):
     actor.notify("some_text")
 
 
+# pylint: disable=too-few-public-methods
 class MainMenuInputHandler(Handler):
 
     def __init__(self, owner):
@@ -42,6 +43,7 @@ class MainMenuInputHandler(Handler):
                 command(self._actor)
 
 
+# pylint: disable=too-few-public-methods
 class MainMenuEventHandler(Handler):
 
     def __init__(self, owner):
@@ -87,9 +89,11 @@ class MainMenuState(State):
         self._screen = owner.screen
         self._actor = None  # Should be some of Menu instances?
 
-        self._objects = [TextWidget(Point(4, 4), "Whoooch"),
-                         MenuItemWidget(Point(10, 10), "First menu item"),
-                         MenuItemWidget(Point(10, 11), "Second menu item")]
+        self._objects = [
+            TextWidget(Point(4, 4), "Whoooch"),
+            MenuItemWidget(Point(10, 10), "First menu item"),
+            MenuItemWidget(Point(10, 11), "Second menu item")
+        ]
         self._objects[1].select()
 
         self._current_menu = None
@@ -98,9 +102,8 @@ class MainMenuState(State):
     def notify(self, text, pos=Point(15, 15)):
         self._objects.append(
             PopUpNotificationWidget(
-                pos,
-                text or "ololo",
-                callback=lambda identity: self._objects.remove(identity)))
+                pos, text or "ololo",
+                callback=self._objects.remove))
 
 #   def register_menu_item(self, caption, item_action_list):
     def events(self):

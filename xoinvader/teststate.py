@@ -1,3 +1,5 @@
+"""State for testing on pygame-sdl driver."""
+
 import pygame
 import pygame.locals
 
@@ -9,6 +11,7 @@ from xoinvader.state import State
 from xoinvader.common import Settings
 
 
+# pylint: disable=all
 class TestStateInputHandler(Handler):
 
     def __init__(self, owner):

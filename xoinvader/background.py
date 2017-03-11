@@ -1,6 +1,5 @@
 """Level background."""
 
-
 from xoinvader.common import Settings
 from xoinvader.render import Renderable
 from xoinvader.utils import Point, Surface
@@ -23,10 +22,22 @@ class Chunk(object):
 
     @property
     def name(self):
+        """Chunk name.
+
+        :getter: yes
+        :setter: no
+        :type: str
+        """
         return self._name
 
     @property
     def lines(self):
+        """All chunk lines.
+
+        :getter: yes
+        :setter: no
+        :type: list
+        """
         return self._lines
 
     def add_line(self, line):
@@ -99,6 +110,7 @@ def load_chunks(filename, trim_width=None):
     return chunks
 
 
+# pylint: disable=too-many-instance-attributes
 class Background(Renderable):
     """Class for storing and managing level background.
 
@@ -112,7 +124,6 @@ class Background(Renderable):
     :param list background: list of background lines. You may change it at any
     time. This list directly converts into Surface which then goes to the
     renderer
-
     """
 
     render_priority = -1000  # TODO: render-priority
@@ -124,6 +135,7 @@ class Background(Renderable):
         self._chunks = []
         self._background = []
 
+        # pylint: disable=invalid-name
         self._w = Settings.layout.field.edge.x
         self._h = Settings.layout.field.edge.y
         self._background_surface = None
@@ -137,42 +149,77 @@ class Background(Renderable):
 
     @property
     def loop(self):
+        """Loop current chunk.
+
+        :getter: yes
+        :setter: yes
+        :type: bool
+        """
         return self._loop
 
     @loop.setter
     def loop(self, value):
+        """Setter."""
         self._loop = value
 
     @property
     def loop_all(self):
+        """Loop all chunks.
+
+        :getter: yes
+        :setter: yes
+        :type: bool
+        """
         return self._loop_all
 
     @loop_all.setter
     def loop_all(self, value):
+        """Setter."""
         self._loop_all = value
 
     @property
     def speed(self):
+        """Speed of background advance.
+
+        :getter: yes
+        :setter: yes
+        :type: int
+        """
         return self._speed
 
     @speed.setter
     def speed(self, value):
+        """Setter."""
         self._speed = value
 
     @property
     def chunks(self):
+        """Background chunks.
+
+        :getter: yes
+        :setter: yes
+        :type: list
+        """
         return self._chunks
 
     @chunks.setter
     def chunks(self, value):
+        """Setter."""
         self._chunks = value
 
     @property
     def background(self):
+        """Background lines.
+
+        :getter: yes
+        :setter: yes
+        :type: list
+        """
         return self._background
 
     @background.setter
     def background(self, value):
+        """Setter."""
         self._background = value
 
     def clear(self):

@@ -1,8 +1,12 @@
 """Sound files handling."""
 
+import logging
 
 from xoinvader.common import Settings
 from xoinvader.utils import Singleton
+
+
+LOG = logging.getLogger(__name__)
 
 
 def get_mixer():
@@ -20,6 +24,7 @@ def get_mixer():
     return choises[Settings.system.no_sound]
 
 
+# pylint: disable=no-self-use
 class DummyMixer(object):
     """Mixer stub for no-sound mode."""
 
@@ -28,7 +33,7 @@ class DummyMixer(object):
 
     def register(self, *args, **kwargs):
         """Dummy register."""
-        pass  # TODO: logging: [sound::DummyMixer] Registering ...
+        LOG.debug("Registering: %s; %s", args, kwargs)
 
     def play(self, *args, **kwargs):
         """Dummy play."""
@@ -36,11 +41,11 @@ class DummyMixer(object):
 
     def mute(self):
         """Dummy mute."""
-        pass
+        LOG.debug("Muting.")
 
     def unmute(self):
         """Dummy unmute."""
-        pass
+        LOG.debug("Unmuting.")
 
 
 class PygameMixer(object, metaclass=Singleton):
@@ -59,11 +64,14 @@ class PygameMixer(object, metaclass=Singleton):
 
     def register(self, object_id, sound_path):
         """Map object classname to sound object."""
+
+        LOG.debug("Registering %s, %s.", object_id, sound_path)
         sound = self.pygame.mixer.Sound(sound_path)
         self._sounds.update({object_id: sound})
 
     def play(self, object_id, *args, **kwargs):
         """Play sound object."""
+
         if self._mute:
             return
 

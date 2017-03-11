@@ -1,5 +1,6 @@
 """Basic Entity."""
 # TODO: better module docstring
+# pylint: disable=all
 
 from xoinvader import constants
 from xoinvader.common import Settings

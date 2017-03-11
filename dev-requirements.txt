@@ -2,8 +2,9 @@ codecov
 coverage
 flake8
 pytest
-pytest-coverage
 pylint
+pytest-coverage
+pytest-pylint
 sphinx
 tornado
 tox
