@@ -39,6 +39,7 @@ def setup_logger(name, debug=False, msgfmt=None, timefmt=None):
     """
 
     logger = logging.getLogger(name)
+    logger.propagate = False
     level = logging.DEBUG if debug else logging.INFO
     logger.setLevel(level)
     handler = logging.FileHandler("{0}.log".format(name))
