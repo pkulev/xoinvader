@@ -1,8 +1,10 @@
 """Game weapon classes."""
 
 
-import curses
-
+from xoinvader.charge import (
+    BasicPlasmaCannon, EBasicPlasmaCannon,
+    BasicLaserCharge, BasicUnguidedMissile
+)
 from xoinvader.common import Settings, get_json_config
 from xoinvader.render import Renderable
 from xoinvader.sound import Mixer
@@ -21,20 +23,21 @@ class Weapon(Renderable):
     Callbacks for rendering: get_render_data(), remove_obsolete(pos).
     """
 
-    def __init__(self, ammo, max_ammo, cooldown, damage, radius, dy):
+    allowed_charges = []
+    default_charge = None
+
+    def __init__(self, ammo, max_ammo, cooldown):
         self._type = self.__class__.__name__
-        self._image = None
+        self._image = Surface([" "])  # stub for now, to render nothing
+        self._current_charge = self.default_charge
         self._ammo = ammo
         self._max_ammo = max_ammo
         self._cooldown = cooldown
-        self._damage = damage
-        self._radius = radius
-        self._dy = dy
         self._current_cooldown = self._cooldown
 
         self.ready = True
         self._timer = Timer(self._cooldown, self._reload)
-        self._coords = []
+        self._pos = Point()  # stub for now, to render nothing as weapon
         self._loud = True
 
         Mixer().register(self._type, Settings.path.sound.weapon[self._type])
@@ -48,15 +51,19 @@ class Weapon(Renderable):
         self._timer.reset()
 
     def make_shot(self, pos):
-        """Check load and ammo, perform shot if ready."""
+        """Check load and ammo, perform shot if ready.
+
+        :param xoinvader.utils.Point pos: position of fire
+        :raise ValueError: when no ammo
+        """
 
         if not self.ready:
             return
 
         if self._ammo == INFINITE:
-            self._coords.append(pos)
+            self._current_charge(pos)
         elif self._ammo > 0:
-            self._coords.append(pos)
+            self._current_charge(pos)
             self._ammo -= 1
 
         if self._ammo == 0:
@@ -73,10 +80,7 @@ class Weapon(Renderable):
             Mixer().play(self._type)
 
     def get_render_data(self):
-        return (self._coords, self._image.get_image())
-
-    def remove_obsolete(self, pos):
-        self._coords.remove(pos)
+        return ([self._pos], self._image.get_image())
 
     @property
     def ammo(self):
@@ -101,49 +105,49 @@ class Weapon(Renderable):
         return self._timer.get_elapsed() * 100.0 / self._cooldown
 
     def update(self):
-        """Update coords."""
+        """Update weapon timer."""
 
-        if self.ready and not self._coords:
+        if self.ready:
             return
 
-        new_coords = []
-        for i in self._coords:
-            new_coords.append(Point(x=i.x, y=i.y - self._dy))
-        self._coords = new_coords[:]
         self._timer.update()
 
 
 class Blaster(Weapon):
     """Basic player's weapon. Low damage, fast cooldown."""
 
+    allowed_charges = [BasicPlasmaCannon]
+    default_charge = BasicPlasmaCannon
+
     def __init__(self):
         super(Blaster, self).__init__(**CONFIG[self.__class__.__name__])
-        self._image = Surface(["^"], style=[[curses.A_BOLD]])
 
 
 class EBlaster(Weapon):
     """Basic enemy blaster. Almost identical to Blaster."""
 
+    allowed_charges = [EBasicPlasmaCannon]
+    default_charge = EBasicPlasmaCannon
+
     def __init__(self):
         super(EBlaster, self).__init__(**CONFIG[self.__class__.__name__])
-        self._image = Surface([":"])
 
 
 class Laser(Weapon):
     """Basic player's laser. Medium damage, medium cooldown."""
 
+    allowed_charges = [BasicLaserCharge]
+    default_charge = BasicLaserCharge
+
     def __init__(self):
         super(Laser, self).__init__(**CONFIG[self.__class__.__name__])
-        self._image = Surface(["|"], style=[[curses.A_BOLD]])
 
 
 class UM(Weapon):
     """Player's unguided missile. High damage, slow cooldown."""
 
+    allowed_charges = [BasicUnguidedMissile]
+    default_charge = BasicUnguidedMissile
+
     def __init__(self):
         super(UM, self).__init__(**CONFIG[self.__class__.__name__])
-        self._image = Surface([
-            "^",
-            "|",
-            "*"
-        ], style=[[curses.A_BOLD] for _ in range(3)])

@@ -2,33 +2,21 @@
     "Blaster": {
         "ammo": "infinite",
         "max_ammo": "infinite",
-        "cooldown": 0.2,
-        "damage": 1,
-        "radius": 0,
-        "dy": 1
+        "cooldown": 0.2
     },
     "Laser": {
         "ammo": 50,
         "max_ammo": 50,
-        "cooldown": 1,
-        "damage": 2,
-        "radius": 0,
-        "dy": 2
+        "cooldown": 1
     },
     "UM": {
         "ammo": 15,
         "max_ammo": 15,
-        "cooldown": 2,
-        "damage": 3,
-        "radius": 1,
-        "dy": 1
+        "cooldown": 2
     },
     "EBlaster": {
         "ammo": "infinite",
         "max_ammo": "infinite",
-        "cooldown": 0.7,
-        "damage": 25,
-        "radius": 1,
-        "dy": -1
+        "cooldown": 0.7
     }
 }
