@@ -75,7 +75,7 @@ class Application(object):
         :type: str
         """
         if self._state:
-            return self._state.__class__.__name__
+            return self._state
         else:
             raise AttributeError("There is no available state.")
 

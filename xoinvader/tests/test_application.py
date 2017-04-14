@@ -24,7 +24,7 @@ def test_application():
     # One element
     app.register_state(StateMock)
     assert len(app._states) == 1  # pylint: disable=protected-access
-    assert app.state == StateMock.__name__
+    assert isinstance(app.state, StateMock)
 
     assert pytest.raises(KeyError, lambda: setattr(app, "state", "test"))
 
@@ -32,10 +32,10 @@ def test_application():
     app.register_state(AnotherStateMock)
     assert len(app.states) == 2
     # Ensure that Application._state hasn't changed
-    assert app.state == StateMock.__name__
+    assert isinstance(app.state, StateMock)
 
     app.state = AnotherStateMock.__name__
-    assert app.state == AnotherStateMock.__name__
+    assert isinstance(app.state, AnotherStateMock)
 
 
 def test_curses_application(monkeypatch):
