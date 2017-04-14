@@ -1,5 +1,6 @@
 {
     "config": {
+        "charges": "/config/charges.json",
         "ships": "/config/ships.json",
         "weapons": "/config/weapons.json"
     },
