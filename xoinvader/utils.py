@@ -167,6 +167,19 @@ class Point(object):
 
         return self.x == other.x and self.y == other.y and self.z == other.z
 
+    def __getitem__(self, cons):
+        """Cast Point to selected type.
+
+        :param type cons: type to cast to
+
+        :return Point: with casted members
+        """
+
+        return Point(
+            x=cons(self.x),
+            y=cons(self.y),
+            z=cons(self.z))
+
 
 class Surface(object):
     """Representation of graphic objects.
