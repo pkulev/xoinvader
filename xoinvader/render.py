@@ -1,6 +1,5 @@
-"""
-    Module that renders graphics to screen.
-"""
+"""Rendering routines."""
+
 
 from operator import attrgetter
 
@@ -12,9 +11,18 @@ INVISIBLE_SYMBOLS = " "
 
 
 class Renderable(object):
-    """Base for renderable objects."""
+    """Base for renderable objects.
+
+    .. class-variables::
+
+    * render_priority (int): priority for renderer, greater -> rendered later
+
+    * draw_on_border (bool): allow or not drawing on border
+    if not allowed - renderer will send remove_obsolete signal to object
+    """
 
     render_priority = 0
+    draw_on_border = False
 
     def get_render_data(self):
         """Renderable.get_render_data(None) -> (gpos_list, data_gen)
@@ -40,8 +48,14 @@ class Renderable(object):
         pass
 
 
+# TODO: [advanced-render]
+# * use render for curses and SDL windows
 def render_objects(objects, screen):
-    """Render all renderable objects."""
+    """Render all renderable objects.
+
+    :param collections.Iterable objects: objects to render
+    :param curses._Window screen: curses screen
+    """
     border = Point(*screen.getmaxyx()[::-1])
 
     # TODO: Move sorting to some kind of object manager
@@ -52,11 +66,12 @@ def render_objects(objects, screen):
         for data in data_gen:
             for gpos in gpos_list:
                 lpos, image, style = data
-                cpos = gpos + lpos
+                cpos = (gpos + lpos)[int]
 
-                if (cpos.x >= border.x or cpos.y >= border.y) \
-                   or (cpos.x <= 0 or cpos.y <= 0):
-
+                if (
+                        (cpos.x >= border.x - 1 or cpos.y >= border.y - 1) or
+                        (cpos.x <= 0 or cpos.y <= 0)
+                ) and not obj.draw_on_border:
                     obj.remove_obsolete(gpos)
                     continue
 
@@ -64,6 +79,6 @@ def render_objects(objects, screen):
                     continue
 
                 if style:
-                    screen.addstr(int(cpos.y), int(cpos.x), image, style)
+                    screen.addstr(cpos.y, cpos.x, image, style)
                 else:
-                    screen.addstr(int(cpos.y), int(cpos.x), image)
+                    screen.addstr(cpos.y, cpos.x, image)

@@ -24,6 +24,7 @@ class TextWidget(Renderable):
     """
 
     render_priority = 1
+    draw_on_border = True
 
     def __init__(self, pos, text, style=None):
         self._pos = pos
@@ -194,6 +195,7 @@ class WeaponWidget(Renderable):
     """
 
     render_priority = 1
+    draw_on_border = True
 
     def __init__(self, pos, get_data):
         self._pos = pos
@@ -245,6 +247,7 @@ class Bar(Renderable):
     """
 
     render_priority = 1
+    draw_on_border = True
 
     def __init__(
             self, pos,
