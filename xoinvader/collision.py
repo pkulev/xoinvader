@@ -78,6 +78,7 @@ class CollisionManager(object):
         """Add collider."""
         self._colliders.append(collider)
 
+    # pylint: disable=too-many-nested-blocks
     def update(self):
         """Detect and process all collisions."""
 
