@@ -212,6 +212,20 @@ class InGameState(State):
         except AttributeError:
             pass
 
+    def remove(self, obj):
+        """Remove GameObject from State's list of objects.
+
+        Removed objects should be collected by GC.
+
+        :param object obj: GameObject
+        """
+
+        LOG.debug("%s", obj)
+        try:
+            self._objects.remove(obj)
+        except ValueError:
+            LOG.exception("Object %s is not in State's object list.", obj)
+
     def _create_gui(self):
         """Create user interface."""
 
