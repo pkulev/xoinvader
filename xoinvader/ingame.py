@@ -202,13 +202,16 @@ class InGameState(State):
 
         obj = obj if isinstance(obj, (list, tuple)) else [obj]
         self._objects.extend(obj)
+        LOG.debug("%s", obj)
 
         # TODO: Because we don't have common GameObject interface
         # This is temporary smellcode
         try:
             for item in obj:
                 if item.compound:
-                    self._objects.extend(item.get_renderable_objects())
+                    subitems = item.get_renderable_objects()
+                    LOG.debug("Subitems: %s", subitems)
+                    self._objects.extend(subitems)
         except AttributeError:
             pass
 
