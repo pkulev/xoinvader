@@ -15,12 +15,15 @@ class Renderable(object):
 
     .. class-variables::
 
+    * compound (bool): if object consists of other renderables
+
     * render_priority (int): priority for renderer, greater -> rendered later
 
     * draw_on_border (bool): allow or not drawing on border
     if not allowed - renderer will send remove_obsolete signal to object
     """
 
+    compound = False
     render_priority = 0
     draw_on_border = False
 

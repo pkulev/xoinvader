@@ -206,14 +206,11 @@ class InGameState(State):
 
         # TODO: Because we don't have common GameObject interface
         # This is temporary smellcode
-        try:
-            for item in obj:
-                if item.compound:
-                    subitems = item.get_renderable_objects()
-                    LOG.debug("Subitems: %s", subitems)
-                    self._objects.extend(subitems)
-        except AttributeError:
-            pass
+        for item in obj:
+            if item.compound:
+                subitems = item.get_renderable_objects()
+                LOG.debug("Subitems: %s", subitems)
+                self._objects.extend(subitems)
 
     def remove(self, obj):
         """Remove GameObject from State's list of objects.
