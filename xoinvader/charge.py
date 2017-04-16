@@ -36,12 +36,24 @@ class WeaponCharge(Renderable):
         self._dx = dx
         self._dy = dy
 
+        # Set to True means that object in destroying phase
+        # and will ignore remove_obsolete signal
+        self._destroy = False
+
     def get_render_data(self):
         return ([self._pos], self._image.get_image())
 
     def remove_obsolete(self, pos):
-        LOG.debug("%s remove obsolete.", self._type)
-        application.get_current().state.remove(self)
+        border = Settings.layout.field.border
+        pos = self._pos[int]
+        if (
+                pos.x > self._image.width + border.x or
+                pos.x + self._image.width < 0 or
+                int(pos.y) > self._image.height + border.y or
+                int(pos.y) + self._image.height < 0
+        ) and not self._destroy:
+            application.get_current().state.remove(self)
+            self._destroy = True
 
     def update(self):
         """Update coords."""
