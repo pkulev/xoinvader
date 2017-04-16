@@ -224,10 +224,17 @@ class InGameState(State):
         """
 
         LOG.debug("%s", obj)
+
         try:
+            if obj.compound:
+                for subobj in obj.get_renderable_objects():
+                    self._objects.remove(subobj)
+                    del subobj
             self._objects.remove(obj)
         except ValueError:
             LOG.exception("Object %s is not in State's object list.", obj)
+        finally:
+            del obj
 
     def _create_gui(self):
         """Create user interface."""
