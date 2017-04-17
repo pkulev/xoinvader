@@ -3,6 +3,7 @@
 import curses
 import logging
 
+from xoinvader import application
 from xoinvader.background import Background
 from xoinvader.collision import CollisionManager
 from xoinvader.common import Settings
@@ -104,9 +105,11 @@ class TestLevel(Level):
         self._player_ship = Playership(
             Settings.layout.field.player, Settings.layout.field.edge)
         self._state_add(self._player_ship)
+        self._enemies = []
 
         self.add_event(1, self.spawn4)
         self.add_event(100, lambda: None)
+        self.add_event(200, self.del4)
 
         self.bg = Background(Settings.path.level1bg, speed=10, loop=True)
         self.bg.start(True)
@@ -159,10 +162,12 @@ class TestLevel(Level):
             "", e4, "_pos",
             self.get_keyframes(1, right_side - 20, -1), interp=True)
 
-        self._state_add(e1)
-        self._state_add(e2)
-        self._state_add(e3)
-        self._state_add(e4)
+        self._enemies = [e1, e2, e3, e4]
+        self._state_add(self._enemies)
+
+    def del4(self):
+        for enemy in self._enemies:
+            application.get_current().state.remove(enemy)
 
 
 class InGameState(State):
