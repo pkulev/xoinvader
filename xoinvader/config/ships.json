@@ -1,25 +1,24 @@
 {
-	"Playership" : {
-		"dx" : 1,
-		"hull" : 100,
-		"shield" : 100,
-		"max_hull" : 100,
-		"max_shield" : 100
-	},
-
-	"GenericXEnemy" : {
-		"dx" : 2,
-		"hull" : 100,
-		"shield" : 100,
-		"max_hull" : 100,
-		"max_shield" : 100
-	},
-    "TestShip" : {
-        "dx" : 10,
-        "dy" : 2,
-        "hull" : 100,
-        "shield" : 100,
-        "max_hull" : 100,
-        "max_shield" : 100
+    "Playership": {
+        "dx": 1,
+        "hull": 100,
+        "shield": 100,
+        "max_hull": 100,
+        "max_shield": 100
+    },
+    "GenericXEnemy": {
+        "dx": 2,
+        "hull": 100,
+        "shield": 100,
+        "max_hull": 100,
+        "max_shield": 100
+    },
+    "TestShip": {
+        "dx": 10,
+        "dy": 2,
+        "hull": 100,
+        "shield": 100,
+        "max_hull": 100,
+        "max_shield": 100
     }
 }

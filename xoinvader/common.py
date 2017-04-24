@@ -9,14 +9,27 @@ from xoinvader.utils import dotdict, Point
 
 
 def get_json_config(path):
-    """Return Settings object made from json."""
+    """Return Settings object made from json.
+
+    :param str path: path to config
+
+    :return xoinvader.utils.dotdict: parsed config
+    """
+
     with open(path) as fd:
         config = dotdict(json.load(fd))
     return config
 
 
 def rootify(root, config):
-    "Append paths in dict to root."
+    """Append paths in dict to root.
+
+    :param str root: common root
+    :param dict config:
+
+    :return dict: rootified config
+    """
+
     for key, path in config.items():
         if isinstance(path, dict):
             rootify(root, path)
@@ -71,6 +84,7 @@ def update_system_settings(args):
 
     :param dict args: arguments
     """
+
     for arg, val in args.items():
         if arg in Settings.system:
             Settings.system[arg] = val

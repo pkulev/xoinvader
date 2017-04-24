@@ -59,13 +59,20 @@ class PygameMixer(object, metaclass=Singleton):
 
         self.pygame.mixer.init()
 
-        self._sounds = dict()
+        self._sounds = {}
         self._mute = Settings.system.no_sound
 
     def register(self, object_id, sound_path):
-        """Map object classname to sound object."""
+        """Map object classname to sound object.
+
+        :param str object_id: now this is class name
+        :param str sound_path: path to object's sound
+        """
 
         LOG.debug("Registering %s, %s.", object_id, sound_path)
+        if object_id in self._sounds:
+            return
+
         sound = self.pygame.mixer.Sound(sound_path)
         self._sounds.update({object_id: sound})
 

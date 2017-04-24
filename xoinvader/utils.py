@@ -39,6 +39,7 @@ def setup_logger(name, debug=False, msgfmt=None, timefmt=None):
     """
 
     logger = logging.getLogger(name)
+    logger.propagate = False
     level = logging.DEBUG if debug else logging.INFO
     logger.setLevel(level)
     handler = logging.FileHandler("{0}.log".format(name))
@@ -165,6 +166,19 @@ class Point(object):
             raise self._value_error("eq", other)
 
         return self.x == other.x and self.y == other.y and self.z == other.z
+
+    def __getitem__(self, cons):
+        """Cast Point to selected type.
+
+        :param type cons: type to cast to
+
+        :return Point: with casted members
+        """
+
+        return Point(
+            x=cons(self.x),
+            y=cons(self.y),
+            z=cons(self.z))
 
 
 class Surface(object):

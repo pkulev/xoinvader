@@ -24,6 +24,7 @@ class TextWidget(Renderable):
     """
 
     render_priority = 1
+    draw_on_border = True
 
     def __init__(self, pos, text, style=None):
         self._pos = pos
@@ -163,11 +164,11 @@ class PopUpNotificationWidget(TextWidget):
     """
 
     def __init__(self, pos, text, style=None, timeout=1.0, callback=None):
-        super(self.__class__, self).__init__(pos, text, style)
+        super(PopUpNotificationWidget, self).__init__(pos, text, style)
 
         self._callback = callback
         self._timer = Timer(timeout, self._finalize_cb)
-        self._update_text = super(self.__class__, self).update
+        self._update_text = super(PopUpNotificationWidget, self).update
         self._timer.start()
 
     def _finalize_cb(self):
@@ -194,6 +195,7 @@ class WeaponWidget(Renderable):
     """
 
     render_priority = 1
+    draw_on_border = True
 
     def __init__(self, pos, get_data):
         self._pos = pos
@@ -245,6 +247,7 @@ class Bar(Renderable):
     """
 
     render_priority = 1
+    draw_on_border = True
 
     def __init__(
             self, pos,

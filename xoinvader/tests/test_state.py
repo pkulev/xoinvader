@@ -1,22 +1,23 @@
 """Tests for xoinvader.state module."""
 
 
-import unittest
+import pytest
 
 from xoinvader.state import State
 
 
-class TestState(unittest.TestCase):
-    """xoinvader.state.State"""
+def test_state():
+    """Test xoinvader.state.State base class."""
 
-    def test_base_class(self):
-        """base_class"""
-        state = State("owner")
+    state = State("owner")
 
-        self.assertEqual(state.owner, "owner")
-        self.assertEqual(state.actor, None)
-        self.assertEqual(state.screen, None)
+    assert state.owner == "owner"
+    assert state.actor is None
+    assert state.screen is None
 
-        self.assertRaises(NotImplementedError, state.events)
-        self.assertRaises(NotImplementedError, state.update)
-        self.assertRaises(NotImplementedError, state.render)
+    with pytest.raises(NotImplementedError):
+        state.events()
+    with pytest.raises(NotImplementedError):
+        state.update()
+    with pytest.raises(NotImplementedError):
+        state.render()

@@ -6,6 +6,30 @@ from xoinvader.constants import DEFAULT_FPS, DRIVER_NCURSES, DRIVER_SDL
 from xoinvader.common import Settings
 
 
+_CURRENT_APPLICATION = None
+"""Current application instance."""
+
+
+class ApplicationNotInitializedError(Exception):
+    """Raise when try to get not initialized application."""
+
+    def __init__(self):
+        super(ApplicationNotInitializedError, self).__init__(
+            "Application not initialized.")
+
+
+def get_current():
+    """Current application getter.
+
+    :return: current application object
+    """
+
+    if _CURRENT_APPLICATION is not None:
+        return _CURRENT_APPLICATION
+    else:
+        raise ApplicationNotInitializedError()
+
+
 # TODO: implement proper choosing by env
 def get_application():
     """Application class getter.
@@ -50,6 +74,9 @@ class Application(object):
     """
 
     def __init__(self):
+        global _CURRENT_APPLICATION
+        _CURRENT_APPLICATION = self
+
         self._state = None
         self._states = {}
         self._screen = None
@@ -75,7 +102,7 @@ class Application(object):
         :type: str
         """
         if self._state:
-            return self._state.__class__.__name__
+            return self._state
         else:
             raise AttributeError("There is no available state.")
 

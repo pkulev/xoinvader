@@ -1,0 +1,22 @@
+{
+    "BasicPlasmaCannon": {
+        "damage": 1,
+        "radius": 0,
+        "dy": -1
+    },
+    "EBasicPlasmaCannon": {
+        "damage": 25,
+        "radius": 1,
+        "dy": 1
+    },
+    "BasicLaserCharge": {
+        "damage": 2,
+        "radius": 0,
+        "dy": -2
+    },
+    "BasicUnguidedMissile": {
+        "damage": 3,
+        "radius": 3,
+        "dy": -1
+    }
+}
