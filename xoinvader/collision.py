@@ -49,6 +49,76 @@ class TypePair(object):
         return hash(self._pair)
 
 
+class Rect(object):
+    """Axis aligned bounding box."""
+
+    def __init__(self, topleft, bottomright):
+        self._topleft = topleft
+        self._bottomright = bottomright
+
+    @property
+    def topleft(self):
+        return self._topleft
+
+    @property
+    def bottomright(self):
+        return self._bottomright
+
+    def overlaps(self, other):
+        tl1 = self.toplfet
+        br1 = self.bottomright
+        tl2 = other.topleft
+        br2 = other.bottomright
+        if (
+                tl1.x >= br2.x
+                or tl1.y >= br2.y
+                or br1.x <= tl2.x
+                or br1.y <= tl2.y
+        ):
+            # Definelty not overlapping
+            return False
+        # Now find where exactly overlapping occured
+        tl = Point(
+            max(tl1.x, tl2.x),
+            max(tl1.y, tl2.y))
+        br = Point(
+            min(br1.x, br2.x),
+            min(br1.y, br2.y))
+        return Rect(tl, br)
+
+
+class QuadTree(object):
+    """Quadtree for pruning collisions.
+
+    Quadrants:
+     _________
+    |    |    |
+    | NW | NE |
+    |----+----|
+    | SW | SE |
+    |____|____|
+    """
+
+    def __init__(self, field):
+        self._region = field
+
+    def insert(self, obj):
+        if not self._obj:
+            self._obj = obj
+
+        tl = self._region.topleft
+        br = self._region.bottomright
+        half_width =  (br - tl).x / 2
+        half_height = (br - tl).y / 2
+        self._nw = QuadTree(Rect(self._region.topleft,
+                                 self._region.topleft
+                                 + Point(half_width, half_height)))
+        self._ne = QuadTree(Rect(Poself._region.topleft
+                                 + Point(half_width, half_height),
+                                 self._region))
+
+
+
 class CollisionManager(object):
     """Class for collision detection between known components.
 
@@ -176,7 +246,6 @@ class CollisionManager(object):
                 "unregistered collider {0}".format(collider))
         type_pair = TypePair(collider.col_type, other_classname)
         self._collisions.setdefault(type_pair, []).append(callback)
-
 
 class Collider(object):
     """Collider component class.
