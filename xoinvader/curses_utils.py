@@ -3,12 +3,15 @@
 import time
 import curses
 
+from six import add_metaclass
+
 from xoinvader.common import Settings
 from xoinvader.utils import Singleton
 
 
 # pylint: disable=too-few-public-methods
-class _Color(object, metaclass=Singleton):
+@add_metaclass(Singleton)
+class _Color(object):
     """Curses color mapping."""
 
     def __init__(self):
@@ -50,7 +53,8 @@ Color = _Color()  # pylint: disable=invalid-name
 
 
 # TODO: rewrite this shit
-class Style(object, metaclass=Singleton):
+@add_metaclass(Singleton)
+class Style(object):
     """Container for style mappings."""
 
     def __init__(self):

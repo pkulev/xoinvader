@@ -1,7 +1,10 @@
 """Rendering routines."""
 
 
+from abc import ABCMeta, abstractmethod
 from operator import attrgetter
+
+from six import add_metaclass
 
 from xoinvader.utils import Point
 
@@ -10,6 +13,7 @@ INVISIBLE_SYMBOLS = " "
 """Symbols that renderer must not render on the screen."""
 
 
+@add_metaclass(ABCMeta)
 class Renderable(object):
     """Base for renderable objects.
 
@@ -27,6 +31,7 @@ class Renderable(object):
     render_priority = 0
     draw_on_border = False
 
+    @abstractmethod
     def get_render_data(self):
         """Renderable.get_render_data(None) -> (gpos_list, data_gen)
 
@@ -37,7 +42,7 @@ class Renderable(object):
             * data_gen: generator which yields tuple (lpos, image, style)
             Example: (Point(x=5, y=5), "*", curses.A_BOLD)
         """
-        raise NotImplementedError
+        pass
 
     def remove_obsolete(self, pos):
         """Renderable.remove_obsolete(Point(int, int)) -> None
