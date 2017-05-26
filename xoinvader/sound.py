@@ -2,6 +2,8 @@
 
 import logging
 
+from six import add_metaclass
+
 from xoinvader.common import Settings
 from xoinvader.utils import Singleton
 
@@ -48,7 +50,8 @@ class DummyMixer(object):
         LOG.debug("Unmuting.")
 
 
-class PygameMixer(object, metaclass=Singleton):
+@add_metaclass(Singleton)
+class PygameMixer(object):
     """Handle sound files."""
 
     def __init__(self):
