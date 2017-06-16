@@ -2,6 +2,8 @@
 """ Graphical user interface widgets."""
 
 
+from __future__ import unicode_literals
+
 # TODO: make working with styles pretty
 from xoinvader.curses_utils import Style
 from xoinvader.render import Renderable
@@ -251,10 +253,10 @@ class Bar(Renderable):
 
     def __init__(
             self, pos,
-            prefix=u"", postfix=u"",
-            left=u"[", right=u"]",
-            marker=u"█", marker_style=None,
-            empty=u"-", empty_style=None,
+            prefix="", postfix="",
+            left="[", right="]",
+            marker="█", marker_style=None,
+            empty="-", empty_style=None,
             count=10, maxval=100,
             general_style=None,
             stylemap=None, callback=None
@@ -275,7 +277,7 @@ class Bar(Renderable):
         self._stylemap = stylemap
         self._callback = callback
 
-        self._template = u"".join([
+        self._template = "".join([
             str(val) for val in [
                 self._prefix,
                 self._left, "{blocks}", self._right,
@@ -303,7 +305,7 @@ class Bar(Renderable):
         return None
 
     def _update_image(self):
-        """Update image in depend on persentage."""
+        """Update image in depend on percentage."""
 
         left = self._marker * self._current_count
         right = self._empty * (self._count - self._current_count)

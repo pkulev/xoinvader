@@ -8,9 +8,12 @@ from xoinvader.common import Settings
 if Settings.system.video_driver == constants.DRIVER_SDL:
     import pygame
 else:
-    class pygame:
+    class pygame(object):
         Rect = object
-        Surface = lambda *args: 0
+
+        @staticmethod
+        def Surface(*args, **kwargs):
+            pass
 
 
 # TODO: document

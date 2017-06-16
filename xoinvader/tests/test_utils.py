@@ -92,6 +92,8 @@ def test_point_operations():
     assert a + b == Point(0, 0, 0)
     assert a + Point(-50, -50, -50) == Point(-30, -30, -30)
 
+    assert Point(1.9, 1.9)[int] == Point(1, 1, 0)
+
 
 def test_infinite_list_operations():
     # Test empty InfiniteList behaviour

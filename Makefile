@@ -1,11 +1,11 @@
-DOCPATH=./docs
+DOCPATH    = ./docs
 PYVERSION ?= 3
-VENV = .venv
-VENV_CMD = virtualenv --python=python$(PYVERSION)
-PYTHON ?= $(VENV)/bin/python$(PYVERSION)
-PYTEST = $(VENV)/bin/py.test
-PIP ?= $(VENV)/bin/pip
-RM = rm -f
+VENV      ?= .venv
+VENV_CMD   = virtualenv --python=python$(PYVERSION)
+PYTHON    ?= $(VENV)/bin/python$(PYVERSION)
+PYTEST     = $(VENV)/bin/py.test
+PIP       ?= $(VENV)/bin/pip
+RM         = rm -f
 
 all: help
 

@@ -8,6 +8,8 @@
     :license: MIT, see LICENSE for more details.
 """
 
+import locale
+
 from .common import Settings
 from .common import update_system_settings as _update_system_settings
 from .utils import setup_logger
@@ -21,6 +23,20 @@ class XOInitializationError(Exception):
     pass
 
 
+def setup_locale(settings):
+    """Setup locale settings.
+
+    :param dict settings:
+
+    :return dict: updated settings
+    """
+
+    locale.setlocale(locale.LC_ALL, "")
+    encoding = locale.getpreferredencoding()
+    settings["encoding"] = encoding
+    return settings
+
+
 def init(settings=None):
     """Do engine initialization first.
 
@@ -31,6 +47,7 @@ def init(settings=None):
         settings = {}
 
     try:
+        settings = setup_locale(settings)
         log = setup_logger(
             "xoinvader", settings.get("debug", Settings.system.debug))
     except Exception as exc:
