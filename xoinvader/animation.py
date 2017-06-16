@@ -8,6 +8,8 @@ Keyframe:
 
 Objects have animation manager which manages animation graph and switching."""
 
+from __future__ import division
+
 from operator import itemgetter
 
 from xoinvader.utils import Point, Timer
