@@ -161,6 +161,8 @@ class Point(object):
         else:
             raise self._value_error("div", other)
 
+    __div__ = __truediv__
+
     def __eq__(self, other):
         if not isinstance(other, Point):
             raise self._value_error("eq", other)
