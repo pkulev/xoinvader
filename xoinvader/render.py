@@ -6,6 +6,7 @@ from operator import attrgetter
 
 from six import add_metaclass
 
+from xoinvader.common import Settings
 from xoinvader.utils import Point
 
 
@@ -87,6 +88,8 @@ def render_objects(objects, screen):
                     continue
 
                 if style:
-                    screen.addstr(cpos.y, cpos.x, image, style)
+                    screen.addstr(
+                        cpos.y, cpos.x,
+                        image.encode(Settings.system.encoding), style)
                 else:
                     screen.addstr(cpos.y, cpos.x, image)

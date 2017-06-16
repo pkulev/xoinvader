@@ -21,3 +21,7 @@ VIDEO_DRIVERS = [
     # DRIVER_SDL2,
 ]
 """Supported video drivers."""
+
+
+UTF_8 = "UTF-8"
+"""UTF-8 encoding."""
