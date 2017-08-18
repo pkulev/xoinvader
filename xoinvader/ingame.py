@@ -13,7 +13,7 @@ from xoinvader.handlers import Handler
 from xoinvader.keys import K_A, K_D, K_E, K_F, K_R, K_SPACE, K_ESCAPE, K_Q
 from xoinvader.level import Level
 from xoinvader.render import render_objects
-from xoinvader.ship import GenericXEnemy, Playership
+from xoinvader.ship import GenericXEnemy, PlayerShip
 from xoinvader.state import State
 from xoinvader.utils import Point, dotdict
 
@@ -102,7 +102,7 @@ class TestLevel(Level):
         super(TestLevel, self).__init__(speed)
         self._state_add = state_object_adder
 
-        self._player_ship = Playership(
+        self._player_ship = PlayerShip(
             Settings.layout.field.player, Settings.layout.field.edge)
         self._state_add(self._player_ship)
         self._enemies = []

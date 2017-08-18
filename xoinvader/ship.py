@@ -293,11 +293,15 @@ class GenericXEnemy(Ship):
         super(GenericXEnemy, self).update()
 
 
-class Playership(Ship):
-    """Playership class. Contains additional methods for HUD."""
+class PlayerShip(Ship):
+    """PlayerShip class. Contains additional methods for HUD.
+
+    :param :class:`xoinvader.utils.Point` pos: left top corner
+    :param :class:`xoinvader.utils.Point` border: max allowed bottom right pos
+    """
 
     def __init__(self, pos, border):
-        super(Playership, self).__init__(pos, border)
+        super(PlayerShip, self).__init__(pos, border)
 
         self._image = Surface([
             "  O  ",
