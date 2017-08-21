@@ -15,7 +15,7 @@ PREFIX = "xoinvader/tests/fixtures/"
 def test_chunk():
     c = Chunk("test")
     assert not c.lines
-    assert len(c) == 0
+    assert len(c) == 0  # pylint: disable=len-as-condition
     assert c.name == "test"
 
     c.add_line("wut")
