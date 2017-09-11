@@ -8,10 +8,10 @@
     },
     "GenericXEnemy": {
         "dx": 2,
-        "hull": 100,
-        "shield": 100,
-        "max_hull": 100,
-        "max_shield": 100
+        "hull": 5,
+        "shield": 0,
+        "max_hull": 5,
+        "max_shield": 0
     },
     "TestShip": {
         "dx": 10,
