@@ -1,5 +1,10 @@
 """Enemy and player ships."""
 
+import logging
+
+from xoinvader import application
+from xoinvader import collision
+from xoinvader.animation import AnimationManager
 from xoinvader.entity import Entity
 from xoinvader.sound import Mixer
 from xoinvader.render import Renderable
@@ -8,6 +13,8 @@ from xoinvader.utils import Point, Surface, InfiniteList
 from xoinvader.collision import Collider
 from xoinvader.common import Settings, get_json_config
 
+
+LOG = logging.getLogger(__name__)
 
 # pylint: disable=missing-docstring
 CONFIG = get_json_config(Settings.path.config.ships)
@@ -128,6 +135,8 @@ class Ship(Renderable):
         self._hull = None
         self._shield = None
 
+        self._collider = None
+
         # first initialization
         self._load_config(CONFIG[self._type])
 
@@ -142,6 +151,10 @@ class Ship(Renderable):
         self._shield = int(config.shield)
         self._max_hull = int(config.max_hull)
         self._max_shield = int(config.max_shield)
+
+    @property
+    def pos(self):
+        return self._pos
 
     @property
     def direction(self):
@@ -229,7 +242,12 @@ class Ship(Renderable):
 
         if self._fire:
             try:
-                self._weapon.make_shot(self._pos + self._wbay)
+                # FIXME: [fix-in-place-coercing]
+                #        Coercing Point in-place smells badly
+                #        (needed now because animation can set float pos to
+                #        enemy ships), we need to add type ensurance mechanism
+                #        to cast automatically maybe.
+                self._weapon.make_shot(self._pos[int] + self._wbay)
             except ValueError:
                 self.next_weapon()
 
@@ -271,19 +289,21 @@ class GenericXEnemy(Ship):
         ])
 
         self._collider = Collider(
-            self._type, [
+            self, [
                 "###",
                 ".#.",
                 ".#.",
-            ], self._pos)
+            ])
 
         self.add_weapon(EBlaster())
         self._fire = True
         self._wbay = Point(x=self._image.width // 2, y=1)
 
-        from xoinvader.animation import AnimationManager
         self._animgr = AnimationManager()
 
+    # TODO: rethink this method
+    #       Problem of emerging such methods is more complex problem
+    #       of creating and configuring GameObjects.
     def add_animation(self, *args, **kwargs):
         self._animgr.add(*args, **kwargs)
 
@@ -291,6 +311,13 @@ class GenericXEnemy(Ship):
         self._animgr.update()
 
         super(GenericXEnemy, self).update()
+
+    @collision.register("GenericXEnemy", "BasicPlasmaCannon")
+    @collision.register("GenericXEnemy", "BasicLaserCharge")
+    @collision.register("GenericXEnemy", "BasicUnguidedMissile")
+    def collide(self, other, rect):
+        self.take_damage(other.damage)
+        other.destroy()
 
 
 class PlayerShip(Ship):
@@ -309,20 +336,17 @@ class PlayerShip(Ship):
             " * * ",
         ])
 
+        self._border = border
         self._pos = Point(
             x=pos.x - self._image.width // 2,
             y=pos.y - self._image.height)
 
         self._collider = Collider(
-            self._type, [
+            self, [
                 "  #  ",
                 "#####",
                 " # # "
-            ], self._pos)
-
-        self._collider.add_handler(
-            GenericXEnemy.__name__, lambda _: self.take_damage(5))
-        self._border = border
+            ])
 
         self._fire = False
         self._weapons = InfiniteList([Blaster(), Laser(), UM()])
@@ -340,3 +364,8 @@ class PlayerShip(Ship):
             w=self._weapon.type,
             c=self._weapon.ammo,
             m=self._weapon.max_ammo)
+
+    @collision.register("PlayerShip", "EBasicPlasmaCannon")
+    def collide(self, other, rect):
+        self.take_damage(other.damage)
+        other.destroy()
