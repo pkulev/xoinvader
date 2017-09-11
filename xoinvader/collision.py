@@ -4,6 +4,7 @@ import functools
 import logging
 import weakref
 
+from xoinvader import application
 from xoinvader.utils import Point
 
 
@@ -221,22 +222,18 @@ class Collider(object):
     geometry. All strings must be of equal length. Class member
     __solid_matter__ of CollisionManager represents solid geometry, all other
     chars are treated as void space and may be any.
-    :param pos: left top corner of collider map
-    :type pos: :class:`Point`
     """
 
-    __manager__ = None
-
-    def __init__(self, col_type, phys_map, pos):
-        if Collider.__manager__ is None:
-            raise ValueError(
-                "You can't use Collider objects without "
-                "ColliderManager. Please create it first.")
-        self._mgr = Collider.__manager__()  # manager is weakreaf, thus '()'
-        self._col_type = col_type
-        self._pos = pos
+    def __init__(self, obj, phys_map):
+        self._obj = obj
+        self._col_type = self._obj.type()
         self._phys_map = phys_map
-        self._mgr._add(self)  # pylint: disable=protected-access
+
+        # TODO: move collision to State.systems
+        try:
+            application.get_current().state.collision.add(self)
+        except AttributeError:
+            raise CollisionManagerNotFound()
 
     @property
     def phys_map(self):
@@ -266,21 +263,8 @@ class Collider(object):
         :setter: no
         :type: :class:`Point`
         """
-        return self._pos
+        return self._obj.pos[int]
 
-    def add_handler(self, other_type, callback=None):
-        """Install handler for collision with type `other_type`.
-
-        Handler is fired when collision between current collider and any other
-        collider of type `other_type` detected by `update` method of class
-        :class:`CollisionManager`. Callback is `None` by default.
-
-        :param str other_type: type of collider to install collision handler
-        with
-        :param function callback: function which is called when current
-        CollisionManager's update method detects collision of this collider
-        with collider of type `other_type`
-        """
-
-        # pylint: disable=protected-access
-        self._mgr._add_collision(self, other_type, callback)
+    @property
+    def obj(self):
+        return self._obj
