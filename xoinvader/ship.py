@@ -308,6 +308,14 @@ class GenericXEnemy(Ship):
         self._animgr.add(*args, **kwargs)
 
     def update(self):
+        if self._hull <= 0:
+            # TODO: [scoring]
+            #       * Parametrize scores, move them to ships.conf
+            #       * implement better scoring mechanism
+            application.get_current().state.add_player_score(10)
+            application.get_current().state.remove(self)
+            return
+
         self._animgr.update()
 
         super(GenericXEnemy, self).update()

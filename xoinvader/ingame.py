@@ -8,7 +8,7 @@ from xoinvader.background import Background
 from xoinvader.collision import CollisionManager
 from xoinvader.common import Settings
 from xoinvader.curses_utils import Style
-from xoinvader.gui import TextWidget, WeaponWidget, Bar
+from xoinvader.gui import TextCallbackWidget, TextWidget, WeaponWidget, Bar
 from xoinvader.handlers import Handler
 from xoinvader.keys import K_A, K_D, K_E, K_F, K_R, K_SPACE, K_ESCAPE, K_Q
 from xoinvader.level import Level
@@ -172,22 +172,66 @@ class TestLevel(Level):
 
 class InGameState(State):
 
+    # TODO FIXME: collision manager looks like collision system
+    #             belonging to State. Idea is to create some sort of
+    #             mechanism for registering/deregistering/accesing
+    #             theese systems via GameObject's current State.
+    # ATTENTION: Here I met a problem of initialization of this state.
+    #            1) here in init we created collision manager (now moved here)
+    #            2) initialization of TestLevel created first game object
+    #            (PlayerShip) that have collider
+    #            3) Collider needs to be registered in CollisionManager that
+    #            already was created, BUT! Collider.__init__ can't have
+    #            access to current state because several frames above current
+    #            control flow resides in State.__init__ and State does not
+    #            fully instantiated yet and could not be accessed via
+    #            application.state.
+    #            One approach that I see here is to create optional postinit
+    #            method and create objects that want access to state there.
+    # NOTE: I think that here we must extrude systems with such behaviour and
+    #       create them before state initialization, maybe here in classfields.
+    collision = CollisionManager()
+
     def __init__(self, owner):
         LOG.info("Instantiating InGame state")
         super(InGameState, self).__init__(owner)
         self._objects = []
-        self._collision_manager = CollisionManager()
         self._screen = self._owner.screen
+
+    def postinit(self):
+        """Deferred initialization.
+
+        Prepare GameObjects that require created and registered State object.
+        """
 
         LOG.debug("Registering renderable entities")
 
         self.level = TestLevel(self.add, speed=1)
         self._actor = self.level._player_ship
 
+        # TODO: [scoring]
+        self.score = 0
+
         self._events = InGameEventHandler(self)
 
         self.add(self._create_gui())
         self.level.start()
+
+    def add_player_score(self, amount):
+        """Add player score.
+
+        :param int amount: scores to add
+        """
+
+        self.score += amount
+
+    def get_player_score_string(self):
+        """Callback for TextCallbackWidget.
+
+        :return str: score string
+        """
+
+        return "Score: {0}".format(self.score)
 
     # TODO: [object-system]
     #  * implement GameObject common class for using in states
@@ -272,7 +316,7 @@ class InGameState(State):
                 Settings.layout.gui.info.weapon,
                 self.actor.get_weapon_info)
         ] + [
-            TextWidget(Point(2, 0), "Score: %s" % 0),
+            TextCallbackWidget(Point(2, 0), self.get_player_score_string),
             TextWidget(
                 Point(Settings.layout.field.edge.x // 2 - 4, 0),
                 "XOInvader", curses.A_BOLD)
@@ -282,7 +326,7 @@ class InGameState(State):
         self._events.handle()
 
     def update(self):
-        self._collision_manager.update()
+        self.collision.update()
         self.level.update()
         if not self.level.running:
             self.level.start()

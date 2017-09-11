@@ -131,9 +131,16 @@ class Application(object):
         :type state: :class:`xoinvader.state.State`
         """
         name = state.__name__
-        self._states[name] = state(self)
+        state_object = state(self)
+        self._states[name] = state_object
         if len(self._states) == 1:
             self._state = self._states[name]
+
+        # NOTE: State cannot instantiate in State.__init__ objects that
+        #       want access to state because there is no instance at creation
+        #       moment. For such objects state can declare it's 'postinit'
+        #       method.
+        state_object.postinit()
 
     @property
     def fps(self):

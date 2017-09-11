@@ -18,6 +18,11 @@ class State(object):
         # TODO:
         self._music = None
 
+    def postinit(self):
+        """Do all instantiations that require prepared State object."""
+
+        pass
+
     @property
     def owner(self):
         """State's owner.
