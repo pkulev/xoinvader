@@ -6,18 +6,17 @@ from xoinvader.utils import Point
 
 
 class TypePair(object):
-    """Class for hashable unordered string pairs.
+    """Class for hashable ordered string pairs.
 
-    Used as collision dictionary keys, containing pair of collider types. It's
-    set-like, i.e. TypePair(a, b) == TypePair(b, a) and their hashes are equal
-    too.
+    Used as collision dictionary keys, containing pair of collider types.
+    Not commutative, TypePair(a, b) != TypePair(b, a)
+    It's needed to store and get exact handler as it was registered.
 
     :param str first: first collider type
     :param str second: second collider type
     """
 
     def __init__(self, first, second):
-        first, second = sorted([first, second])
         self._first = first
         self._second = second
         self._pair = first + '_' + second
@@ -48,6 +47,8 @@ class TypePair(object):
     def __hash__(self):
         return hash(self._pair)
 
+    def __str__(self):
+        return "TypePair({0}, {1})".format(self._first, self._second)
 
 class CollisionManager(object):
     """Class for collision detection between known components.

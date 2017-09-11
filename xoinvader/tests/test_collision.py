@@ -66,9 +66,9 @@ def test_collision():
 def test_type_pair():
     p1 = TypePair("t1", "t2")
     p2 = TypePair("t2", "t1")
-    assert p1._pair == p2._pair
-    assert p1 == p2
-    assert hash(p1) == hash(p2)
+    assert p1._pair != p2._pair
+    assert p1 != p2
+    assert hash(p1) != hash(p2)
 
 
 def test_collision_manager():
