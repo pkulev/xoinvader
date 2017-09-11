@@ -365,6 +365,14 @@ class PlayerShip(Ship):
             ".".join([self._type, "engine"]),
             Settings.path.sound.ship[self._type].engine)
 
+    def update(self):
+        if self._hull <= 0:
+            application.trigger_state(
+                "GameOverState",
+                score=application.get_current().state.score)
+
+        super(PlayerShip, self).update()
+
     def get_weapon_info(self):
         """Return information about current weapon."""
 
