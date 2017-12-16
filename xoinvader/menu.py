@@ -58,7 +58,7 @@ class MainMenuEventHandler(Handler):
 
 # Compound renderable object
 # Contains renderables as InGame state contains.
-# Or Playership object contains weapons.
+# Or PlayerShip object contains weapons.
 class Menu(object):
     """
     Represents menu.

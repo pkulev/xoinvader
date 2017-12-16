@@ -239,6 +239,16 @@ class Surface(object):
         """
         return self._width
 
+    @property
+    def raw(self):
+        """Raw image content.
+
+        :getter: yes
+        :setter: no
+        :type: list
+        """
+        return self._image
+
     def get_image(self):
         """Image generator. Allows to renderers render Surfaces.
 

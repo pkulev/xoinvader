@@ -61,7 +61,7 @@ class TextWidget(Renderable):
         if style:
             self._style = style
         if text or style:
-            self._image = self._make_image
+            self._image = self._make_image()
 
     def get_render_data(self):
         return [self._pos], self._image.get_image()

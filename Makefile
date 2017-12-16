@@ -27,7 +27,11 @@ help:
 	@printf "USAGE: make [params]\n"
 
 lint:
-	@$(PYTEST) --pylint -m pylint -vvvv $(PYTEST_ARGS)
+	@printf "Warnings are disabled. To full check use 'make lint-full'\n"
+	@$(PYTEST) --pylint -m pylint -vvvv $(PYTEST_ARGS) --pylint-error-types CREF
+
+lint-full:
+	@$(PYTEST) --pylint -m pylint -vvvv $(PYTEST_ARGS) --pylint-error-types CREWF
 
 test:
 	@$(PYTEST) --cov=./xoinvader --cov-report=html --strict -v $(PYTEST_ARGS)
@@ -48,4 +52,5 @@ count:
 	@printf "Documentation:\n" && git ls-files "*.rst" | xargs wc -l
 	@printf "All files:\n" && git ls-files "*.rst" "*.py" "*.json" | xargs wc -l | tail -n 1
 
-.PHONY: all clean install devel help lint test view count docs view_docs
+.PHONY: all clean install devel help lint lint-full test view count docs \
+	view_docs

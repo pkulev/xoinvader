@@ -61,9 +61,9 @@ class Weapon(Renderable):
             return
 
         if self._ammo == INFINITE:
-            self._current_charge(pos)
+            self._current_charge(pos)  # pylint: disable=not-callable
         elif self._ammo > 0:
-            self._current_charge(pos)
+            self._current_charge(pos)  # pylint: disable=not-callable
             self._ammo -= 1
 
         if self._ammo == 0:

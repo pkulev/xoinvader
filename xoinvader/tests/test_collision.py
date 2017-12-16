@@ -9,7 +9,7 @@ from xoinvader.utils import Point
 # pylint: disable=invalid-name,protected-access,missing-docstring
 def test_collision():
     with pytest.raises(ValueError):
-        c = Collider("", [], None)  # pylint: disable=unused-variable
+        Collider("", [], None)
     cm = CollisionManager()
     c1 = Collider(
         "",

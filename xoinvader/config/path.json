@@ -12,7 +12,7 @@
             "UM": "/res/snd/basic_um.ogg"
         },
         "ship": {
-            "Playership": {
+            "PlayerShip": {
                 "engine": "/res/snd/playership_engine.ogg"
             }
         }

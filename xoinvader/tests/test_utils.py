@@ -125,7 +125,7 @@ def test_surface_attributes():
     surface = Surface(_image)
     assert surface.height == len(_image)
     assert surface.width == len(_image[0])
-    assert surface._image == _image
+    assert surface.raw == _image
 
 
 def test_image_generator():

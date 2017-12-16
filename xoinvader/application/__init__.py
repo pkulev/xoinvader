@@ -99,7 +99,7 @@ class Application(object):
 
         :getter: Return current state
         :setter: Set current state
-        :type: str
+        :type: :class:`xoinvader.application.Application`
         """
         if self._state:
             return self._state
