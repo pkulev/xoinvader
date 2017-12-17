@@ -2,15 +2,16 @@
 
 import pytest
 
+from xoinvader import collision
 from xoinvader.collision import (
     Collider, CollisionManager, CollisionManagerNotFound, TypePair
 )
 from xoinvader.utils import Point
 
 
-# pylint: disable=invalid-name,protected-access,missing-docstring
-@pytest.mark.xfail
-def test_collision():
+# pylint: disable=invalid-name,protected-access
+def test_collision(mock_state):
+    """Generic test for Collider and CollisionManager."""
 
     class Obj(object):
         def __init__(self, pos):
@@ -19,10 +20,14 @@ def test_collision():
         def type(self):
             return self.__class__.__name__
 
+    state = mock_state(mock_app=True)
+
     with pytest.raises(CollisionManagerNotFound):
         Collider(Obj(Point()), [])
 
     cm = CollisionManager()
+    state.collision = cm
+
     c1 = Collider(
         Obj(Point()), [
             "##",
@@ -66,6 +71,10 @@ def test_collision():
     c4.obj.pos = Point(1, 0)
     assert cm.check_collision(c1, c4) is None
 
+    assert len(cm._colliders) == 4
+    cm.remove(c4)
+    assert len(cm._colliders) == 3
+
 
 def test_type_pair():
     p1 = TypePair("t1", "t2")
@@ -73,91 +82,59 @@ def test_type_pair():
     assert p1._pair != p2._pair
     assert p1 != p2
     assert hash(p1) != hash(p2)
+    assert str(p1) == "TypePair(t1, t2)"
 
 
-@pytest.mark.xfail
-def test_collision_manager():
-    import gc
-    gc.collect()
-    assert Collider.__manager__ is None
+def test_manager_update(mock_state):
 
-    # pylint: disable=too-few-public-methods
-    class MockManager(object):
-        def __call__(self):
-            return self
-
-        def _add(self, _collider):
-            pass
-
-        def _add_collision(self, other_type, callback=None):
-            pass
-
-    m = MockManager()
-    Collider.__manager__ = m
-    c = Collider("", [], None)
-    mm = CollisionManager()
-    with pytest.raises(ValueError):
-        mm._add_collision(c, "other", lambda: 0)
-    assert not mm._colliders
-    assert not mm._collisions
-
-    Collider.__manager__ = None
-    mm = CollisionManager()
-
-    c1 = Collider("t1", [], None)
-    c2 = Collider("t2", [], None)
-    mm._add_collision(c1, "t1", lambda: 0)
-    assert len(mm._collisions) == 1
-    mm._add_collision(c2, "t2", lambda: 0)
-    assert len(mm._collisions) == 2
-    mm._add_collision(c2, "t1", lambda: 0)
-    assert len(mm._collisions) == 3
-    c2.add_handler("t1", lambda: 0)
-    t = TypePair("t1", "t2")
-    assert len(mm._collisions) == 3
-    assert len(mm._collisions[t]) == 2
-
-
-@pytest.mark.xfail
-def test_manager_update():
-
-    mm = CollisionManager()
+    state = mock_state(mock_app=True)
+    cmanager = CollisionManager()
+    state.collision = cmanager
 
     # pylint: disable=too-few-public-methods
     class Ship(object):
         def __init__(self):
             self.health = 10
             self.pos = Point(0, 10)
-            self.collider = Collider(
-                "ship", [
+            self._collider = Collider(
+                self, [
                     "..#..",
                     "#####",
                     ".#.#."
-                ], Point(0, 10))
+                ])
 
-        def rocket_collision(self):
-            def callback(_):
-                self.health -= 10
-            return callback
+        def type(self):
+            return self.__class__.__name__
+
+        @collision.register("Ship", "Rocket")
+        def collide(self, other, rect):
+            self.health -= other.damage
+
+    class Rocket(object):
+
+        def __init__(self):
+            self.damage = 10
+            self.pos = Point(0, 0)
+            self._collider = Collider(
+                self, [
+                    "#",
+                    "#",
+                    "#",
+                ])
+
+        def type(self):
+            return self.__class__.__name__
 
     ship = Ship()
+    rocket = Rocket()
 
-    rocket = Collider(
-        "rocket", [
-            "#",
-            "#",
-            "#"
-        ], Point(0, 0))
-
-    ship.collider.add_handler("rocket", ship.rocket_collision())
-
-    mm.update()
+    cmanager.update()
     assert ship.health == 10
 
-    rocket.update(Point(0, 8))
-    mm.update()
+    rocket.pos = Point(0, 8)
+    cmanager.update()
     assert ship.health == 10
 
-    rocket.update(Point(0, 9))
-    mm.update()
+    rocket.pos = Point(0, 9)
+    cmanager.update()
     assert ship.health == 0
