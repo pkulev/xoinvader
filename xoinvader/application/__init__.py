@@ -153,6 +153,15 @@ class Application(object):
         #       method.
         state_object.postinit()
 
+    def deregister_state(self, name):
+        """Remove existing state.
+
+        :param str name: name of state
+        """
+
+        state = self._states.pop(name)
+        del state
+
     @property
     def fps(self):
         """Frames per second.
