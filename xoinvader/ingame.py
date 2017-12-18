@@ -2,6 +2,7 @@
 
 import curses
 import logging
+import weakref
 
 from xoinvader import application
 from xoinvader.background import Background
@@ -105,7 +106,7 @@ class TestLevel(Level):
         self._player_ship = PlayerShip(
             Settings.layout.field.player, Settings.layout.field.edge)
         self._state_add(self._player_ship)
-        self._enemies = []
+        self._enemies = weakref.WeakSet()
 
         self.add_event(1, self.spawn4)
         self.add_event(100, lambda: None)
@@ -162,12 +163,12 @@ class TestLevel(Level):
             "", e4, "_pos",
             self.get_keyframes(1, right_side - 20, -1), interp=True)
 
-        self._enemies = [e1, e2, e3, e4]
-        self._state_add(self._enemies)
+        self._enemies = weakref.WeakSet([e1, e2, e3, e4])
+        self._state_add(list(self._enemies))
 
     def del4(self):
         for enemy in self._enemies:
-            application.get_current().state.remove(enemy)
+            enemy.destroy()
 
 
 class InGameState(State):
@@ -281,6 +282,15 @@ class InGameState(State):
             LOG.exception("Object %s is not in State's object list.", obj)
         finally:
             del obj
+
+        # TODO: [collider-destruction]
+        #       Remove this after collider instant destruction.
+        #       Now colliders in weakref set garbage-collected with noticeable
+        #       delay. In future we need to drop weakrefs and manually manage
+        #       objects.
+        LOG.debug("Colliders: %s", len(self.collision._colliders))
+        LOG.debug("Collisions: %s", len(self.collision._collisions))
+        LOG.debug("Objects in state: %s", len(self._objects))
 
     def _create_gui(self):
         """Create user interface."""
