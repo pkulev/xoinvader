@@ -135,6 +135,10 @@ class Ship(Renderable):
         self._hull = None
         self._shield = None
 
+        # Set to True means that object in destroying phase
+        # and will ignore remove_obsolete signal
+        self._destroy = False
+
         self._collider = None
 
         # first initialization
@@ -253,6 +257,27 @@ class Ship(Renderable):
 
         self.refresh_shield()
 
+    def destroy(self):
+        """Self-destroying routine."""
+
+        LOG.debug("Destroying ship %s", self)
+
+        if not self._destroy:
+            self._destroy = True
+            application.get_current().state.collision.remove(self._collider)
+            application.get_current().state.remove(self)
+
+    def remove_obsolete(self, pos):
+        border = Settings.layout.field.border
+        pos = self._pos[int]
+        if (
+                pos.x > self._image.width + border.x or
+                pos.x + self._image.width < 0 or
+                int(pos.y) > self._image.height + border.y or
+                int(pos.y) + self._image.height < 0
+        ) and not self._destroy:
+            self.destroy()
+
     def take_damage(self, damage):
         """Calculate and apply damage to shield and hull."""
 
@@ -313,7 +338,7 @@ class GenericXEnemy(Ship):
             #       * Parametrize scores, move them to ships.conf
             #       * implement better scoring mechanism
             application.get_current().state.add_player_score(10)
-            application.get_current().state.remove(self)
+            self.destroy()
             return
 
         self._animgr.update()
