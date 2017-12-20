@@ -10,3 +10,4 @@ K_R = ord("r")
 K_Q = ord("q")
 K_SPACE = ord(" ")
 K_ESCAPE = 27
+K_ENTER = 343

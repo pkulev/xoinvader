@@ -1,10 +1,18 @@
-"""Game weapon charge classes."""
+"""Game weapon charge classes.
+
+Attention: Next statement related only to GameObject entities.
+           There're situations where two GameObject modules need to import
+           each other. In such cases do it via importing `xoinvader.registry`
+           in functions (not at import time).
+"""
 
 
-import logging
 import curses
+import logging
+import re
 
 from xoinvader import application
+from xoinvader.collision import Collider
 from xoinvader.common import Settings, get_json_config
 from xoinvader.render import Renderable
 from xoinvader.utils import Point, Surface
@@ -14,7 +22,8 @@ CONFIG = get_json_config(Settings.path.config.charges)
 LOG = logging.getLogger(__name__)
 
 
-# pylint: disable=too-many-arguments
+# TODO: [components]: move some variables to default GameObject components
+# pylint: disable=too-many-arguments,too-many-instance-attributes
 class WeaponCharge(Renderable):
     """Weapon charge representation.
 
@@ -40,6 +49,24 @@ class WeaponCharge(Renderable):
         # and will ignore remove_obsolete signal
         self._destroy = False
 
+        # Common collider for any shape charge
+        # TODO FIXME: objects want know, what '#' means!
+        #             make solid marker accessible to them
+        #             and/or provide 'Collider.from_array(self._image.raw)'
+        self._collider = Collider(
+            self, [
+                re.sub(r"[^\ ]", "#", row)
+                for row in self._image.raw
+            ])
+
+    @property
+    def pos(self):
+        return self._pos
+
+    @property
+    def damage(self):
+        return self._damage
+
     def get_render_data(self):
         return ([self._pos], self._image.get_image())
 
@@ -59,6 +86,14 @@ class WeaponCharge(Renderable):
         """Update coords."""
 
         self._pos += Point(self._dx, self._dy)
+
+    def destroy(self):
+        """Self-destroying routine."""
+
+        if not self._destroy:
+            self._destroy = True
+            application.get_current().state.collision.remove(self._collider)
+            application.get_current().state.remove(self)
 
 
 # TODO: Implement hitscan behaviour

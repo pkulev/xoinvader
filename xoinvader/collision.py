@@ -1,23 +1,41 @@
 """Collision detection system and component module."""
 
+import functools
+import logging
 import weakref
 
+from xoinvader import application
 from xoinvader.utils import Point
 
 
-class TypePair(object):
-    """Class for hashable unordered string pairs.
+LOG = logging.getLogger(__name__)
 
-    Used as collision dictionary keys, containing pair of collider types. It's
-    set-like, i.e. TypePair(a, b) == TypePair(b, a) and their hashes are equal
-    too.
+
+COLLISIONS = {}
+"""Global mapping TypePair <=> [callable]."""
+
+
+class CollisionManagerNotFound(Exception):
+    """Raises on try to register collider without instantiated manager."""
+
+    def __init__(self):
+        super(CollisionManagerNotFound, self).__init__(
+            "You can't use Collider objects without "
+            "CollisionManager. Please create it first.")
+
+
+class TypePair(object):
+    """Class for hashable ordered string pairs.
+
+    Used as collision dictionary keys, containing pair of collider types.
+    Not commutative, TypePair(a, b) != TypePair(b, a)
+    It's needed to store and get exact handler as it was registered.
 
     :param str first: first collider type
     :param str second: second collider type
     """
 
     def __init__(self, first, second):
-        first, second = sorted([first, second])
         self._first = first
         self._second = second
         self._pair = first + '_' + second
@@ -48,6 +66,30 @@ class TypePair(object):
     def __hash__(self):
         return hash(self._pair)
 
+    def __str__(self):
+        return "TypePair({0}, {1})".format(self._first, self._second)
+
+
+def register(left, right):
+    """Collision handler registration decorator.
+
+    .. Note:: Argument order matters! Handler must belong to first object.
+
+    :param str left: first collidable object
+    :param str right: right collidable object
+    """
+
+    def decorator(handler):
+        COLLISIONS.setdefault(TypePair(left, right), []).append(handler)
+
+        @functools.wraps(handler)
+        def handle(*args, **kwargs):
+            return handler(*args, **kwargs)
+
+        return handle
+
+    return decorator
+
 
 class CollisionManager(object):
     """Class for collision detection between known components.
@@ -65,18 +107,26 @@ class CollisionManager(object):
     __solid_matter__ = "#"
 
     def __init__(self):
-        if Collider.__manager__ is None:
-            def null_manager(_):
-                """Manager nuller."""
-                Collider.__manager__ = None
+        self._colliders = weakref.WeakSet()
+        self._collisions = COLLISIONS
 
-            Collider.__manager__ = weakref.ref(self, null_manager)
-        self._colliders = []
-        self._collisions = {}
+    def add(self, collider):
+        """Add collider.
 
-    def _add(self, collider):
-        """Add collider."""
-        self._colliders.append(collider)
+        :param :class:`xoinvader.collision.Collider` collider:
+        """
+
+        LOG.debug("Adding collider %s\n pos: %s", collider, collider.pos)
+        self._colliders.add(collider)
+
+    def remove(self, collider):
+        """Remove collider.
+
+        :param :class:`xoinvader.collision.Collider` collider:
+        """
+
+        LOG.debug("Removing collider %s\n pos %s", collider, collider.pos)
+        self._colliders.remove(collider)
 
     # pylint: disable=too-many-nested-blocks
     def update(self):
@@ -95,8 +145,8 @@ class CollisionManager(object):
                         collider_1, collider_2)
                     if collision_rect:
                         for callback in self._collisions[pair]:
-                            if callback:
-                                callback(collision_rect)
+                            callback(collider_1.obj, collider_2.obj,
+                                     collision_rect)
 
     # pylint: disable=too-many-locals
     @staticmethod
@@ -156,27 +206,6 @@ class CollisionManager(object):
                 ):
                     return (topleft_overlap, botright_overlap)
 
-    def _add_collision(self, collider, other_classname, callback=None):
-        """Add collision handler.
-
-        Adds handler to be called when collision of colliders of `col_type`
-        `other_classname` and `collider`'s `col_type` occurs.
-
-        :param collider: collider to which type's add handler
-        :type collider: :class:`Collider`
-        :param str other_classname: type name of other collider instances to
-        check collisions with
-        :paran function callback: handler callback. Function that is called
-        whenever collision is detected
-        """
-
-        if collider not in self._colliders:
-            raise ValueError(
-                "Attempt to add collision handler for "
-                "unregistered collider {0}".format(collider))
-        type_pair = TypePair(collider.col_type, other_classname)
-        self._collisions.setdefault(type_pair, []).append(callback)
-
 
 class Collider(object):
     """Collider component class.
@@ -185,28 +214,26 @@ class Collider(object):
     system: i.e. to be able to detect and process collisions between the object
     and other ones.
 
-    :param str col_type: name of the collider type. Used in processing possible
-    collisions
+    .. Attention:: CollisionManager must be created first and must be
+                   accessible via State.
+
+    :param object obj: GameObject to which the collider is linked
     :param list phys_map: list of strings representing collider physical
     geometry. All strings must be of equal length. Class member
     __solid_matter__ of CollisionManager represents solid geometry, all other
     chars are treated as void space and may be any.
-    :param pos: left top corner of collider map
-    :type pos: :class:`Point`
     """
 
-    __manager__ = None
-
-    def __init__(self, col_type, phys_map, pos):
-        if Collider.__manager__ is None:
-            raise ValueError(
-                "You can't use Collider objects without "
-                "ColliderManager. Please create it first.")
-        self._mgr = Collider.__manager__()  # manager is weakreaf, thus '()'
-        self._col_type = col_type
-        self._pos = pos
+    def __init__(self, obj, phys_map):
+        self._obj = obj
+        self._col_type = self._obj.type()
         self._phys_map = phys_map
-        self._mgr._add(self)  # pylint: disable=protected-access
+
+        # TODO: move collision to State.systems
+        try:
+            application.get_current().state.collision.add(self)
+        except AttributeError:
+            raise CollisionManagerNotFound()
 
     @property
     def phys_map(self):
@@ -236,21 +263,8 @@ class Collider(object):
         :setter: no
         :type: :class:`Point`
         """
-        return self._pos
+        return self._obj.pos[int]
 
-    def add_handler(self, other_type, callback=None):
-        """Install handler for collision with type `other_type`.
-
-        Handler is fired when collision between current collider and any other
-        collider of type `other_type` detected by `update` method of class
-        :class:`CollisionManager`. Callback is `None` by default.
-
-        :param str other_type: type of collider to install collision handler
-        with
-        :param function callback: function which is called when current
-        CollisionManager's update method detects collision of this collider
-        with collider of type `other_type`
-        """
-
-        # pylint: disable=protected-access
-        self._mgr._add_collision(self, other_type, callback)
+    @property
+    def obj(self):
+        return self._obj

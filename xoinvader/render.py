@@ -45,6 +45,10 @@ class Renderable(object):
         """
         pass
 
+    @classmethod
+    def type(cls):
+        return cls.__name__
+
     def remove_obsolete(self, pos):
         """Renderable.remove_obsolete(Point(int, int)) -> None
 

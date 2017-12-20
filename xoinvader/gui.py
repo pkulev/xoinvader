@@ -67,6 +67,35 @@ class TextWidget(Renderable):
         return [self._pos], self._image.get_image()
 
 
+# TODO XXX FIXME: [proper-gui-hierarchy]
+#                 This bloody mess bourned in hell suburbans to serve
+#                 to one great target: easily enable updating by callback
+#                 to update score string. It was so easy to do...
+#                 Reimplement TextWidget to support callbacks too.
+class TextCallbackWidget(TextWidget):
+    """Simple text widget with callback.
+
+    :param class::`xoinvader.utils.Point` pos: widget's global position
+
+    :param str text: contained text
+
+    .. Note:: add [ [style], ...] support
+
+    :param int style: curses style for text
+    """
+
+    def __init__(self, pos, callback, style=None):
+
+        self._callback = callback
+
+        super(TextCallbackWidget, self).__init__(
+            pos, callback(), style)
+
+    def update(self):
+        self._text = self._callback()
+        self._image = self._make_image()
+
+
 class MenuItemWidget(TextWidget):
     """Selectable menu item widget.
 

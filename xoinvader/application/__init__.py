@@ -67,6 +67,17 @@ def get_pygame_application():
     return PygameApplication
 
 
+def trigger_state(state, **kwargs):
+    """Change current state and pass to it data via kwargs.
+
+    :param str state: state name
+    """
+
+    app = get_current()
+    app.state = state
+    app.state.trigger(**kwargs)
+
+
 class Application(object):
     """Base application class for backend-specific application classes.
 
@@ -131,9 +142,25 @@ class Application(object):
         :type state: :class:`xoinvader.state.State`
         """
         name = state.__name__
-        self._states[name] = state(self)
+        state_object = state(self)
+        self._states[name] = state_object
         if len(self._states) == 1:
             self._state = self._states[name]
+
+        # NOTE: State cannot instantiate in State.__init__ objects that
+        #       want access to state because there is no instance at creation
+        #       moment. For such objects state can declare it's 'postinit'
+        #       method.
+        state_object.postinit()
+
+    def deregister_state(self, name):
+        """Remove existing state.
+
+        :param str name: name of state
+        """
+
+        state = self._states.pop(name)
+        del state
 
     @property
     def fps(self):
