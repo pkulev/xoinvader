@@ -75,9 +75,18 @@ class dotdict(dict):  # pylint: disable=invalid-name
 
     def _wrap_nested(self):
         """Wrap nested dicts for deep dot access."""
+
         for key, value in self.items():
             if isinstance(value, dict):
                 self[key] = dotdict(value)
+
+    def fullcopy(self):
+        """Return full copy of internal structure as dotdict.
+
+        :return :class:`xoinvader.utils.dotdict`: full copy
+        """
+
+        return dotdict(copy.deepcopy(self))
 
 
 # pylint: disable=too-few-public-methods
