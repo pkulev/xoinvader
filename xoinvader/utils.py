@@ -1,11 +1,11 @@
 """Various useful tools."""
 
-
+import copy
 import datetime
 import logging
 import time
 try:
-    import time.perf_counter
+    time.perf_counter
 except ImportError:
     time.perf_counter = time.time
 
