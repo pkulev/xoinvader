@@ -14,7 +14,7 @@ from xoinvader.application.ncurses_app import CursesApplication
 from xoinvader.tests.common import StateMock, AnotherStateMock
 
 
-def test_application():
+def test_application(monkeypatch):
     """xoinvader.application.Application"""
 
     with pytest.raises(ApplicationNotInitializedError):
@@ -43,6 +43,16 @@ def test_application():
 
     app.state = AnotherStateMock.__name__
     assert isinstance(app.state, AnotherStateMock)
+
+    # Test Application.trigger_state
+    called_with = []
+
+    def new_trigger(self, *args, **kwargs):
+        called_with.extend([args, kwargs])
+
+    monkeypatch.setattr(StateMock, "trigger", new_trigger)
+    app.trigger_state(StateMock.__name__, 10, test=20)
+    assert called_with == [(10,), {"test": 20}]
 
 
 def test_curses_application(monkeypatch):
