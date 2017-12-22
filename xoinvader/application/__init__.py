@@ -120,7 +120,7 @@ class Application(object):
 
         :getter: Return current state
         :setter: Set current state
-        :type: :class:`xoinvader.application.Application`
+        :type: :class:`xoinvader.state.State`
         """
         if self._state:
             return self._state
