@@ -63,17 +63,6 @@ def get_pygame_application():
     return PygameApplication
 
 
-def trigger_state(state, **kwargs):
-    """Change current state and pass to it data via kwargs.
-
-    :param str state: state name
-    """
-
-    app = get_current()
-    app.state = state
-    app.state.trigger(**kwargs)
-
-
 class Application(object):
     """Base application class for backend-specific application classes.
 
@@ -171,6 +160,15 @@ class Application(object):
 
         state = self._states.pop(name)
         del state
+
+    def trigger_state(self, state, *args, **kwargs):
+        """Change current state and pass args and kwargs to it.
+
+        :param str state: state name
+        """
+
+        self.state = state
+        self.state.trigger(*args, **kwargs)
 
     @property
     def fps(self):
