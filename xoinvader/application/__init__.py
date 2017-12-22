@@ -27,7 +27,7 @@ def get_current():
 
 
 # TODO: implement proper choosing by env
-def get_application():
+def get_application_class():
     """Application class getter.
 
     :return: application class based on environment

@@ -6,7 +6,8 @@ from xoinvader import constants
 from xoinvader.common import Settings
 import xoinvader.curses_utils
 from xoinvader.application import (
-    get_application, get_current, Application, ApplicationNotInitializedError
+    get_application_class, get_current, Application,
+    ApplicationNotInitializedError
 )
 from xoinvader.application.ncurses_app import CursesApplication
 
@@ -54,7 +55,7 @@ def test_curses_application(monkeypatch):
         xoinvader.curses_utils, "deinit_curses",
         lambda *args, **kwargs: True)
 
-    assert CursesApplication == get_application()
+    assert CursesApplication == get_application_class()
     app = CursesApplication()
     assert isinstance(get_current(), CursesApplication)
 
@@ -78,7 +79,7 @@ def test_pygame_application(monkeypatch):
     Settings.system.video_driver = constants.DRIVER_SDL
 
     # Empty object
-    assert PygameApplication == get_application()
+    assert PygameApplication == get_application_class()
     app = PygameApplication((800, 600), 0, 32)
     app.set_caption("test")
     assert isinstance(get_current(), PygameApplication)
