@@ -1,13 +1,12 @@
-"""Base class for game application."""
+"""Base class for game application.
+
+Only one application can exist in one interpreter instance.
+"""
 
 from tornado import ioloop
 
 from xoinvader.constants import DEFAULT_FPS, DRIVER_NCURSES, DRIVER_SDL
 from xoinvader.common import Settings
-
-
-_CURRENT_APPLICATION = None
-"""Current application instance."""
 
 
 class ApplicationNotInitializedError(Exception):
@@ -24,14 +23,11 @@ def get_current():
     :return: current application object
     """
 
-    if _CURRENT_APPLICATION is not None:
-        return _CURRENT_APPLICATION
-    else:
-        raise ApplicationNotInitializedError()
+    return Application.current()
 
 
 # TODO: implement proper choosing by env
-def get_application():
+def get_application_class():
     """Application class getter.
 
     :return: application class based on environment
@@ -67,26 +63,17 @@ def get_pygame_application():
     return PygameApplication
 
 
-def trigger_state(state, **kwargs):
-    """Change current state and pass to it data via kwargs.
-
-    :param str state: state name
-    """
-
-    app = get_current()
-    app.state = state
-    app.state.trigger(**kwargs)
-
-
 class Application(object):
     """Base application class for backend-specific application classes.
 
     Provides state primitive mechanism and some useful getters/setters.
     """
 
+    __CURRENT_APPLICATION = None
+    """Instance of the current application."""
+
     def __init__(self):
-        global _CURRENT_APPLICATION
-        _CURRENT_APPLICATION = self
+        Application.__CURRENT_APPLICATION = self
 
         self._state = None
         self._states = {}
@@ -97,6 +84,9 @@ class Application(object):
         self._pc = ioloop.PeriodicCallback(self.tick, 30, self._ioloop)
         self._pc.start()
 
+    def __del__(self):
+        Application.__CURRENT_APPLICATION = None
+
     def tick(self):
         """Callback to execute at every frame."""
 
@@ -104,13 +94,22 @@ class Application(object):
         self._state.update()
         self._state.render()
 
+    @classmethod
+    def current(cls):
+        """Return the current application if exists, raise otherwise."""
+
+        if cls.__CURRENT_APPLICATION:
+            return cls.__CURRENT_APPLICATION
+        else:
+            raise ApplicationNotInitializedError()
+
     @property
     def state(self):
         """Current state.
 
         :getter: Return current state
         :setter: Set current state
-        :type: :class:`xoinvader.application.Application`
+        :type: :class:`xoinvader.state.State`
         """
         if self._state:
             return self._state
@@ -161,6 +160,15 @@ class Application(object):
 
         state = self._states.pop(name)
         del state
+
+    def trigger_state(self, state, *args, **kwargs):
+        """Change current state and pass args and kwargs to it.
+
+        :param str state: state name
+        """
+
+        self.state = state
+        self.state.trigger(*args, **kwargs)
 
     @property
     def fps(self):

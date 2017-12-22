@@ -392,9 +392,10 @@ class PlayerShip(Ship):
 
     def update(self):
         if self._hull <= 0:
-            application.trigger_state(
+            app = application.get_current()
+            app.trigger_state(
                 "GameOverState",
-                score=application.get_current().state.score)
+                score=app.state.score)
 
         super(PlayerShip, self).update()
 

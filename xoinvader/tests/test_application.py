@@ -6,14 +6,15 @@ from xoinvader import constants
 from xoinvader.common import Settings
 import xoinvader.curses_utils
 from xoinvader.application import (
-    get_application, get_current, Application, ApplicationNotInitializedError
+    get_application_class, get_current, Application,
+    ApplicationNotInitializedError
 )
 from xoinvader.application.ncurses_app import CursesApplication
 
 from xoinvader.tests.common import StateMock, AnotherStateMock
 
 
-def test_application():
+def test_application(monkeypatch):
     """xoinvader.application.Application"""
 
     with pytest.raises(ApplicationNotInitializedError):
@@ -43,6 +44,16 @@ def test_application():
     app.state = AnotherStateMock.__name__
     assert isinstance(app.state, AnotherStateMock)
 
+    # Test Application.trigger_state
+    called_with = []
+
+    def new_trigger(self, *args, **kwargs):
+        called_with.extend([args, kwargs])
+
+    monkeypatch.setattr(StateMock, "trigger", new_trigger)
+    app.trigger_state(StateMock.__name__, 10, test=20)
+    assert called_with == [(10,), {"test": 20}]
+
 
 def test_curses_application(monkeypatch):
     """xoinvader.application.CursesApplication"""
@@ -54,7 +65,7 @@ def test_curses_application(monkeypatch):
         xoinvader.curses_utils, "deinit_curses",
         lambda *args, **kwargs: True)
 
-    assert CursesApplication == get_application()
+    assert CursesApplication == get_application_class()
     app = CursesApplication()
     assert isinstance(get_current(), CursesApplication)
 
@@ -78,7 +89,7 @@ def test_pygame_application(monkeypatch):
     Settings.system.video_driver = constants.DRIVER_SDL
 
     # Empty object
-    assert PygameApplication == get_application()
+    assert PygameApplication == get_application_class()
     app = PygameApplication((800, 600), 0, 32)
     app.set_caption("test")
     assert isinstance(get_current(), PygameApplication)

@@ -23,6 +23,11 @@ class State(object):
 
         pass
 
+    def trigger(self, *args, **kwargs):
+        """Common way to get useful information for triggered state."""
+
+        pass
+
     @property
     def owner(self):
         """State's owner.

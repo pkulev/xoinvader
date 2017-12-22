@@ -34,7 +34,7 @@ def create_game():
     #            Create defaults, but make decisions on run time only
     #            Maybe this will lead to reorganizing code.
 
-    app = application.get_application()()
+    app = application.get_application_class()()
 
     from xoinvader.ingame import InGameState
     from xoinvader.menu import MainMenuState, GameOverState
@@ -51,7 +51,7 @@ def create_test_game():
 
     from xoinvader.teststate import TestState
 
-    app = application.get_application()((800, 600), 0, 32)
+    app = application.get_application_class()((800, 600), 0, 32)
     app.register_state(TestState)
     return app
 
