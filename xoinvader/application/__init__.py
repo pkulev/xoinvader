@@ -1,13 +1,12 @@
-"""Base class for game application."""
+"""Base class for game application.
+
+Only one application can exist in one interpreter instance.
+"""
 
 from tornado import ioloop
 
 from xoinvader.constants import DEFAULT_FPS, DRIVER_NCURSES, DRIVER_SDL
 from xoinvader.common import Settings
-
-
-_CURRENT_APPLICATION = None
-"""Current application instance."""
 
 
 class ApplicationNotInitializedError(Exception):
@@ -24,10 +23,7 @@ def get_current():
     :return: current application object
     """
 
-    if _CURRENT_APPLICATION is not None:
-        return _CURRENT_APPLICATION
-    else:
-        raise ApplicationNotInitializedError()
+    return Application.current()
 
 
 # TODO: implement proper choosing by env
@@ -84,9 +80,11 @@ class Application(object):
     Provides state primitive mechanism and some useful getters/setters.
     """
 
+    __CURRENT_APPLICATION = None
+    """Instance of the current application."""
+
     def __init__(self):
-        global _CURRENT_APPLICATION
-        _CURRENT_APPLICATION = self
+        Application.__CURRENT_APPLICATION = self
 
         self._state = None
         self._states = {}
@@ -97,12 +95,24 @@ class Application(object):
         self._pc = ioloop.PeriodicCallback(self.tick, 30, self._ioloop)
         self._pc.start()
 
+    def __del__(self):
+        Application.__CURRENT_APPLICATION = None
+
     def tick(self):
         """Callback to execute at every frame."""
 
         self._state.events()
         self._state.update()
         self._state.render()
+
+    @classmethod
+    def current(cls):
+        """Return the current application if exists, raise otherwise."""
+
+        if cls.__CURRENT_APPLICATION:
+            return cls.__CURRENT_APPLICATION
+        else:
+            raise ApplicationNotInitializedError()
 
     @property
     def state(self):

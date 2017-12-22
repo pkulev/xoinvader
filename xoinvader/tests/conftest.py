@@ -41,7 +41,6 @@ class MockedApplication(application.Application):
     def _finalize():
         app = application.get_current()
         app.stop()
-        application._CURRENT_APPLICATION = None
 
 
 class MockedState(state.State):
