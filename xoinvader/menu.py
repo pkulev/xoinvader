@@ -178,7 +178,10 @@ class GameOverState(State):
         return self._score
 
     def trigger(self, score):
-        """Temporary bla bla"""
+        """Trigger the state and pass the score info to it.
+
+        :param int score: last player score
+        """
 
         self._score = self._score.format(score)
 
