@@ -22,5 +22,6 @@
             "TestShip": "/res/gfx/ship.png"
         }
     },
-    "level1bg": "/res/level1.bg"
+    "level1bg": "/res/level1.bg",
+    "scoreboard": "/data/scoreboard"
 }

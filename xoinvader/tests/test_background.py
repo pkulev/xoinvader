@@ -1,14 +1,27 @@
 """Test xoinvader.background module."""
 
 from copy import copy
+import os
+
 import pytest
 
 from xoinvader.background import Background, Chunk, load_chunks
 from xoinvader.common import Settings
+from xoinvader.tests.common import PREFIX
 from xoinvader.utils import Point
 
 
-PREFIX = "xoinvader/tests/fixtures/"
+CHUNK_NO_NAME = os.path.join(PREFIX, "chunk_no_name.bg")
+"""Background file contains unnamed chunk."""
+
+CHUNK_DUPLICATE_NAMES = os.path.join(PREFIX, "chunk_duplicate_names.bg")
+"""Background file contains duplicated chunk names."""
+
+CHUNK_NO_CHUNKS = os.path.join(PREFIX, "no_chunks.bg")
+"""Background file doesn't contain chunks at all."""
+
+CHUNK_NORMAL = os.path.join(PREFIX, "chunk_normal.bg")
+"""Absolutely valid background file."""
 
 
 # pylint: disable=invalid-name,protected-access,missing-docstring
@@ -28,20 +41,20 @@ def test_chunk():
 
 def test_load_chunks():
     with pytest.raises(ValueError):
-        load_chunks(PREFIX + "chunk_no_name.bg")
+        load_chunks(CHUNK_NO_NAME)
 
     with pytest.raises(ValueError):
-        load_chunks(PREFIX + "chunk_duplicate_names.bg")
+        load_chunks(CHUNK_DUPLICATE_NAMES)
 
     with pytest.raises(ValueError):
-        load_chunks(PREFIX + "no_chunks.bg")
+        load_chunks(CHUNK_NO_CHUNKS)
 
-    c = load_chunks(PREFIX + "chunk_normal.bg")
+    c = load_chunks(CHUNK_NORMAL)
     assert len(c) == 3
     assert c[0][0] == "qweqwe"
     assert len(c[0]) == 1
 
-    d = load_chunks(PREFIX + "chunk_normal.bg", 3)
+    d = load_chunks(CHUNK_NORMAL, 3)
     assert d[0][0] == "qwe"
 
 
@@ -70,7 +83,7 @@ def test_background():
 
     assert b._advance_chunk(1) == "   "
 
-    b = Background(PREFIX + "chunk_normal.bg")
+    b = Background(CHUNK_NORMAL)
     assert len(b.chunks) == 3
     assert len(b.chunks[2]) == 3
 

@@ -3,6 +3,10 @@
 from xoinvader.state import State
 
 
+PREFIX = "xoinvader/tests/fixtures/"
+"""Test fixture data prefix."""
+
+
 # pylint: disable=missing-docstring
 class StateMock(State):
     """Mock State interface."""
