@@ -10,8 +10,8 @@ from xoinvader.collision import CollisionManager
 from xoinvader.common import Settings
 from xoinvader.curses_utils import Style
 from xoinvader.gui import TextCallbackWidget, TextWidget, WeaponWidget, Bar
-from xoinvader.handlers import Handler
-from xoinvader.keys import K_A, K_D, K_E, K_F, K_R, K_SPACE, K_ESCAPE, K_Q
+from xoinvader.handlers import EventHandler
+from xoinvader.keys import K_A, K_D, K_E, K_R, K_SPACE, K_ESCAPE, K_Q
 from xoinvader.level import Level
 from xoinvader.render import render_objects
 from xoinvader.ship import GenericXEnemy, PlayerShip
@@ -20,81 +20,6 @@ from xoinvader.utils import Point, dotdict
 
 
 LOG = logging.getLogger(__name__)
-
-
-# pylint: disable=missing-docstring
-def move_left_command(actor):
-    actor.move_left()
-
-
-def move_right_command(actor):
-    actor.move_right()
-
-
-def next_weapon_command(actor):
-    actor.next_weapon()
-
-
-def prev_weapon_command(actor):
-    actor.prev_weapon()
-
-
-def toggle_fire_command(actor):
-    actor.toggle_fire()
-
-
-def take_damage_command(actor):
-    actor.take_damage(5)
-
-
-# pylint: disable=protected-access
-def switch_actor_command(actor):
-    actor._actor, actor._owner.enemy = actor._owner.enemy, actor._actor
-
-
-def to_mainmenu_command(actor):
-    actor.owner.state = "MainMenuState"
-
-
-# pylint: disable=too-few-public-methods
-class InGameInputHandler(Handler):
-
-    def __init__(self, owner):
-        super(InGameInputHandler, self).__init__(owner)
-
-        self._command_map = {
-            K_A: move_left_command,
-            K_D: move_right_command,
-            K_E: next_weapon_command,
-            K_Q: prev_weapon_command,
-            K_R: take_damage_command,
-            K_F: switch_actor_command,
-            K_SPACE: toggle_fire_command,
-            K_ESCAPE: to_mainmenu_command
-        }
-
-    def handle(self):
-        key = self._screen.getch()
-        command = self._command_map.get(key)
-        if command:
-            if command is to_mainmenu_command:
-                command(self._owner)
-            elif command is switch_actor_command:
-                command(self)
-            else:
-                command(self._actor)
-
-
-class InGameEventHandler(Handler):
-
-    def __init__(self, owner):
-        super(InGameEventHandler, self).__init__(owner)
-
-        self._input_handler = InGameInputHandler(owner)
-
-    def handle(self):
-        self._input_handler.handle()
-        # Some other event logic
 
 
 # pylint: disable=invalid-name
@@ -213,10 +138,21 @@ class InGameState(State):
         # TODO: [scoring]
         self.score = 0
 
-        self._events = InGameEventHandler(self)
+        self._events = EventHandler(self, {
+            K_A: self.actor.move_left,
+            K_D: self.actor.move_right,
+            K_E: self.actor.next_weapon,
+            K_Q: self.actor.prev_weapon,
+            K_R: lambda: self.actor.take_damage(5),
+            K_SPACE: self.actor.toggle_fire,
+            K_ESCAPE: self.to_mainmenu_command,
+        })
 
         self.add(self._create_gui())
         self.level.start()
+
+    def to_mainmenu_command(self):
+        self.owner.state = "MainMenuState"
 
     def add_player_score(self, amount):
         """Add player score.
