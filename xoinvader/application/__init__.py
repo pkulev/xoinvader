@@ -143,14 +143,21 @@ class Application(object):
         name = state.__name__
         state_object = state(self)
         self._states[name] = state_object
-        if len(self._states) == 1:
-            self._state = self._states[name]
 
         # NOTE: State cannot instantiate in State.__init__ objects that
         #       want access to state because there is no instance at creation
         #       moment. For such objects state can declare it's 'postinit'
         #       method.
+        # NOTE: Objects in state on postinit phase can try access current
+        #       state, so it must be used as current at postinit state, and
+        #       rolled back after.
+        previous_state = self._state
+        self._state = self._states[name]
+
         state_object.postinit()
+
+        if len(self._states) > 1:
+            self._state = previous_state
 
     def deregister_state(self, name):
         """Remove existing state.
