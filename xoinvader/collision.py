@@ -84,7 +84,7 @@ def register(left, right):
 
         @functools.wraps(handler)
         def handle(*args, **kwargs):
-            return handler(*args, **kwargs)
+            return handler(*args, **kwargs)  # pragma: no cover
 
         return handle
 
