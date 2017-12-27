@@ -15,6 +15,8 @@ def test_state():
     assert state.actor is None
     assert state.screen is None
 
+    assert not state.trigger()
+
     with pytest.raises(NotImplementedError):
         state.events()
     with pytest.raises(NotImplementedError):
