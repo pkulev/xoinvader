@@ -11,7 +11,7 @@ from xoinvader.common import Settings
 from xoinvader.curses_utils import Style
 from xoinvader.gui import TextCallbackWidget, TextWidget, WeaponWidget, Bar
 from xoinvader.handlers import EventHandler
-from xoinvader.keys import K_A, K_D, K_E, K_R, K_SPACE, K_ESCAPE, K_Q
+from xoinvader.keys import KEY
 from xoinvader.level import Level
 from xoinvader.render import render_objects
 from xoinvader.ship import GenericXEnemy, PlayerShip
@@ -139,13 +139,13 @@ class InGameState(State):
         self.score = 0
 
         self._events = EventHandler(self, {
-            K_A: self.actor.move_left,
-            K_D: self.actor.move_right,
-            K_E: self.actor.next_weapon,
-            K_Q: self.actor.prev_weapon,
-            K_R: lambda: self.actor.take_damage(5),
-            K_SPACE: self.actor.toggle_fire,
-            K_ESCAPE: self.to_mainmenu_command,
+            KEY.A: self.actor.move_left,
+            KEY.D: self.actor.move_right,
+            KEY.E: self.actor.next_weapon,
+            KEY.Q: self.actor.prev_weapon,
+            KEY.R: lambda: self.actor.take_damage(5),
+            KEY.SPACE: self.actor.toggle_fire,
+            KEY.ESCAPE: self.to_mainmenu_command,
         })
 
         self.add(self._create_gui())
