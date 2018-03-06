@@ -1,0 +1,3 @@
+six
+tornado>=4,<5
+pygame>=1.9,<2

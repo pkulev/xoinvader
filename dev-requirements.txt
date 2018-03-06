@@ -5,7 +5,5 @@ pytest
 pylint
 pytest-coverage
 pytest-pylint
-six
 sphinx
-tornado
 tox
