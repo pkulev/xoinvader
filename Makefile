@@ -19,8 +19,8 @@ install:
 
 devel:
 	$(VENV_CMD) $(VENV)
+	$(PIP) install -r requirements.txt
 	$(PIP) install -r dev-requirements.txt
-	$(PIP) install hg+https://bitbucket.org/pygame/pygame |:
 	$(PIP) install -e .
 
 help:
