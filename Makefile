@@ -4,6 +4,7 @@ VENV      ?= .venv
 VENV_CMD   = virtualenv --python=python$(PYVERSION)
 PYTHON    ?= $(VENV)/bin/python$(PYVERSION)
 PYTEST     = $(VENV)/bin/py.test
+COV_FMT   ?= html
 PIP       ?= $(VENV)/bin/pip
 RM         = rm -f
 
@@ -34,7 +35,7 @@ lint-full:
 	@$(PYTEST) --pylint -m pylint -vvvv $(PYTEST_ARGS) --pylint-error-types CREWF
 
 test:
-	@$(PYTEST) --cov=./xoinvader --cov-report=html --strict -v $(PYTEST_ARGS)
+	@$(PYTEST) --cov=./xoinvader --cov-report=$(COV_FMT) --strict -v $(PYTEST_ARGS)
 
 view_cov: test
 	@xdg-open ./htmlcov/index.html
