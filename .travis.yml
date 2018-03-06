@@ -1,26 +1,24 @@
-sudo: required
+sudo: false
 dist: thrusty
 language: python
 python:
+  - "2.7"
   - "3.4"
+  - "3.5"
+  - "3.6"
 
 addons:
   apt:
     packages:
-      - python-pygame
-      - mercurial
-
-before_install:
-  - sudo apt-get build-dep -y python-pygame
-  - pip install hg+http://bitbucket.org/pygame/pygame
-  - python -c "import pygame; print(pygame.__version__)"
+      - make
+      - libsdl1.2
+      - libsdl1.2-dev
 
 install:
-  - pip install -r dev-requirements.txt
-  - pip install .
+  - PYVERSION=$TRAVIS_PYTHON_VERSION make devel
 
 script:
-  - py.test --cov=./xoinvader --cov-report=xml --strict -v
+  - PYVERSION=$TRAVIS_PYTHON_VERSION COV_FMT=xml make test
 
 after_success:
   - codecov
