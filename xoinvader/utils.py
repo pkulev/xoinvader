@@ -6,7 +6,7 @@ import logging
 import time
 try:
     time.perf_counter
-except ImportError:
+except AttributeError:
     time.perf_counter = time.time
 
 
