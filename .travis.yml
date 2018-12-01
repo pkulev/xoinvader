@@ -12,8 +12,6 @@ addons:
   apt:
     packages:
       - make
-      - libsdl1.2
-      - libsdl1.2-dev
 
 install:
   - PYVERSION=$TRAVIS_PYTHON_VERSION make devel
