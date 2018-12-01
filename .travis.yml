@@ -1,5 +1,5 @@
 sudo: false
-dist: thrusty
+dist: xenial
 language: python
 python:
   - "2.7"
