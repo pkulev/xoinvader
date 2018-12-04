@@ -67,7 +67,7 @@ def test_ensure(tmpdir, mock_scorepath):
 
 @pytest.mark.parametrize(("path", "expected"), (
     (SCOREBOARD_EMPTY, []),
-    (SCOREBOARD_NONEXISTENT, []),
+    (SCOREBOARD_NONEXISTENT, scoreboard.DEFAULTS),
     (SCOREBOARD_DEFAULTS, scoreboard.DEFAULTS),
 ))
 def test_items(path, expected, mock_scorepath):

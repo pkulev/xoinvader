@@ -38,6 +38,7 @@ def items():
     :return tuple(str, int): (username, score)
     """
 
+    ensure()
     try:
         with open(Settings.path.scoreboard) as scores:
             for name, score in csv.reader(scores):
