@@ -1,24 +1,23 @@
 sudo: false
-dist: thrusty
+dist: xenial
 language: python
 python:
   - "2.7"
   - "3.4"
   - "3.5"
   - "3.6"
+  - "3.7"
 
 addons:
   apt:
     packages:
       - make
-      - libsdl1.2
-      - libsdl1.2-dev
 
 install:
-  - PYVERSION=$TRAVIS_PYTHON_VERSION make devel
+  - make ci-install
 
 script:
-  - PYVERSION=$TRAVIS_PYTHON_VERSION COV_FMT=xml make test
+  - make ci-test
 
 after_success:
   - codecov

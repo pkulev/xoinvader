@@ -9,14 +9,24 @@ from xoinvader import scoreboard
 from xoinvader.tests.common import PREFIX
 
 
-SCOREBOARD_DEFAULTS = os.path.join(PREFIX, "scoreboard_defaults")
-"""Contains scoreboard stub."""
+SCOREBOARD_DATA = [
+    ("most", 1700),
+    ("most", 1440),
+    ("most", 0),
+]
+"""Scoreboard test data."""
+
+SCOREBOARD_VALID = os.path.join(PREFIX, "scoreboard_valid")
+"""Contains scoreboard valid data."""
 
 SCOREBOARD_EMPTY = os.path.join(PREFIX, "scoreboard_empty")
 """Empty scoreboard file."""
 
 SCOREBOARD_NONEXISTENT = os.path.join(PREFIX, "scoreboard_nonexistent")
 """No such file."""
+
+SCOREBOARD_CORRUPTED = os.path.join(PREFIX, "scoreboard_corrupted")
+"""Corrupted, but recoverable scoreboard file."""
 
 
 # pylint: disable=redefined-outer-name
@@ -37,44 +47,18 @@ def mock_scorepath(monkeypatch):
     return inner
 
 
-def test_ensure(tmpdir, mock_scorepath):
-    """xoinvader.scoreboard.ensure()."""
-
-    datadir = tmpdir.mkdir("data")
-    scorefile = datadir.join("scoreboard")
-    # Check that file doesn't exist
-    assert not scorefile.check()
-
-    mock_scorepath(str(scorefile))
-
-    scoreboard.ensure()
-    # scoreboard.ensure() creates placeholder
-    assert scorefile.check()
-    assert list(scoreboard.items()) == scoreboard.DEFAULTS
-    scoreboard.add("test", 9000)  # modify to destinguish hash of default file
-    scorehash = scorefile.computehash()
-
-    # Second checks that file wasn't recreated
-    scoreboard.ensure()
-    assert scorehash == scorefile.computehash()
-
-    # scoreboard.ensure() also must create directory for the scoreboard file
-    datadir.remove()
-    assert not scorefile.check()
-    scoreboard.ensure()
-    assert scorefile.check()
-
-
 @pytest.mark.parametrize(("path", "expected"), (
     (SCOREBOARD_EMPTY, []),
     (SCOREBOARD_NONEXISTENT, []),
-    (SCOREBOARD_DEFAULTS, scoreboard.DEFAULTS),
+    (SCOREBOARD_CORRUPTED, SCOREBOARD_DATA),
+    (SCOREBOARD_VALID, SCOREBOARD_DATA),
 ))
 def test_items(path, expected, mock_scorepath):
     """xoinvader.scoreboard.items()."""
 
     mock_scorepath(path)
-    assert list(scoreboard.items()) == expected
+    assert scoreboard.items() == expected
+    assert scoreboard._load() == expected
 
 
 def test_add(tmpdir, mock_scorepath):
@@ -82,10 +66,10 @@ def test_add(tmpdir, mock_scorepath):
 
     mock_scorepath(str(tmpdir.mkdir("data").join("scoreboard")))
     scoreboard.add("test", 1000)
-    assert ("test", 1000) in list(scoreboard.items())
+    assert ("test", 1000) in scoreboard.items()
 
     scoreboard.add("test", 2000)
-    items = list(scoreboard.items())
+    items = scoreboard.items()
     assert ("test", 1000) in items
     assert ("test", 2000) in items
 
@@ -93,8 +77,8 @@ def test_add(tmpdir, mock_scorepath):
 def test_lowest(mock_scorepath):
     """xoinvader.scoreboard.lowest()."""
 
-    mock_scorepath(SCOREBOARD_DEFAULTS)
-    assert scoreboard.lowest() == min(scoreboard.DEFAULTS,
+    mock_scorepath(SCOREBOARD_VALID)
+    assert scoreboard.lowest() == min(SCOREBOARD_DATA,
                                       key=itemgetter(1))[1]
 
     mock_scorepath(SCOREBOARD_EMPTY)
@@ -104,9 +88,30 @@ def test_lowest(mock_scorepath):
 def test_highest(mock_scorepath):
     """xoinvader.scoreboard.highest()."""
 
-    mock_scorepath(SCOREBOARD_DEFAULTS)
-    assert scoreboard.highest() == max(scoreboard.DEFAULTS,
+    mock_scorepath(SCOREBOARD_VALID)
+    assert scoreboard.highest() == max(SCOREBOARD_DATA,
                                        key=itemgetter(1))[1]
 
     mock_scorepath(SCOREBOARD_EMPTY)
     assert scoreboard.highest() == 0
+
+
+def test__save(tmpdir, mock_scorepath):
+    """xoinvader.scoreboard._save()."""
+
+    datadir = tmpdir.mkdir("data")
+    scorefile = datadir.join("scoreboard")
+    # Check that file doesn't exist
+    assert not scorefile.check()
+
+    mock_scorepath(str(scorefile))
+
+    scoreboard._save(SCOREBOARD_DATA)
+    assert scorefile.check()
+    assert scoreboard.items() == SCOREBOARD_DATA
+
+    # scoreboard._save() also must create directory for the scoreboard file
+    datadir.remove()
+    assert not scorefile.check()
+    scoreboard._save(SCOREBOARD_DATA)
+    assert scorefile.check()
