@@ -14,10 +14,10 @@ addons:
       - make
 
 install:
-  - PYVERSION=$TRAVIS_PYTHON_VERSION make devel
+  - make ci-install
 
 script:
-  - PYVERSION=$TRAVIS_PYTHON_VERSION COV_FMT=xml make test
+  - make ci-test
 
 after_success:
   - codecov

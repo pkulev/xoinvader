@@ -24,6 +24,15 @@ devel:
 	$(PIP) install -r dev-requirements.txt
 	$(PIP) install -e .
 
+# CI isolates virtualenvs itself, we don't have to think about it
+ci-install:
+	pip install -r requirements.txt
+	pip install -r dev-requirements.txt
+	pip install .
+
+ci-test:
+	py.test --cov=./xoinvader --cov-report=xml --strict -v
+
 help:
 	@printf "USAGE: make [params]\n"
 
