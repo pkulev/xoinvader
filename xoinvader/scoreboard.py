@@ -19,32 +19,13 @@ DEFAULTS = [
 """Default scoreboard placeholder."""
 
 
-def ensure():
-    """Ensure that path and file exist, create default stub if not."""
-
-    dirname = os.path.dirname(Settings.path.scoreboard)
-
-    if not os.path.isdir(dirname):
-        os.mkdir(dirname)
-
-    if not os.path.isfile(Settings.path.scoreboard):
-        with open(Settings.path.scoreboard, "w") as scores:
-            csv.writer(scores).writerows(DEFAULTS)
-
-
 def items():
-    """Generator, yield scoreboard entries one by one.
+    """Return all scorefile entries.
 
-    :return tuple(str, int): (username, score)
+    :return [(str, int)]: (username, score) pairs
     """
 
-    ensure()
-    try:
-        with open(Settings.path.scoreboard) as scores:
-            for name, score in csv.reader(scores):
-                yield name, int(score)
-    except IOError:
-        raise StopIteration
+    return _load()
 
 
 def add(username, score):
@@ -54,13 +35,11 @@ def add(username, score):
     :param int score: user score
     """
 
-    ensure()
-    data = list(items())
-    data.append((username, score))
-    data.sort(key=operator.itemgetter(1))
+    scores = items()
+    scores.append((username, int(score)))
+    scores.sort(key=operator.itemgetter(1))
 
-    with open(Settings.path.scoreboard, "w") as scores:
-        csv.writer(scores).writerows(data)
+    _save(scores)
 
 
 def lowest():
@@ -69,7 +48,11 @@ def lowest():
     :return int: lowest score
     """
 
-    return min(list(items()) or [("nobody", 0)], key=operator.itemgetter(1))[1]
+    scores = items()
+    if scores:
+        return min(scores, key=operator.itemgetter(1))[1]
+    else:
+        return 0
 
 
 def highest():
@@ -78,4 +61,46 @@ def highest():
     :return int: highest score
     """
 
-    return max(list(items()) or [("nobody", 0)], key=operator.itemgetter(1))[1]
+    scores = items()
+    if scores:
+        return max(scores, key=operator.itemgetter(1))[1]
+    else:
+        return 0
+
+
+def _load():
+    """Load scores from scorefile.
+
+    :return [(str, int)]: scores
+    """
+
+    scores = []
+
+    try:
+        with open(Settings.path.scoreboard) as scorefile:
+            for entry in csv.reader(scorefile):
+                try:
+                    name, score = entry
+                    scores.append((name, int(score)))
+                except ValueError:
+                    # probably CSV is corrupted, skip failure entries
+                    pass
+    except IOError:
+        pass
+
+    return scores
+
+
+def _save(scores):
+    """Save scores to scorefile.
+
+    :param [(str, int)] scores: scores to save
+    """
+
+    dirname = os.path.dirname(Settings.path.scoreboard)
+
+    if not os.path.isdir(dirname):
+        os.mkdir(dirname)
+
+    with open(Settings.path.scoreboard, "w") as scorefile:
+        csv.writer(scorefile).writerows(scores)
