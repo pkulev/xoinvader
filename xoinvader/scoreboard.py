@@ -11,14 +11,6 @@ import csv
 from xoinvader.common import Settings
 
 
-DEFAULTS = [
-    ("most", 1700),
-    ("most", 1440),
-    ("most", 0),
-]
-"""Default scoreboard placeholder."""
-
-
 def items():
     """Return all scorefile entries.
 
