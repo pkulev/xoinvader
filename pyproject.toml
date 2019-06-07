@@ -4,9 +4,36 @@ version = "0.1.1"
 description = "(not so) small python curses space game"
 authors = ["Pavel Kulyov <kulyov.pavel@gmail.com>"]
 license = "MIT"
+readme = "README.rst"
+
+repository = "https://github.com/pkulev/xoinvader"
+homepage = "https://github.com/pkulev/xoinvader"
+documentation = "http://mmap.me/"
+
+keywords = ["curses", "space", "game"]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console :: Curses",
+    "Environment :: X11 Applications", 
+   "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Games/Entertainment :: Arcade",
+    "Topic :: Software Development :: Libraries :: pygame",
+]
+
+[tool.poetry.scripts]
+xoigame = "xoinvader.game:main"
 
 [tool.poetry.dependencies]
-python = "^3"
+python = "~2.7 || ^3.4"
 tornado = "^4"
 pygame = "*"
 
