@@ -15,7 +15,7 @@ from .common import update_system_settings as _update_system_settings
 from .utils import setup_logger
 
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 
 class XOInitializationError(Exception):

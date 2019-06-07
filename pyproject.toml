@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xoinvader"
-version = "0.1.1"
+version = "0.1.2"
 description = "(not so) small python curses space game"
 authors = ["Pavel Kulyov <kulyov.pavel@gmail.com>"]
 license = "MIT"

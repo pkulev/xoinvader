@@ -19,7 +19,7 @@ def read(filename):
 setup(
     name="XOInvader",
     description="Curses/Pygame space game",
-    version="0.1.1",
+    version="0.1.2",
     author="Pavel Kulyov",
     author_email="kulyov.pavel@gmail.com",
     long_description=read("README.rst"),
