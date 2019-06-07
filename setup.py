@@ -36,7 +36,7 @@ setup(
     """,
 
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 3 - Alpha",
         "Environment :: Console :: Curses",
         "Environment :: X11 Applications",
         "Intended Audience :: Developers",
