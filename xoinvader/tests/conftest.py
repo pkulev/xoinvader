@@ -17,11 +17,11 @@ def mock_application(request):
 
 
 @pytest.fixture
-def mock_state(request):
+def mock_state(request, mock_application):
 
     def inner(mock_app=False):
         if mock_app:
-            MockedApplication()
+            mock_application()
         application.get_current().register_state(MockedState)
         return application.get_current().state
 
