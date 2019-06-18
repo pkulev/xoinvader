@@ -36,6 +36,7 @@ xoigame = "xoinvader.game:main"
 python = "~2.7 || ^3.4"
 tornado = "^4"
 pygame = "*"
+six = "*"
 
 [tool.poetry.dev-dependencies]
 codecov = "*"
