@@ -26,9 +26,10 @@ def mock_state(request, mock_application):
         return application.get_current().state
 
     def stop():
-        application.get_current().deregister_state(MockedState.__name__)
-        if not application.get_current().states:
-            MockedApplication._finalize()
+        try:
+            application.get_current().deregister_state(MockedState.__name__)
+        except application.ApplicationNotInitializedError:
+            pass
 
     request.addfinalizer(stop)
 
