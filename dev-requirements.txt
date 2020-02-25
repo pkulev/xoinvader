@@ -1,9 +1,0 @@
-codecov
-coverage
-flake8
-pytest
-pylint
-pytest-coverage
-pytest-pylint
-sphinx
-tox

@@ -1,9 +1,4 @@
 DOCPATH    = ./docs
-PYVERSION ?= 3
-VENV      ?= .venv
-VENV_CMD   = virtualenv --python=python$(PYVERSION)
-PYTHON    ?= $(VENV)/bin/python$(PYVERSION)
-PYTEST     = $(VENV)/bin/py.test
 COV_FMT   ?= html
 PIP       ?= $(VENV)/bin/pip
 RM         = rm -f
@@ -12,45 +7,33 @@ all: help
 
 clean:
 	$(RM) -r *~ ./xoinvader/*~ ./xoinvader/tests/*~ ./xoinvader/*.pyc ./xoinvader/tests/*.pyc ./dist ./build
-	$(RM) -r $(VENV) *.egg-info
+	$(RM) -r *.egg-info
 	$(RM) -r ./htmlcov ./docs/build/
 
 install:
 	$(PIP) install .
 
 devel:
-	$(VENV_CMD) $(VENV)
-	$(PIP) install -r requirements.txt
-	$(PIP) install -r dev-requirements.txt
-	$(PIP) install -e .
-
-# CI isolates virtualenvs itself, we don't have to think about it
-ci-install:
-	pip install -r requirements.txt
-	pip install -r dev-requirements.txt
-	pip install .
-
-ci-test:
-	py.test --cov=./xoinvader --cov-report=xml --strict -v
+	poetry install
 
 help:
 	@printf "USAGE: make [params]\n"
 
 lint:
 	@printf "Warnings are disabled. To full check use 'make lint-full'\n"
-	@$(PYTEST) --pylint -m pylint -vvvv $(PYTEST_ARGS) --pylint-error-types CREF
+	poetry run pytest --pylint -m pylint -vvvv $(PYTEST_ARGS) --pylint-error-types CREF
 
 lint-full:
-	@$(PYTEST) --pylint -m pylint -vvvv $(PYTEST_ARGS) --pylint-error-types CREWF
+	poetry run pytest --pylint -m pylint -vvvv $(PYTEST_ARGS) --pylint-error-types CREWF
 
 test:
-	@$(PYTEST) --cov=./xoinvader --cov-report=$(COV_FMT) --strict -v $(PYTEST_ARGS)
+	poetry run pytest --cov=./xoinvader --cov-report=$(COV_FMT) --strict -v $(PYTEST_ARGS)
 
 view_cov: test
 	@xdg-open ./htmlcov/index.html
 
 docs:
-	$(MAKE) -C $(DOCPATH) -f Makefile html SPHINXBUILD="$(CURDIR)/$(VENV)/bin/sphinx-build"
+	poetry run $(MAKE) -C $(DOCPATH) -f Makefile html SPHINXBUILD=sphinx-build
 
 view_docs: docs
 	@xdg-open $(DOCPATH)/build/html/index.html

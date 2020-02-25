@@ -1,3 +1,0 @@
-include README.rst
-include LICENSE
-recursive-include xoinvader res/gfx/* res/snd/* config/*

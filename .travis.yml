@@ -2,22 +2,30 @@ sudo: false
 dist: xenial
 language: python
 python:
-  - "2.7"
-  - "3.4"
-  - "3.5"
   - "3.6"
   - "3.7"
+  - "3.8"
 
 addons:
   apt:
     packages:
+      - curl
       - make
 
+cache:
+  pip: true
+  directories:
+    - "$HOME/.cache/pypoetry"
+
 install:
-  - make ci-install
+  - pip install --upgrade pip
+  - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py > get-poetry.py
+  - python get-poetry.py -y
+  - source $HOME/.poetry/env
+  - poetry install
 
 script:
-  - make ci-test
+  - poetry run pytest --cov=./xoinvader --cov-report=xml -s -v xoinvader/tests
 
 after_success:
   - codecov
