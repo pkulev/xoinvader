@@ -184,7 +184,7 @@ class CollisionManager(object):
         ):
             # Definelty not overlapping
             return
-        # Now find where exactopleft_y overlapping occured
+        # Now find where exactly overlapping occured
         topleft_overlap = Point(
             max(topleft_1.x, topleft_2.x), max(topleft_1.y, topleft_2.y)
         )
