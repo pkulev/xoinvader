@@ -6,6 +6,8 @@ from typing import (
     Union,
 )
 
+from xoinvader import render
+
 
 LOG = logging.getLogger(__name__)
 
@@ -79,12 +81,21 @@ class State:
         raise NotImplementedError
 
     def update(self):
-        "Update handler, called by `Application.loop` method."
-        raise NotImplementedError
+        """Update handler, called every frame."""
+
+        for obj in self._objects:
+            obj.update()
 
     def render(self):
-        "Render handler, called by `Application.loop` method."
-        raise NotImplementedError
+        """Render handler, called every frame."""
+
+        self._screen.erase()
+        self._screen.border(0)
+
+        # TODO: abstract renderer or move it to application
+        render.render_objects(self._objects, self._screen)
+        self._screen.refresh()
+
 
     # TODO: [object-system]
     #  * implement GameObject common class for using in states

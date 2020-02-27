@@ -13,7 +13,6 @@ from xoinvader.gui import TextCallbackWidget, TextWidget, WeaponWidget, Bar
 from xoinvader.handlers import EventHandler
 from xoinvader.keys import KEY
 from xoinvader.level import Level
-from xoinvader.render import render_objects
 from xoinvader.ship import GenericXEnemy, PlayerShip
 from xoinvader.state import State
 from xoinvader.utils import Point, dotdict
@@ -225,12 +224,4 @@ class InGameState(State):
         if not self.level.running:
             self.level.start()
 
-        for obj in self._objects:
-            obj.update()
-
-    def render(self):
-        self._screen.erase()
-        self._screen.border(0)
-
-        render_objects(self._objects, self._screen)
-        self._screen.refresh()
+        super().update()
