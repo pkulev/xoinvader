@@ -119,7 +119,6 @@ class InGameState(State):
     collision = CollisionManager()
 
     def __init__(self, owner):
-        LOG.info("Instantiating InGame state")
         super(InGameState, self).__init__(owner)
         self._objects = []
         self._screen = self._owner.screen
@@ -129,8 +128,6 @@ class InGameState(State):
 
         Prepare GameObjects that require created and registered State object.
         """
-
-        LOG.debug("Registering renderable entities")
 
         self.level = TestLevel(self.add, speed=1)
         self._actor = self.level._player_ship
@@ -169,55 +166,6 @@ class InGameState(State):
         """
 
         return "Score: {0}".format(self.score)
-
-    # TODO: [object-system]
-    #  * implement GameObject common class for using in states
-    #  * generalize interaction with game objects and move `add` to base class
-    # ATTENTION: renderables that added by another objects in runtime will not
-    #  render at the screen, because they must register in state via this func
-    #  as others. This is temporary decision as attempt to create playable game
-    #  due to deadline.
-    def add(self, obj):
-        """Add GameObject to State's list of objects.
-
-        Adding via this method means that objects will be
-        updated and rendered in main IOLoop.
-
-        :param object obj: GameObject
-        """
-
-        obj = obj if isinstance(obj, (list, tuple)) else [obj]
-        self._objects.extend(obj)
-        LOG.debug("%s", obj)
-
-        # TODO: Because we don't have common GameObject interface
-        # This is temporary smellcode
-        for item in obj:
-            if item.compound:
-                subitems = item.get_renderable_objects()
-                LOG.debug("Subitems: %s", subitems)
-                self._objects.extend(subitems)
-
-    def remove(self, obj):
-        """Remove GameObject from State's list of objects.
-
-        Removed objects should be collected by GC.
-
-        :param object obj: GameObject
-        """
-
-        LOG.debug("%s", obj)
-
-        try:
-            if obj.compound:
-                for subobj in obj.get_renderable_objects():
-                    self._objects.remove(subobj)
-                    del subobj
-            self._objects.remove(obj)
-        except ValueError:
-            LOG.exception("Object %s is not in State's object list.", obj)
-        finally:
-            del obj
 
         # TODO: [collider-destruction]
         #       Remove this after collider instant destruction.
