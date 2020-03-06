@@ -175,6 +175,58 @@ class MenuItemWidget(TextWidget):
         if callable(self._action):
             self._action()
 
+
+class MenuItemContainer(Renderable):  # (CompoundMixin)
+    """Container for menu items, manages current selected, dispatches action."""
+
+    compound = True
+
+    def __init__(self, items: Optional[List[MenuItemWidget]] = None):
+        self._items = InfiniteList(items) if items else InfiniteList()
+
+    def add(self, item: MenuItemWidget):
+        self._items.append(item)
+
+    # TODO: add ability to update infinity list index after changing?
+    def remove(self, item: MenuItemWidget):
+        self._items.remove(item)
+
+    def select(self, index: int) -> MenuItemWidget:
+        """Select desired element by index, returns this element."""
+
+        self._items.current().deselect()
+        selected = self._items.select(index)
+        selected.select()
+        return selected
+
+    def do_action(self):
+        self._items.current().do_action()
+
+    def prev(self):
+        self._items.current().deselect()
+        item = self._items.prev()
+        item.select()
+        return item
+
+    def next(self):
+        self._items.current().deselect()
+        item = self._items.next()
+        item.select()
+        return item
+
+    def current(self):
+        return self._items.current()
+
+    def get_render_data(self):
+        return [], []
+
+    def update(self):
+        pass
+
+    def get_renderable_objects(self):
+        return list(self._items)
+
+
 # pylint: disable=too-many-arguments
 class PopUpNotificationWidget(TextWidget):
     """Widget that allows to show short messages with timeout.
