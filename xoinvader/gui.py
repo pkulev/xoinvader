@@ -115,11 +115,13 @@ class MenuItemWidget(TextWidget):
         action: Optional[Callable] = None,
         template: Tuple[str, str] = ("* ", " *"),
         style=None,
+        align_left=True,
     ):
         self._action = action
         self._left = template[0]
         self._right = template[1]
         self._selected = False
+        self._align_left = align_left
 
         super(MenuItemWidget, self).__init__(pos, text, style)
 
@@ -134,7 +136,10 @@ class MenuItemWidget(TextWidget):
         if self._selected:
             _full_text = "".join([self._left, self._text, self._right])
         else:
-            _full_text = self._text
+            if self._align_left:
+                _full_text = "".join([" " * len(self._left), self._text])
+            else:
+                _full_text = self._text
 
         return Surface(
             [[ch for ch in _full_text]],
