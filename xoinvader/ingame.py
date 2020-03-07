@@ -117,11 +117,6 @@ class InGameState(State):
     #       create them before state initialization, maybe here in classfields.
     collision = CollisionManager()
 
-    def __init__(self, owner):
-        super(InGameState, self).__init__(owner)
-        self._objects = []
-        self._screen = self._owner.screen
-
     def postinit(self):
         """Deferred initialization.
 
@@ -129,7 +124,7 @@ class InGameState(State):
         """
 
         self.level = TestLevel(self.add, speed=1)
-        self._actor = self.level._player_ship
+        self.actor = self.level._player_ship
 
         # TODO: [scoring]
         self.score = 0
@@ -148,7 +143,7 @@ class InGameState(State):
         self.level.start()
 
     def pause_command(self):
-        self.owner.state = "PauseMenuState"
+        self.app.state = "PauseMenuState"
 
     def add_player_score(self, amount):
         """Add player score.
@@ -192,19 +187,19 @@ class InGameState(State):
                     comp.high: Style().gui["dp_ok"],
                     comp.normal: Style().gui["dp_middle"],
                     comp.low: Style().gui["dp_critical"]
-                }, callback=self._actor.get_hull_percentage),
+                }, callback=self.actor.get_hull_percentage),
             Bar(
                 pos=Settings.layout.gui.bar.shield, prefix="Shield: ",
                 general_style=curses.A_BOLD, stylemap={
                     comp.high: Style().gui["sh_ok"],
                     comp.normal: Style().gui["sh_mid"],
                     comp.low: Style().gui["dp_critical"]
-                }, callback=self._actor.get_shield_percentage),
+                }, callback=self.actor.get_shield_percentage),
             Bar(
                 pos=Settings.layout.gui.bar.weapon,
                 stylemap={
                     comp.whatever: Style().gui["dp_ok"]
-                }, callback=self._actor.get_weapon_percentage),
+                }, callback=self.actor.get_weapon_percentage),
             WeaponWidget(
                 Settings.layout.gui.info.weapon,
                 self.actor.get_weapon_info)

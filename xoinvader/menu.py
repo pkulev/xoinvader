@@ -16,9 +16,8 @@ from xoinvader.utils import Point
 
 class PauseMenuState(State):
 
-    def __init__(self, owner):
-        super().__init__(owner)
-        self._screen = owner.screen
+    def __init__(self, app):
+        super().__init__(app)
 
         self.add(TextWidget(Point(4, 4), "Pause"))
         self._items = MenuItemContainer([
@@ -54,9 +53,8 @@ class PauseMenuState(State):
 
 class GameOverState(State):
 
-    def __init__(self, owner):
-        super().__init__(owner)
-        self._screen = owner.screen
+    def __init__(self, app):
+        super().__init__(app)
 
         self._score = "Your score: {0}"
 

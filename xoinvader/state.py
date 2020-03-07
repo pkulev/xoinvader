@@ -22,16 +22,15 @@ class State:
 
     .. warning:: implement actor base class
 
-    :param owner: state's owner
-    :type owner: `xoinvader.application.Application`
+    :param app: current application
+    :type app: `xoinvader.application.Application`
     """
 
-    def __init__(self, owner):
+    def __init__(self, app):
         LOG.info("Instantiating %s state.", self.__class__.__name__)
 
-        self._owner = owner
+        self._app = app
         self._actor = None
-        self._screen = None
 
         self._objects = []
 
@@ -47,34 +46,25 @@ class State:
                   self.__class__.__name__, args, kwargs)
 
     @property
-    def owner(self):
+    def app(self):
         """State's owner.
 
         :getter: yes
         :setter: no
         :type: :class:`xoinvader.application.Application`
         """
-        return self._owner
+        return self._app
 
     @property
-    def actor(self):
-        """Controllable object.
-
-        :getter: yes
-        :setter: no
-        :type: object
-        """
+    def actor(self) -> object:
+        """Controllable object getter."""
         return self._actor
 
-    @property
-    def screen(self):
-        """Screen for rendering state's objects.
+    @actor.setter
+    def actor(self, val):
+        """Controllable object setter."""
 
-        :getter: yes
-        :setter: no
-        :type: `curses.Window`
-        """
-        return self._screen
+        self._actor = val
 
     def events(self):
         "Event handler, called by `Application.loop` method."
