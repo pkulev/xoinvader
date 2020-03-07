@@ -2,7 +2,11 @@
 
 from xoinvader import application
 from xoinvader.gui import (
-    TextCallbackWidget, TextWidget, MenuItemWidget, PopUpNotificationWidget
+    MenuItemContainer,
+    MenuItemWidget,
+    PopUpNotificationWidget,
+    TextCallbackWidget,
+    TextWidget,
 )
 from xoinvader.handlers import EventHandler
 from xoinvader.keys import KEY
@@ -18,25 +22,33 @@ class MainMenuState(State):
         self._owner = owner
         self._actor = None  # Should be some of Menu instances?
 
-        self.add(TextWidget(Point(4, 4), "Whoooch"))
-        self._items = [
-            MenuItemWidget(Point(10, 10), "First menu item"),
-            MenuItemWidget(Point(10, 11), "Second menu item")
-        ]
-        self._items[0].select()
+        self.add(TextWidget(Point(4, 4), "Pause"))
+        self._items = MenuItemContainer([
+            MenuItemWidget(
+                Point(10, 10), "Continue",
+                template=("=> ", ""),
+                action=lambda: application.get_current().trigger_state("InGameState")),
+            MenuItemWidget(
+                Point(10, 11), "Quit",
+                template=("=> ", ""),
+                action=application.get_current().stop),
+        ])
+        self._items.select(0)
         self.add(self._items)
 
         self._events = EventHandler(self, {
             KEY.ESCAPE: lambda: application.get_current().trigger_state("InGameState"),
-            KEY.R: application.get_current().stop,
             KEY.N: lambda: self.notify("This is test notification"),
+            KEY.W: self._items.prev,
+            KEY.S: self._items.next,
+            KEY.F: self._items.do_action,
         })
 
     def notify(self, text, pos=Point(15, 15)):
-        widget = PopUpNotificationWidget(
-            pos, text or "ololo")
-        widget._callback = lambda: self.remove(widget)
-        self.add(widget)
+        self.add(
+            PopUpNotificationWidget(
+                pos, text,
+                callback=lambda w: self.remove(w)))
 
     def events(self):
         self._events.handle()
