@@ -60,16 +60,24 @@ class GameOverState(State):
 
         self._score = "Your score: {0}"
 
-        self._objects = [
-            TextWidget(Point(4, 4), "Your soul completely lost this time"),
-            TextCallbackWidget(Point(4, 5), self.score_callback),
-            MenuItemWidget(Point(10, 10), "I agree"),
-            MenuItemWidget(Point(10, 11), "No, I want more")
-        ]
-        self._objects[2].select()
+        self.add(TextWidget(Point(4, 4), "I was too tired and scared to continue..."))
+        self.add(TextCallbackWidget(Point(4, 5), self.score_callback))
+
+        self._items = MenuItemContainer([
+            MenuItemWidget(
+                Point(10, 10), "I must to continue my revenge!",
+                action=lambda: application.get_current().trigger_reinit("InGameState")),
+            MenuItemWidget(
+                Point(10, 11), "No! I want to go home!",
+                action=application.get_current().stop),
+        ])
+        self.add(self._items)
+        self._items.select(0)
+
         self._events = EventHandler(self, {
-            KEY.ESCAPE: application.get_current().stop,
-            # KEY.ENTER: exit_game_command,
+            KEY.SPACE: self._items.do_action,
+            KEY.W: self._items.prev,
+            KEY.S: self._items.next,
         })
 
     def score_callback(self):
