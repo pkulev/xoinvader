@@ -52,7 +52,15 @@ def test_application(monkeypatch):
 
     monkeypatch.setattr(StateMock, "trigger", new_trigger)
     app.trigger_state(StateMock.__name__, 10, test=20)
+    assert isinstance(app.state, StateMock)
     assert called_with == [(10,), {"test": 20}]
+
+    # Test Application.trigger_reinit
+    app.state.marker = "something"
+    assert hasattr(app.state, "marker") is True
+    app.trigger_reinit(StateMock.__name__)
+    assert isinstance(app.state, StateMock)
+    assert hasattr(app.state, "marker") is False
 
 
 def test_curses_application(monkeypatch):

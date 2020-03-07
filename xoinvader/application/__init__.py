@@ -159,23 +159,25 @@ class Application(object):
         if len(self._states) > 1:
             self._state = previous_state
 
-    def deregister_state(self, name):
-        """Remove existing state.
-
-        :param str name: name of state
-        """
+    def deregister_state(self, name: str):
+        """Remove existing state."""
 
         state = self._states.pop(name)
         del state
 
-    def trigger_state(self, state, *args, **kwargs):
-        """Change current state and pass args and kwargs to it.
-
-        :param str state: state name
-        """
+    def trigger_state(self, state: str, *args, **kwargs):
+        """Change current state and pass args and kwargs to it."""
 
         self.state = state
         self.state.trigger(*args, **kwargs)
+
+    def trigger_reinit(self, name: str):
+        """Deregister state, register again and make it current."""
+        state = self.states[name].__class__
+
+        self.deregister_state(name)
+        self.register_state(state)
+        self.state = name
 
     @property
     def fps(self):
