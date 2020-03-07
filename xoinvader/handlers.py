@@ -16,7 +16,6 @@ class Handler(object):
 
     def __init__(self, owner):
         self._owner = owner
-        self._screen = owner.screen
         self._actor = owner.actor
 
     @property
@@ -41,17 +40,6 @@ class Handler(object):
 
         return self._owner
 
-    @property
-    def screen(self):
-        """Screen.
-
-        :getter: yes
-        :setter: no
-        :type: object
-        """
-
-        return self._screen
-
     @abstractmethod
     def handle(self):
         """Handle event."""
@@ -66,8 +54,10 @@ class EventHandler(Handler):
 
     Handles events using the event queue.
     Provides command mapping manipulations via the default handle() method.
+    You must instantiate this class only after application being initialized.
+    Application instance has event queue object, that will be used here.
 
-    :param :class:`xoinvader.state.State` owner: handler's owner
+    :param :class:`xoinvader.state.State` owner: handler's owner state
     :param dict command_map: key->command mapping
     """
 
@@ -75,6 +65,8 @@ class EventHandler(Handler):
         super(EventHandler, self).__init__(owner)
 
         self._command_map = command_map or {}
+        # TODO: implement proper queue object
+        self._event_queue = owner.app.event_queue
 
     # TODO: event-handling: I think we need some global event bus in whole
     #       application.
@@ -87,7 +79,7 @@ class EventHandler(Handler):
     def get_input(self):
         """Get input from keyboard."""
 
-        return self._screen.getch()
+        return self._event_queue.getch()
 
     def handle(self):
         """Handle input event."""

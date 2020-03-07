@@ -7,6 +7,7 @@ from tornado import ioloop
 
 from xoinvader.constants import DEFAULT_FPS, DRIVER_NCURSES, DRIVER_SDL
 from xoinvader.common import Settings
+from xoinvader.render import Renderer
 
 
 class ApplicationNotInitializedError(Exception):
@@ -72,15 +73,17 @@ class Application(object):
     __CURRENT_APPLICATION = None
     """Instance of the current application."""
 
-    def __init__(self):
+    def __init__(self, renderer: Renderer = Renderer("dummy"), event_queue=None):
         Application.__CURRENT_APPLICATION = self
+
+        self._renderer = renderer
+        self._event_queue = event_queue
 
         self._state = None
         self._states = {}
-        self._screen = None
         self._fps = DEFAULT_FPS
-        self._ioloop = ioloop.IOLoop.instance()
 
+        self._ioloop = ioloop.IOLoop.instance()
         self._pc = ioloop.PeriodicCallback(self.tick, 30, self._ioloop)
         self._pc.start()
 
@@ -180,18 +183,27 @@ class Application(object):
         self.state = name
 
     @property
-    def fps(self):
-        """Frames per second.
+    def renderer(self) -> Renderer:
+        """Application's renderer getter."""
 
-        :getter: yes
-        :setter: yes
-        :type: int
-        """
+        return self._renderer
+
+    @property
+    def event_queue(self):
+        """Application's event queue getter."""
+
+        return self._event_queue
+
+    @property
+    def fps(self) -> int:
+        """Desired FPS getter."""
+
         return self._fps
 
     @fps.setter
-    def fps(self, val):
-        """Setter."""
+    def fps(self, val: int):
+        """Desired FPS setter."""
+
         self._fps = int(val)
 
     @property

@@ -2,20 +2,10 @@
 
 
 from abc import ABCMeta, abstractmethod
-from operator import attrgetter
-
-from six import add_metaclass
-
-from xoinvader.common import Settings
-from xoinvader.utils import Point
+from typing import List
 
 
-INVISIBLE_SYMBOLS = " "
-"""Symbols that renderer must not render on the screen."""
-
-
-@add_metaclass(ABCMeta)
-class Renderable(object):
+class Renderable(metaclass=ABCMeta):
     """Base for renderable objects.
 
     .. class-variables::
@@ -61,39 +51,21 @@ class Renderable(object):
         pass
 
 
-# TODO: [advanced-render]
-# * use render for curses and SDL windows
-def render_objects(objects, screen):
-    """Render all renderable objects.
+class Renderer:
+    """Base renderer class. Instance can be used as dummy renderer."""
 
-    :param collections.Iterable objects: objects to render
-    :param curses._Window screen: curses screen
-    """
-    border = Point(*screen.getmaxyx()[::-1])
+    def __init__(self, screen):
+        self._screen = screen
 
-    # TODO: Move sorting to some kind of object manager
-    # Must be sorted on adding objects
-    for obj in sorted(objects, key=attrgetter("render_priority")):
-        gpos_list, data_gen = obj.get_render_data()
+    @property
+    def screen(self):
+        return self._screen
 
-        for data in data_gen:
-            for gpos in gpos_list:
-                lpos, image, style = data
-                cpos = (gpos + lpos)[int]
+    def clear(self):
+        pass
 
-                if (
-                        (cpos.x >= border.x - 1 or cpos.y >= border.y - 1) or
-                        (cpos.x <= 0 or cpos.y <= 0)
-                ) and not obj.draw_on_border:
-                    obj.remove_obsolete(gpos)
-                    continue
+    def render_objects(self, objects: List[Renderable]):
+        pass
 
-                if image in INVISIBLE_SYMBOLS:
-                    continue
-
-                if style:
-                    screen.addstr(
-                        cpos.y, cpos.x,
-                        image.encode(Settings.system.encoding), style)
-                else:
-                    screen.addstr(cpos.y, cpos.x, image)
+    def present(self):
+        pass

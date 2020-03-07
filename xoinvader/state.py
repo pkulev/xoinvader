@@ -6,8 +6,6 @@ from typing import (
     Union,
 )
 
-from xoinvader import render
-
 
 LOG = logging.getLogger(__name__)
 
@@ -30,6 +28,7 @@ class State:
         LOG.info("Instantiating %s state.", self.__class__.__name__)
 
         self._app = app
+        self._renderer = app.renderer
         self._actor = None
 
         self._objects = []
@@ -79,13 +78,9 @@ class State:
     def render(self):
         """Render handler, called every frame."""
 
-        self._screen.erase()
-        self._screen.border(0)
-
-        # TODO: abstract renderer or move it to application
-        render.render_objects(self._objects, self._screen)
-        self._screen.refresh()
-
+        self._renderer.clear()
+        self._renderer.render_objects(self._objects)
+        self._renderer.present()
 
     # TODO: [object-system]
     #  * implement GameObject common class for using in states

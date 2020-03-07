@@ -3,6 +3,19 @@
 import pygame
 
 from xoinvader.application import Application
+from xoinvader.render import Renderer
+
+
+class PygameRenderer(Renderer):
+
+    def clear(self):
+        pass
+
+    def render_objects(self, objects):
+        pass
+
+    def present(self):
+        pass
 
 
 # pylint: disable=no-member
@@ -20,23 +33,21 @@ class PygameApplication(Application):
     """
 
     def __init__(self, resolution=(0, 0), flags=0, depth=0):
-        super(PygameApplication, self).__init__()
+        window = pygame.display.set_mode(resolution, flags, depth)
+        renderer = PygameRenderer(window)
 
-        self._screen = pygame.display.set_mode(resolution, flags, depth)
+        super(PygameApplication, self).__init__(renderer)
+
         pygame.key.set_repeat(50, 50)
 
-    def set_caption(self, caption, icontitle=""):
+    def set_caption(self, caption: str, icontitle: str = ""):
         """Set window caption.
 
         :param caption: window caption
-        :type caption: str
-
         :param icontitle: short title
-        :type icontitle: str
         """
 
-        if self._screen:
-            pygame.display.set_caption(caption, icontitle)
+        pygame.display.set_caption(caption, icontitle)
 
     def stop(self):
         self._ioloop.add_callback(pygame.quit)
