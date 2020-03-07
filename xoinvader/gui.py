@@ -144,6 +144,7 @@ class MenuItemWidget(TextWidget):
     def toggle_select(self):
         """Draw or not selector characters."""
         self._selected = not self._selected
+        self._image = self._make_image()
 
     def select(self):
         """Select and refresh image."""
