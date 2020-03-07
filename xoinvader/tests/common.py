@@ -11,17 +11,17 @@ PREFIX = "xoinvader/tests/fixtures/"
 class StateMock(State):
     """Mock State interface."""
 
-    def __init__(self, owner):
-        super(StateMock, self).__init__(owner)
+    def __init__(self, app):
+        super(StateMock, self).__init__(app)
         self.loop_count = 1
 
-        def nop():
+        def noop():
             pass
 
         # Hooks for loop testing
-        self.on_events = nop
-        self.on_update = nop
-        self.on_render = nop
+        self.on_events = noop
+        self.on_update = noop
+        self.on_render = noop
 
     def events(self):
         self.on_events()
@@ -32,11 +32,10 @@ class StateMock(State):
     def render(self):
         self.on_render()
         if self.loop_count <= 0:
-            self.owner.stop()
+            self.app.stop()
 
         self.loop_count -= 1
 
 
 class AnotherStateMock(StateMock):
     """Class for test with two instances."""
-    pass

@@ -7,6 +7,7 @@ from tornado import ioloop
 
 from xoinvader.constants import DEFAULT_FPS, DRIVER_NCURSES, DRIVER_SDL
 from xoinvader.common import Settings
+from xoinvader.render import Renderer
 
 
 class ApplicationNotInitializedError(Exception):
@@ -72,15 +73,17 @@ class Application(object):
     __CURRENT_APPLICATION = None
     """Instance of the current application."""
 
-    def __init__(self):
+    def __init__(self, renderer: Renderer = Renderer("dummy"), event_queue=None):
         Application.__CURRENT_APPLICATION = self
+
+        self._renderer = renderer
+        self._event_queue = event_queue
 
         self._state = None
         self._states = {}
-        self._screen = None
         self._fps = DEFAULT_FPS
-        self._ioloop = ioloop.IOLoop.instance()
 
+        self._ioloop = ioloop.IOLoop.instance()
         self._pc = ioloop.PeriodicCallback(self.tick, 30, self._ioloop)
         self._pc.start()
 
@@ -143,46 +146,64 @@ class Application(object):
         name = state.__name__
         state_object = state(self)
         self._states[name] = state_object
-        if len(self._states) == 1:
-            self._state = self._states[name]
 
         # NOTE: State cannot instantiate in State.__init__ objects that
         #       want access to state because there is no instance at creation
         #       moment. For such objects state can declare it's 'postinit'
         #       method.
+        # NOTE: Objects in state on postinit phase can try access current
+        #       state, so it must be used as current at postinit state, and
+        #       rolled back after.
+        previous_state = self._state
+        self._state = self._states[name]
+
         state_object.postinit()
 
-    def deregister_state(self, name):
-        """Remove existing state.
+        if len(self._states) > 1:
+            self._state = previous_state
 
-        :param str name: name of state
-        """
+    def deregister_state(self, name: str):
+        """Remove existing state."""
 
         state = self._states.pop(name)
         del state
 
-    def trigger_state(self, state, *args, **kwargs):
-        """Change current state and pass args and kwargs to it.
-
-        :param str state: state name
-        """
+    def trigger_state(self, state: str, *args, **kwargs):
+        """Change current state and pass args and kwargs to it."""
 
         self.state = state
         self.state.trigger(*args, **kwargs)
 
-    @property
-    def fps(self):
-        """Frames per second.
+    def trigger_reinit(self, name: str):
+        """Deregister state, register again and make it current."""
+        state = self.states[name].__class__
 
-        :getter: yes
-        :setter: yes
-        :type: int
-        """
+        self.deregister_state(name)
+        self.register_state(state)
+        self.state = name
+
+    @property
+    def renderer(self) -> Renderer:
+        """Application's renderer getter."""
+
+        return self._renderer
+
+    @property
+    def event_queue(self):
+        """Application's event queue getter."""
+
+        return self._event_queue
+
+    @property
+    def fps(self) -> int:
+        """Desired FPS getter."""
+
         return self._fps
 
     @fps.setter
-    def fps(self, val):
-        """Setter."""
+    def fps(self, val: int):
+        """Desired FPS setter."""
+
         self._fps = int(val)
 
     @property

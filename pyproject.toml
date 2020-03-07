@@ -48,6 +48,9 @@ pytest-pylint = "*"
 sphinx = "*"
 tox = "*"
 
+[tool.black]
+line-length = 80
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"

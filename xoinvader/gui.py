@@ -1,40 +1,37 @@
-# -*- coding: utf-8 -*-
 """ Graphical user interface widgets."""
 
 
-from __future__ import unicode_literals
+from typing import Callable, Optional, List, Tuple, Generator
 
 # TODO: make working with styles pretty
 from xoinvader.curses_utils import Style
 from xoinvader.render import Renderable
-from xoinvader.utils import Surface, Timer
+from xoinvader.utils import (
+    InfiniteList,
+    Point,
+    Surface,
+    Timer,
+)
 
 
 class TextWidget(Renderable):
     """Simple text widget.
 
     :param pos: widget's global position
-    :type pos: `xoinvader.utils.Point`
-
     :param text: contained text
-    :type text: string
-
-    .. note:: add [ [style], ...] support
-
     :param style: curses style for text
-    :type style: integer(curses style)
     """
 
     render_priority = 1
     draw_on_border = True
 
-    def __init__(self, pos, text, style=None):
+    def __init__(self, pos: Point, text: str, style: int = None):
         self._pos = pos
         self._text = text
         self._style = style
         self._image = self._make_image()
 
-    def _make_image(self):
+    def _make_image(self) -> Surface:
         """Make Surface object from text and style.
 
         :return: Surface instance
@@ -44,16 +41,14 @@ class TextWidget(Renderable):
         _style = self._style or Style().gui["normal"]
         return Surface(
             [[ch for ch in self._text]],
-            [[_style for _ in range(len(self._text))]])
+            [[_style for _ in range(len(self._text))]],
+        )
 
-    def update(self, text=None, style=None):
+    def update(self, text: Optional[str] = None, style: Optional[int] = None):
         """Obtain (or not) new data and refresh image.
 
         :param text: new text
-        :type: string
-
         :param style: new style
-        :type: integer(curses style)
         """
 
         if text:
@@ -63,7 +58,7 @@ class TextWidget(Renderable):
         if text or style:
             self._image = self._make_image()
 
-    def get_render_data(self):
+    def get_render_data(self) -> Tuple[List[Point], Generator]:
         return [self._pos], self._image.get_image()
 
 
@@ -75,21 +70,18 @@ class TextWidget(Renderable):
 class TextCallbackWidget(TextWidget):
     """Simple text widget with callback.
 
-    :param class::`xoinvader.utils.Point` pos: widget's global position
-
-    :param str text: contained text
-
-    .. Note:: add [ [style], ...] support
-
-    :param int style: curses style for text
+    :param pos: widget's global position
+    :param text: contained text
+    :param style: curses style for text
     """
 
-    def __init__(self, pos, callback, style=None):
+    def __init__(
+        self, pos: Point, callback: Callable, style: Optional[int] = None
+    ):
 
         self._callback = callback
 
-        super(TextCallbackWidget, self).__init__(
-            pos, callback(), style)
+        super(TextCallbackWidget, self).__init__(pos, callback(), style)
 
     def update(self):
         self._text = self._callback()
@@ -116,14 +108,24 @@ class MenuItemWidget(TextWidget):
 
     render_priority = 1
 
-    def __init__(self, pos, text, template=("* ", " *"), style=None):
+    def __init__(
+        self,
+        pos: Point,
+        text: str,
+        action: Optional[Callable] = None,
+        template: Tuple[str, str] = ("* ", " *"),
+        style=None,
+        align_left=True,
+    ):
+        self._action = action
         self._left = template[0]
         self._right = template[1]
         self._selected = False
+        self._align_left = align_left
 
         super(MenuItemWidget, self).__init__(pos, text, style)
 
-    def _make_image(self):
+    def _make_image(self) -> Surface:
         """Make Surface object from text, markers and style.
 
         :return: Surface instance
@@ -134,15 +136,20 @@ class MenuItemWidget(TextWidget):
         if self._selected:
             _full_text = "".join([self._left, self._text, self._right])
         else:
-            _full_text = self._text
+            if self._align_left:
+                _full_text = "".join([" " * len(self._left), self._text])
+            else:
+                _full_text = self._text
 
         return Surface(
             [[ch for ch in _full_text]],
-            [[_style for _ in range(len(_full_text))]])
+            [[_style for _ in range(len(_full_text))]],
+        )
 
     def toggle_select(self):
         """Draw or not selector characters."""
         self._selected = not self._selected
+        self._image = self._make_image()
 
     def select(self):
         """Select and refresh image."""
@@ -157,19 +164,73 @@ class MenuItemWidget(TextWidget):
         self._image = self._make_image()
 
     @property
-    def selected(self):
+    def selected(self) -> bool:
         """Shows is item selected or not.
 
         .. warning:: Complete menu workflow.
-
-        :getter: yes
-        :setter: no
-        :type: boolean
         """
+
         return self._selected
 
-    def get_render_data(self):
+    def get_render_data(self) -> Tuple[List[Point], Generator]:
         return [self._pos], self._image.get_image()
+
+    def do_action(self):
+        """Call action callback."""
+
+        if callable(self._action):
+            self._action()
+
+
+class MenuItemContainer(Renderable):  # (CompoundMixin)
+    """Container for menu items, manages current selected, dispatches action."""
+
+    compound = True
+
+    def __init__(self, items: Optional[List[MenuItemWidget]] = None):
+        self._items = InfiniteList(items) if items else InfiniteList()
+
+    def add(self, item: MenuItemWidget):
+        self._items.append(item)
+
+    # TODO: add ability to update infinity list index after changing?
+    def remove(self, item: MenuItemWidget):
+        self._items.remove(item)
+
+    def select(self, index: int) -> MenuItemWidget:
+        """Select desired element by index, returns this element."""
+
+        self._items.current().deselect()
+        selected = self._items.select(index)
+        selected.select()
+        return selected
+
+    def do_action(self):
+        self._items.current().do_action()
+
+    def prev(self):
+        self._items.current().deselect()
+        item = self._items.prev()
+        item.select()
+        return item
+
+    def next(self):
+        self._items.current().deselect()
+        item = self._items.next()
+        item.select()
+        return item
+
+    def current(self):
+        return self._items.current()
+
+    def get_render_data(self):
+        return [], []
+
+    def update(self):
+        pass
+
+    def get_renderable_objects(self):
+        return list(self._items)
 
 
 # pylint: disable=too-many-arguments
@@ -239,7 +300,8 @@ class WeaponWidget(Renderable):
 
         return Surface(
             [[ch for ch in self._data]],
-            [[Style().gui["yellow"] for _ in range(len(self._data))]])
+            [[Style().gui["yellow"] for _ in range(len(self._data))]],
+        )
 
     def update(self):
         """Obtain new data and refresh image."""
@@ -257,7 +319,6 @@ class Bar(Renderable):
     """Progress bar widget.
 
     :param pos: Bar's global position
-    :type pos: `xoinvader.utils.Point`
 
     :param str prefix: text before the bar
     :param str postfix: text after the bar
@@ -281,14 +342,21 @@ class Bar(Renderable):
     draw_on_border = True
 
     def __init__(
-            self, pos,
-            prefix="", postfix="",
-            left="[", right="]",
-            marker="█", marker_style=None,
-            empty="-", empty_style=None,
-            count=10, maxval=100,
-            general_style=None,
-            stylemap=None, callback=None
+        self,
+        pos: Point,
+        prefix: str = "",
+        postfix: str = "",
+        left: str = "[",
+        right: str = "]",
+        marker: str = "█",
+        marker_style: Optional[int] = None,
+        empty: str = "-",
+        empty_style: Optional[int] = None,
+        count: int = 10,
+        maxval: int = 100,
+        general_style: Optional[int] = None,
+        stylemap=None,
+        callback=None,
     ):
 
         self._pos = pos
@@ -306,6 +374,7 @@ class Bar(Renderable):
         self._stylemap = stylemap
         self._callback = callback
 
+        # fmt: off
         self._template = "".join([
             str(val) for val in [
                 self._prefix,
@@ -313,6 +382,7 @@ class Bar(Renderable):
                 self._postfix
             ]
         ])
+        # fmt: on
 
         self._current_count = self._count
         self._image = None
@@ -346,8 +416,8 @@ class Bar(Renderable):
             else:
                 image.append((char, self._general_style))
         self._image = Surface(
-            [[ch[0] for ch in image]],
-            [[st[1] for st in image]])
+            [[ch[0] for ch in image]], [[st[1] for st in image]]
+        )
 
     def update(self, val=None):
         """Update bar if there's need for it."""
@@ -362,5 +432,5 @@ class Bar(Renderable):
         self._update_current_count(val)
         self._update_image()
 
-    def get_render_data(self):
+    def get_render_data(self) -> Tuple[List[Point], Generator]:
         return [self._pos], self._image.get_image()

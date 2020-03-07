@@ -96,12 +96,6 @@ def test_point_operations():
 
 
 def test_infinite_list_operations():
-    # Test empty InfiniteList behaviour
-
-    inf_list = InfiniteList()
-    for func in [inf_list.current, inf_list.next, inf_list.prev]:
-        with pytest.raises(IndexError):
-            func()
 
     # Test one element behaviour
     data = "test1"
@@ -109,11 +103,36 @@ def test_infinite_list_operations():
 
     assert len(inf_list) == 1
     assert inf_list[0] == data
+    assert inf_list.select(0) == data
     assert inf_list.current() == data
     assert inf_list.next() == data
     assert inf_list.prev() == data
 
-    # Test many elements behaviour
+    # TODO: Test many elements behaviour
+
+
+def test_infinite_list_operations_negative():
+
+    # Test empty InfiniteList behaviour
+    inf_list = InfiniteList()
+    for func in [
+        inf_list.current,
+        inf_list.next,
+        inf_list.prev,
+    ]:
+        with pytest.raises(IndexError):
+            func()
+
+    # Negative tests for one element behaviour
+
+    inf_list.append("test")
+
+    with pytest.raises(IndexError):
+        inf_list.select(-1)
+    with pytest.raises(IndexError):
+        inf_list.select(1)
+
+    # TODO: test many elements behaviour
 
 
 _image = [

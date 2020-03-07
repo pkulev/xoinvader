@@ -6,18 +6,25 @@ import pytest
 from xoinvader.state import State
 
 
-def test_state():
+def test_state(mock_application):
     """Test xoinvader.state.State base class."""
 
-    state = State("owner")
+    app = mock_application()
+    state = State(app)
 
-    assert state.owner == "owner"
+    assert state.app is app
     assert state.actor is None
-    assert state.screen is None
+    assert state._renderer is app.renderer
+
+    assert not state.postinit()
+    assert not state.trigger()
+
 
     with pytest.raises(NotImplementedError):
         state.events()
-    with pytest.raises(NotImplementedError):
-        state.update()
-    with pytest.raises(NotImplementedError):
-        state.render()
+
+    assert not state.update()
+    assert not state.render()
+
+    assert state._objects == []
+    # TODO: add tests for add and remove

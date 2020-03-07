@@ -279,36 +279,41 @@ class InfiniteList(list):
         super(InfiniteList, self).__init__(*args, **kwargs)
         self._index = 0
 
-    def current(self):
-        """Get current element.
+    def select(self, index: int) -> object:
+        """Set index and return selected element."""
 
-        :return: current element
-        :rtype: object
-        """
+        if not len(self):
+            raise IndexError("List is empty")
+
+        if not (0 <= index < len(self)):
+            raise IndexError("Index out of bounds.")
+
+        self._index = index
         return self[self._index]
 
-    def next(self):
-        """Get next element.
+    def current(self) -> object:
+        """Return current element."""
 
-        :return: next element
-        :rtype: object
-        """
+        return self[self._index]
+
+    def next(self) -> object:
+        """Select next element and return it."""
+
         try:
             self._index = (self._index + 1) % len(self)
         except ZeroDivisionError:
             raise IndexError("List is empty.")
+
         return self[self._index]
 
-    def prev(self):
-        """Get previous element.
+    def prev(self) -> object:
+        """Select previous element and return it."""
 
-        :return: previous element
-        :rtype: object
-        """
         try:
             self._index = (self._index - 1) % len(self)
         except ZeroDivisionError:
             raise IndexError("List is empty.")
+
         return self[self._index]
 
 

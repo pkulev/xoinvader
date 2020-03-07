@@ -10,91 +10,15 @@ from xoinvader.collision import CollisionManager
 from xoinvader.common import Settings
 from xoinvader.curses_utils import Style
 from xoinvader.gui import TextCallbackWidget, TextWidget, WeaponWidget, Bar
-from xoinvader.handlers import Handler
-from xoinvader.keys import K_A, K_D, K_E, K_F, K_R, K_SPACE, K_ESCAPE, K_Q
+from xoinvader.handlers import EventHandler
+from xoinvader.keys import KEY
 from xoinvader.level import Level
-from xoinvader.render import render_objects
 from xoinvader.ship import GenericXEnemy, PlayerShip
 from xoinvader.state import State
 from xoinvader.utils import Point, dotdict
 
 
 LOG = logging.getLogger(__name__)
-
-
-# pylint: disable=missing-docstring
-def move_left_command(actor):
-    actor.move_left()
-
-
-def move_right_command(actor):
-    actor.move_right()
-
-
-def next_weapon_command(actor):
-    actor.next_weapon()
-
-
-def prev_weapon_command(actor):
-    actor.prev_weapon()
-
-
-def toggle_fire_command(actor):
-    actor.toggle_fire()
-
-
-def take_damage_command(actor):
-    actor.take_damage(5)
-
-
-# pylint: disable=protected-access
-def switch_actor_command(actor):
-    actor._actor, actor._owner.enemy = actor._owner.enemy, actor._actor
-
-
-def to_mainmenu_command(actor):
-    actor.owner.state = "MainMenuState"
-
-
-# pylint: disable=too-few-public-methods
-class InGameInputHandler(Handler):
-
-    def __init__(self, owner):
-        super(InGameInputHandler, self).__init__(owner)
-
-        self._command_map = {
-            K_A: move_left_command,
-            K_D: move_right_command,
-            K_E: next_weapon_command,
-            K_Q: prev_weapon_command,
-            K_R: take_damage_command,
-            K_F: switch_actor_command,
-            K_SPACE: toggle_fire_command,
-            K_ESCAPE: to_mainmenu_command
-        }
-
-    def handle(self):
-        key = self._screen.getch()
-        command = self._command_map.get(key)
-        if command:
-            if command is to_mainmenu_command:
-                command(self._owner)
-            elif command is switch_actor_command:
-                command(self)
-            else:
-                command(self._actor)
-
-
-class InGameEventHandler(Handler):
-
-    def __init__(self, owner):
-        super(InGameEventHandler, self).__init__(owner)
-
-        self._input_handler = InGameInputHandler(owner)
-
-    def handle(self):
-        self._input_handler.handle()
-        # Some other event logic
 
 
 # pylint: disable=invalid-name
@@ -193,30 +117,33 @@ class InGameState(State):
     #       create them before state initialization, maybe here in classfields.
     collision = CollisionManager()
 
-    def __init__(self, owner):
-        LOG.info("Instantiating InGame state")
-        super(InGameState, self).__init__(owner)
-        self._objects = []
-        self._screen = self._owner.screen
-
     def postinit(self):
         """Deferred initialization.
 
         Prepare GameObjects that require created and registered State object.
         """
 
-        LOG.debug("Registering renderable entities")
-
         self.level = TestLevel(self.add, speed=1)
-        self._actor = self.level._player_ship
+        self.actor = self.level._player_ship
 
         # TODO: [scoring]
         self.score = 0
 
-        self._events = InGameEventHandler(self)
+        self._events = EventHandler(self, {
+            KEY.A: self.actor.move_left,
+            KEY.D: self.actor.move_right,
+            KEY.E: self.actor.next_weapon,
+            KEY.Q: self.actor.prev_weapon,
+            KEY.R: lambda: self.actor.take_damage(5),
+            KEY.SPACE: self.actor.toggle_fire,
+            KEY.ESCAPE: self.pause_command,
+        })
 
         self.add(self._create_gui())
         self.level.start()
+
+    def pause_command(self):
+        self.app.state = "PauseMenuState"
 
     def add_player_score(self, amount):
         """Add player score.
@@ -233,55 +160,6 @@ class InGameState(State):
         """
 
         return "Score: {0}".format(self.score)
-
-    # TODO: [object-system]
-    #  * implement GameObject common class for using in states
-    #  * generalize interaction with game objects and move `add` to base class
-    # ATTENTION: renderables that added by another objects in runtime will not
-    #  render at the screen, because they must register in state via this func
-    #  as others. This is temporary decision as attempt to create playable game
-    #  due to deadline.
-    def add(self, obj):
-        """Add GameObject to State's list of objects.
-
-        Adding via this method means that objects will be
-        updated and rendered in main IOLoop.
-
-        :param object obj: GameObject
-        """
-
-        obj = obj if isinstance(obj, (list, tuple)) else [obj]
-        self._objects.extend(obj)
-        LOG.debug("%s", obj)
-
-        # TODO: Because we don't have common GameObject interface
-        # This is temporary smellcode
-        for item in obj:
-            if item.compound:
-                subitems = item.get_renderable_objects()
-                LOG.debug("Subitems: %s", subitems)
-                self._objects.extend(subitems)
-
-    def remove(self, obj):
-        """Remove GameObject from State's list of objects.
-
-        Removed objects should be collected by GC.
-
-        :param object obj: GameObject
-        """
-
-        LOG.debug("%s", obj)
-
-        try:
-            if obj.compound:
-                for subobj in obj.get_renderable_objects():
-                    self._objects.remove(subobj)
-                    del subobj
-            self._objects.remove(obj)
-        except ValueError:
-            LOG.exception("Object %s is not in State's object list.", obj)
-        finally:
-            del obj
 
         # TODO: [collider-destruction]
         #       Remove this after collider instant destruction.
@@ -309,19 +187,19 @@ class InGameState(State):
                     comp.high: Style().gui["dp_ok"],
                     comp.normal: Style().gui["dp_middle"],
                     comp.low: Style().gui["dp_critical"]
-                }, callback=self._actor.get_hull_percentage),
+                }, callback=self.actor.get_hull_percentage),
             Bar(
                 pos=Settings.layout.gui.bar.shield, prefix="Shield: ",
                 general_style=curses.A_BOLD, stylemap={
                     comp.high: Style().gui["sh_ok"],
                     comp.normal: Style().gui["sh_mid"],
                     comp.low: Style().gui["dp_critical"]
-                }, callback=self._actor.get_shield_percentage),
+                }, callback=self.actor.get_shield_percentage),
             Bar(
                 pos=Settings.layout.gui.bar.weapon,
                 stylemap={
                     comp.whatever: Style().gui["dp_ok"]
-                }, callback=self._actor.get_weapon_percentage),
+                }, callback=self.actor.get_weapon_percentage),
             WeaponWidget(
                 Settings.layout.gui.info.weapon,
                 self.actor.get_weapon_info)
@@ -341,12 +219,4 @@ class InGameState(State):
         if not self.level.running:
             self.level.start()
 
-        for obj in self._objects:
-            obj.update()
-
-    def render(self):
-        self._screen.erase()
-        self._screen.border(0)
-
-        render_objects(self._objects, self._screen)
-        self._screen.refresh()
+        super().update()
