@@ -14,13 +14,11 @@ from xoinvader.state import State
 from xoinvader.utils import Point
 
 
-class MainMenuState(State):
+class PauseMenuState(State):
 
     def __init__(self, owner):
-        super(MainMenuState, self).__init__(owner)
+        super().__init__(owner)
         self._screen = owner.screen
-        self._owner = owner
-        self._actor = None  # Should be some of Menu instances?
 
         self.add(TextWidget(Point(4, 4), "Pause"))
         self._items = MenuItemContainer([
@@ -38,10 +36,10 @@ class MainMenuState(State):
 
         self._events = EventHandler(self, {
             KEY.ESCAPE: lambda: application.get_current().trigger_state("InGameState"),
-            KEY.N: lambda: self.notify("This is test notification"),
+            KEY.SPACE: self._items.do_action,
             KEY.W: self._items.prev,
             KEY.S: self._items.next,
-            KEY.F: self._items.do_action,
+            KEY.N: lambda: self.notify("This is test notification"),
         })
 
     def notify(self, text, pos=Point(15, 15)):
@@ -57,9 +55,8 @@ class MainMenuState(State):
 class GameOverState(State):
 
     def __init__(self, owner):
-        super(GameOverState, self).__init__(owner)
+        super().__init__(owner)
         self._screen = owner.screen
-        self._actor = None
 
         self._score = "Your score: {0}"
 

@@ -37,11 +37,11 @@ def create_game():
     app = application.get_application_class()()
 
     from xoinvader.ingame import InGameState
-    from xoinvader.menu import MainMenuState, GameOverState
+    from xoinvader.menu import PauseMenuState, GameOverState
 
     Style().init_styles(curses)
     app.register_state(InGameState)
-    app.register_state(MainMenuState)
+    app.register_state(PauseMenuState)
     app.register_state(GameOverState)
     return app
 

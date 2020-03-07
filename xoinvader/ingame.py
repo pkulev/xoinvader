@@ -141,14 +141,14 @@ class InGameState(State):
             KEY.Q: self.actor.prev_weapon,
             KEY.R: lambda: self.actor.take_damage(5),
             KEY.SPACE: self.actor.toggle_fire,
-            KEY.ESCAPE: self.to_mainmenu_command,
+            KEY.ESCAPE: self.pause_command,
         })
 
         self.add(self._create_gui())
         self.level.start()
 
-    def to_mainmenu_command(self):
-        self.owner.state = "MainMenuState"
+    def pause_command(self):
+        self.owner.state = "PauseMenuState"
 
     def add_player_score(self, amount):
         """Add player score.
