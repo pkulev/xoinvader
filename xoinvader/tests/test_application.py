@@ -2,9 +2,10 @@
 
 import pytest
 
+import xoinvader.curses_utils
+
 from xoinvader import constants
 from xoinvader.common import Settings
-import xoinvader.curses_utils
 from xoinvader.application import (
     get_application_class, get_current, Application,
     ApplicationNotInitializedError
@@ -24,7 +25,7 @@ def test_application(monkeypatch):
     assert isinstance(get_current(), Application)
     assert pytest.raises(AttributeError, lambda: app.state)
     assert pytest.raises(AttributeError, app.start)
-    assert app.screen is None
+    assert app.renderer is not None
     app.fps = 40
     assert app.fps == 40
 
@@ -61,6 +62,8 @@ def test_application(monkeypatch):
     app.trigger_reinit(StateMock.__name__)
     assert isinstance(app.state, StateMock)
     assert hasattr(app.state, "marker") is False
+
+    assert pytest.raises(ValueError, lambda: setattr(app, "fps", "thirty"))
 
 
 def test_curses_application(monkeypatch):
@@ -101,10 +104,8 @@ def test_pygame_application(monkeypatch):
     app = PygameApplication((800, 600), 0, 32)
     app.set_caption("test")
     assert isinstance(get_current(), PygameApplication)
-    assert app.screen is not None
-    assert pytest.raises(ValueError, lambda: setattr(app, "fps", "thirty"))
-    assert pytest.raises(AttributeError, lambda: app.state)
-
+    assert app.renderer is not None
+ 
     assert _test_application_loop(app)
 
 

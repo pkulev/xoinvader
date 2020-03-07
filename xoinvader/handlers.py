@@ -2,11 +2,8 @@
 
 from abc import ABCMeta, abstractmethod
 
-import six
 
-
-@six.add_metaclass(ABCMeta)
-class Handler(object):
+class Handler(metaclass=ABCMeta):
     """Base game handler.
 
     Provides accessing to main State's fields and handle function stub.
@@ -16,18 +13,6 @@ class Handler(object):
 
     def __init__(self, owner):
         self._owner = owner
-        self._actor = owner.actor
-
-    @property
-    def actor(self):
-        """Controllable object.
-
-        :getter: yes
-        :setter: no
-        :type: object
-        """
-
-        return self._actor
 
     @property
     def owner(self):
