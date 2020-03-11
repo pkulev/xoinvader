@@ -1,5 +1,7 @@
 """MainMenuState-related input and event handlers."""
 
+from eaf.state import State
+
 from xoinvader import application
 from xoinvader.gui import (
     MenuItemContainer,
@@ -10,7 +12,6 @@ from xoinvader.gui import (
 )
 from xoinvader.handlers import EventHandler
 from xoinvader.keys import KEY
-from xoinvader.state import State
 from xoinvader.utils import Point
 
 

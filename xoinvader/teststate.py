@@ -3,11 +3,11 @@
 import pygame
 import pygame.locals
 
+from eaf.state import State
 from pygame.locals import K_a, K_d, K_ESCAPE
 
 from xoinvader.ship import TestShip
 from xoinvader.handlers import Handler
-from xoinvader.state import State
 from xoinvader.common import Settings
 
 

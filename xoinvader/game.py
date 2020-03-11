@@ -40,9 +40,9 @@ def create_game():
     from xoinvader.menu import PauseMenuState, GameOverState
 
     Style().init_styles(curses)
-    app.register_state(InGameState)
-    app.register_state(PauseMenuState)
-    app.register_state(GameOverState)
+    app.register(InGameState)
+    app.register(PauseMenuState)
+    app.register(GameOverState)
     return app
 
 

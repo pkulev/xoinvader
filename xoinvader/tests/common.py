@@ -1,6 +1,6 @@
 """Test related utilites."""
 
-from xoinvader.state import State
+from eaf.state import State
 
 
 PREFIX = "xoinvader/tests/fixtures/"

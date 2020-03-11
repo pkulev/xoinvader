@@ -2,11 +2,12 @@
 
 from operator import attrgetter
 
+from eaf.app import Application
+from eaf.render import Renderer
+
 import xoinvader.curses_utils
 
-from xoinvader.application import Application
 from xoinvader.common import Settings
-from xoinvader.render import Renderer, Renderable
 from xoinvader.utils import Point
 
 
@@ -69,7 +70,7 @@ class CursesApplication(Application):
             nlines=Settings.layout.field.border.y)
         renderer = CursesRenderer(window)
 
-        super(CursesApplication, self).__init__(renderer, window)
+        super().__init__(renderer, window)
 
         self._clock = xoinvader.curses_utils.get_clock()
 
@@ -86,4 +87,4 @@ class CursesApplication(Application):
     def stop(self):
         self._ioloop.add_callback(
             lambda: xoinvader.curses_utils.deinit_curses(self.renderer.screen))
-        super(CursesApplication, self).stop()
+        super().stop()

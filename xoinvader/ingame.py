@@ -4,6 +4,8 @@ import curses
 import logging
 import weakref
 
+from eaf.state import State
+
 from xoinvader import application
 from xoinvader.background import Background
 from xoinvader.collision import CollisionManager
@@ -14,7 +16,6 @@ from xoinvader.handlers import EventHandler
 from xoinvader.keys import KEY
 from xoinvader.level import Level
 from xoinvader.ship import GenericXEnemy, PlayerShip
-from xoinvader.state import State
 from xoinvader.utils import Point, dotdict
 
 

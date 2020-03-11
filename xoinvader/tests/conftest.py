@@ -2,15 +2,21 @@
 
 import pytest
 
+from eaf.state import State
+
 from xoinvader import application
-from xoinvader import state
 
 
 @pytest.fixture
 def mock_application(request):
 
+    app = None
+
     def inner():
-        return MockedApplication()
+        nonlocal app
+
+        app = MockedApplication()
+        return app
 
     request.addfinalizer(MockedApplication._finalize)
     return inner
@@ -19,17 +25,22 @@ def mock_application(request):
 @pytest.fixture
 def mock_state(request, mock_application):
 
+    app = None
+
     def inner(mock_app=False):
+        nonlocal app
+
         if mock_app:
-            mock_application()
-        application.get_current().register_state(MockedState)
-        return application.get_current().state
+            # We need to create reference or object will be collected by gc
+            app = mock_application()
+        else:
+            app = application.get_current()
+
+        app.register(MockedState)
+        return app.state
 
     def stop():
-        try:
-            application.get_current().deregister_state(MockedState.__name__)
-        except application.ApplicationNotInitializedError:
-            pass
+        app.deregister(MockedState.__name__)
 
     request.addfinalizer(stop)
 
@@ -40,9 +51,13 @@ class MockedApplication(application.Application):
 
     @staticmethod
     def _finalize():
-        app = application.get_current()
-        app.stop()
+        try:
+            app = application.get_current()
+            app.stop()
+            del app
+        except:
+            pass
 
 
-class MockedState(state.State):
+class MockedState(State):
     pass

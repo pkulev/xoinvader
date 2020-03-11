@@ -2,8 +2,8 @@
 
 import pygame
 
-from xoinvader.application import Application
-from xoinvader.render import Renderer
+from eaf.app import Application
+from eaf.render import Renderer
 
 
 class PygameRenderer(Renderer):
@@ -36,7 +36,7 @@ class PygameApplication(Application):
         window = pygame.display.set_mode(resolution, flags, depth)
         renderer = PygameRenderer(window)
 
-        super(PygameApplication, self).__init__(renderer)
+        super().__init__(renderer)
 
         pygame.key.set_repeat(50, 50)
 
@@ -51,4 +51,4 @@ class PygameApplication(Application):
 
     def stop(self):
         self._ioloop.add_callback(pygame.quit)
-        super(PygameApplication, self).stop()
+        super().stop()
