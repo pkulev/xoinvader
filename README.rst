@@ -1,4 +1,4 @@
-|Build Status| |codecov.io|
+|PyPI| |Build Status| |codecov.io|
 
 =========
 XOInvader
@@ -13,8 +13,8 @@ Requirements
 General
 -------
 
-* Python3
-* Tornado 4.x
+* >= python-3.7
+* >= eaf-0.1
 * ncurses >=5.9
 
 Optional requirements (for graphics and sound)
@@ -26,11 +26,19 @@ Optional requirements (for graphics and sound)
 * python devel files (for compiling pygame from sources)
 
 
-Development
-===========
-
 Installation
-------------
+============
+
+From PyPI
+---------
+
+.. code-block:: console
+
+   $ pip install --user xoinvader
+
+
+Development
+-----------
 
 .. code-block:: console
 
@@ -67,6 +75,8 @@ Documentation
      $ make view_docs  # build and open in firefox
 
 
+.. |PyPI| image:: https://badge.fury.io/py/xoinvader.svg
+   :target: https://badge.fury.io/py/xoinvader
 .. |Build Status| image:: https://travis-ci.org/pkulev/xoinvader.svg?branch=master
    :target: https://travis-ci.org/pkulev/xoinvader
 .. |codecov.io| image:: http://codecov.io/github/pkulev/xoinvader/coverage.svg?branch=master
