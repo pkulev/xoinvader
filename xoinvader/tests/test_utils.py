@@ -43,58 +43,6 @@ def test_isclose(left, right, kwargs, expected):
     assert isclose(left, right, **kwargs) is expected
 
 
-def test_point_operations():
-    ax, ay, az = 10, 10, 10
-    bx, by, bz = 20, 20, 20
-    a = Point(ax, ay, az)
-    b = Point(bx, by, bz)
-
-    assert a.x == ax
-    assert a.y == ay
-    assert a.z == az
-    assert b.x == bx
-    assert b.y == by
-    assert b.z == bz
-
-    assert repr(a) == "Point(x={0}, y={1}, z={2})".format(
-        a.x, a.y, a.z)
-
-    assert a + b == Point(ax + bx, ay + by, az + bz)
-    assert a - b == Point(ax - bx, ay - by, az - bz)
-    assert a + 5 == Point(ax + 5, ay + 5, az + 5)
-    assert a - 5 == Point(ax - 5, ay - 5, az - 5)
-    assert a * 5 == Point(ax * 5, ay * 5, az * 5)
-    assert a / 5 == Point(ax / 5, ay / 5, az / 5)
-
-    with pytest.raises(ValueError):
-        assert a + "a"
-    with pytest.raises(ValueError):
-        assert a - "a"
-    with pytest.raises(ValueError):
-        assert a * "a"
-    with pytest.raises(ValueError):
-        assert a / "a"
-    with pytest.raises(ValueError):
-        assert a == "a"
-
-    a.x = bx
-    a.y = by
-    a.z = bz
-
-    assert a.x == bx
-    assert a.y == by
-    assert a.z == bz
-
-    b.x = -bx
-    b.y = -by
-    b.z = -bz
-
-    assert a + b == Point(0, 0, 0)
-    assert a + Point(-50, -50, -50) == Point(-30, -30, -30)
-
-    assert Point(1.9, 1.9)[int] == Point(1, 1, 0)
-
-
 def test_infinite_list_operations():
 
     # Test one element behaviour

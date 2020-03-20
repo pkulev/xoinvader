@@ -4,11 +4,9 @@ import copy
 import datetime
 import logging
 import time
-try:
-    time.perf_counter
-except AttributeError:
-    time.perf_counter = time.time
 
+# FIXME: temporary backward compatibility
+from eaf.core import Vec3 as Point
 
 LOG_FORMAT = (
     "[%(asctime)s] %(levelname)-8s %(name)s[%(funcName)s]:%(lineno)s:  "
@@ -87,109 +85,6 @@ class dotdict(dict):  # pylint: disable=invalid-name
         """
 
         return dotdict(copy.deepcopy(self))
-
-
-# pylint: disable=too-few-public-methods
-class Point(object):
-    """3D point representation.
-
-    :param x: x coordinate
-    :type x: integer
-
-    :param y: y coordinate
-    :type y: integer
-
-    :param z: z coordinate
-    :type z: integer
-
-    :return: Point instance
-    :rtype: `xoinvader.utils.Point`
-    """
-
-    __slots__ = ["x", "y", "z"]
-
-    def __init__(self, x=0, y=0, z=0):
-        self.x = x
-        self.y = y
-        self.z = z
-
-    def __repr__(self):
-        return "Point(x={0}, y={1}, z={2})".format(self.x, self.y, self.z)
-
-    __str__ = __repr__
-
-    @staticmethod
-    def _value_error(operation, value):
-        """Raise ValueError with appropriate message."""
-
-        return ValueError(
-            "Wrong type to {0} {1}: {2}".format(operation, type(value), value))
-
-    def __add__(self, other):
-        if isinstance(other, (int, float)):
-            return Point(
-                x=self.x + other,
-                y=self.y + other,
-                z=self.z + other)
-
-        elif isinstance(other, Point):
-            return Point(
-                x=self.x + other.x,
-                y=self.y + other.y,
-                z=self.z + other.z)
-        else:
-            raise self._value_error("add", other)
-
-    def __sub__(self, other):
-        if isinstance(other, (int, float)):
-            return self.__add__(-other)
-        elif isinstance(other, Point):
-            return Point(
-                x=self.x - other.x,
-                y=self.y - other.y,
-                z=self.z - other.z)
-        else:
-            raise self._value_error("sub", other)
-
-    def __mul__(self, other):
-        if isinstance(other, (int, float)):
-            return Point(
-                x=self.x * other,
-                y=self.y * other,
-                z=self.z * other)
-        # What for point
-        else:
-            raise self._value_error("mul", other)
-
-    def __truediv__(self, other):
-        if isinstance(other, (int, float)):
-            return Point(
-                x=self.x / other,
-                y=self.y / other,
-                z=self.z / other)
-        else:
-            raise self._value_error("div", other)
-
-    __div__ = __truediv__
-
-    def __eq__(self, other):
-        if not isinstance(other, Point):
-            raise self._value_error("eq", other)
-
-        return self.x == other.x and self.y == other.y and self.z == other.z
-
-    def __getitem__(self, cons):
-        """Cast Point to selected type.
-
-        :param type cons: type to cast to
-
-        :return Point: with casted members
-        """
-
-        return Point(
-            x=cons(self.x),
-            y=cons(self.y),
-            z=cons(self.z))
 
 
 class Surface(object):
