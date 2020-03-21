@@ -17,7 +17,7 @@ General
 * >= eaf-0.1
 * ncurses >=5.9
 
-Optional requirements (for graphics and sound)
+Optional requirements (for sound)
 ----------------------------------------------
 
 * Pygame >=1.9.0 (pygame.Mixer)
@@ -46,7 +46,6 @@ Development
 
    $ poetry run xoigame  # ASCII with sound (Pygame.Mixer required)
    $ poetry run xoigame -ns  # ASCII without sound (pygame not required)
-   $ poetry run xoigame -vd pygame-sdl  # Pygame-based version
 
 Testing
 -------

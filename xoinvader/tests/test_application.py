@@ -5,9 +5,7 @@ import pytest
 import xoinvader.curses_utils
 
 from xoinvader import constants
-from xoinvader.common import Settings
 from xoinvader.application import (
-    get_application_class,
     get_current,
 )
 from xoinvader.application.ncurses_app import CursesApplication
@@ -25,7 +23,6 @@ def test_curses_application(monkeypatch):
         xoinvader.curses_utils, "deinit_curses", lambda *args, **kwargs: True
     )
 
-    assert CursesApplication == get_application_class()
     app = CursesApplication()
     assert isinstance(get_current(), CursesApplication)
     assert get_current() is app
@@ -50,10 +47,7 @@ def test_pygame_application(monkeypatch):
     monkeypatch.setattr(pygame.display, "update", lambda: True)
     monkeypatch.setattr(pygame.key, "set_repeat", lambda *a: True)
 
-    Settings.system.video_driver = constants.DRIVER_SDL
-
     # Empty object
-    assert PygameApplication == get_application_class()
     app = PygameApplication((800, 600), 0, 32)
     assert isinstance(get_current(), PygameApplication)
     assert get_current() is app

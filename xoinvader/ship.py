@@ -5,7 +5,6 @@ import logging
 from xoinvader import application
 from xoinvader import collision
 from xoinvader.animation import AnimationManager
-from xoinvader.entity import Entity
 from xoinvader.sound import Mixer
 from xoinvader.render import Renderable
 from xoinvader.weapon import Blaster, Laser, UM, EBlaster
@@ -20,97 +19,7 @@ LOG = logging.getLogger(__name__)
 CONFIG = get_json_config(Settings.path.config.ships)
 
 
-# pylint: disable=too-many-instance-attributes
-class TestShip(Entity):
-    # TODO: border? settings?
-    def __init__(self, pos, border=None):
-        self._type = self.__class__.__name__
-
-        super(TestShip, self).__init__(pos, Settings.path.image.ship.TestShip)
-
-        self._pos = pos
-        self._border = border
-
-        self._dx = None
-        self._dy = None
-        self._fire = False
-        self._weapon = None
-        self._weapons = InfiniteList()
-        self._wbay = None
-        self._direction = 0
-
-        self._max_hull = None
-        self._max_shield = None
-        self._hull = None
-        self._shield = None
-
-        # first initialization
-        self._load_config(CONFIG[self._type])
-
-    def _load_config(self, config):
-        """Load config from mapping."""
-        self._dx = int(config.dx)
-        self._dy = int(config.dy)
-        self._hull = int(config.hull)
-        self._shield = int(config.shield)
-        self._max_hull = int(config.max_hull)
-        self._max_shield = int(config.max_shield)
-
-    @property
-    def x(self):
-        return self._x
-
-    @property
-    def pos(self):
-        return self._pos
-
-    def move_left(self):
-        self._direction = -1
-
-    def move_right(self):
-        self._direction = 1
-
-    def toggle_fire(self):
-        self._fire = not self._fire
-
-    def next_weapon(self):
-        self._weapons.next()
-
-    def refresh_shield(self):
-        pass
-
-    def update(self):
-        """Update ship object's state."""
-        print("border {0}".format(self._border))
-        print("img: <width: {0}><height: {1}>".format(*self._image.get_size()))
-        print("pos {0}".format(self._pos))
-        print("real {0} : {1}".format(*self.topleft))
-        # TODO:
-        # think about those who has dx > 1
-        if (
-                self.x >= self._border.x - self._image.get_width() - 1 and
-                self._dx > 0
-        ):
-            self.x = 0
-        elif self.x <= 0 and self._direction < 0:
-            self.x = self._border.x - self._image.get_width()
-
-        self.x += self._direction * self._dx
-        self._direction = 0
-
-        for weapon in self._weapons:
-            weapon.update()
-
-        if self._fire:
-            try:
-                self._weapon.make_shot(self._pos + self._wbay)
-            except ValueError:
-                self.next_weapon()
-
-        self.refresh_shield()
-
-
-# Think about compositing
+# Think about composition
 class Ship(Renderable):
     """Base class for all ships. Contains basic ship logic."""
 

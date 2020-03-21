@@ -9,7 +9,7 @@ import argparse
 import logging
 
 import xoinvader
-from xoinvader import application
+from xoinvader.application import CursesApplication
 from xoinvader import constants
 
 
@@ -34,7 +34,7 @@ def create_game():
     #            Create defaults, but make decisions on run time only
     #            Maybe this will lead to reorganizing code.
 
-    app = application.get_application_class()()
+    app = CursesApplication()
 
     from xoinvader.ingame import InGameState
     from xoinvader.menu import PauseMenuState, GameOverState
@@ -43,16 +43,6 @@ def create_game():
     app.register(InGameState)
     app.register(PauseMenuState)
     app.register(GameOverState)
-    return app
-
-
-def create_test_game():
-    """Temporary function to create Pygame."""
-
-    from xoinvader.teststate import TestState
-
-    app = application.get_application_class()((800, 600), 0, 32)
-    app.register_state(TestState)
     return app
 
 
@@ -66,10 +56,6 @@ def parse_args():
         "-ns", "--no-sound", action="store_true", help="disable sounds")
     parser.add_argument(
         "-nc", "--no-color", action="store_true", help="disable colors")
-    parser.add_argument(
-        "-vd", "--video-driver", default=constants.DRIVER_NCURSES,
-        type=str, choices=(constants.DRIVER_NCURSES, constants.DRIVER_SDL),
-        help="use pygame")
 
     args = parser.parse_args()
     return args
@@ -83,13 +69,7 @@ def main():
     xoinvader.init(args.__dict__)
     LOG.debug("Incoming args: %s", args)
 
-    # TODO: backend-drivers; implement proper choosing
-    if args.video_driver == constants.DRIVER_SDL:
-        game = create_test_game()
-    else:
-        game = create_game()
-
-    LOG.info("Staring game with '%s' driver", args.video_driver)
+    game = create_game()
     return game.start()
 
 

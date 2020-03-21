@@ -73,7 +73,6 @@ DEFAUT_XOI_SETTINGS = dict(
         encoding=constants.UTF_8,
         no_sound=False,
         no_color=False,
-        video_driver=constants.DRIVER_NCURSES,
     )
 )
 
