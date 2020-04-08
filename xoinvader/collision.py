@@ -232,7 +232,7 @@ class Collider(object):
         # TODO: move collision to State.systems
         try:
             application.get_current().state.collision.add(self)
-        except AttributeError:
+        except:
             raise CollisionManagerNotFound()
 
     @property
