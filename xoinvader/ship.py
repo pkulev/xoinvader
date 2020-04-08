@@ -5,7 +5,6 @@ import logging
 from xoinvader import application
 from xoinvader import collision
 from xoinvader.animation import AnimationManager
-from xoinvader.sound import Mixer
 from xoinvader.render import Renderable
 from xoinvader.weapon import Blaster, Laser, UM, EBlaster
 from xoinvader.utils import Point, Surface, InfiniteList
@@ -294,10 +293,6 @@ class PlayerShip(Ship):
         self._weapons = InfiniteList([Blaster(), Laser(), UM()])
         self._weapon = self._weapons.current()
         self._wbay = Point(x=self._image.width // 2, y=-1)
-
-        Mixer().register(
-            ".".join([self._type, "engine"]),
-            Settings.path.sound.ship[self._type].engine)
 
     def update(self):
         if self._hull <= 0:

@@ -17,15 +17,6 @@ General
 * >= eaf-0.1
 * ncurses >=5.9
 
-Optional requirements (for sound)
-----------------------------------------------
-
-* Pygame >=1.9.0 (pygame.Mixer)
-* SDL with devel (for compiling pygame from sources)
-* gcc with devel (for compiling pygame from sources)
-* python devel files (for compiling pygame from sources)
-
-
 Installation
 ============
 

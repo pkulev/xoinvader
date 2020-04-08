@@ -4,19 +4,6 @@
         "ships": "/config/ships.json",
         "weapons": "/config/weapons.json"
     },
-    "sound": {
-        "weapon": {
-            "Blaster": "/res/snd/basic_blaster.ogg",
-            "Laser": "/res/snd/basic_laser.ogg",
-            "EBlaster": "/res/snd/basic_eblaster.ogg",
-            "UM": "/res/snd/basic_um.ogg"
-        },
-        "ship": {
-            "PlayerShip": {
-                "engine": "/res/snd/playership_engine.ogg"
-            }
-        }
-    },
     "image": {
         "ship": {
             "TestShip": "/res/gfx/ship.png"

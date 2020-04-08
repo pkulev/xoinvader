@@ -71,7 +71,6 @@ DEFAUT_XOI_SETTINGS = dict(
     system=dict(
         debug=False,
         encoding=constants.UTF_8,
-        no_sound=False,
         no_color=False,
     )
 )

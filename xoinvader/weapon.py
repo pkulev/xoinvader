@@ -7,7 +7,6 @@ from xoinvader.charge import (
 )
 from xoinvader.common import Settings, get_json_config
 from xoinvader.render import Renderable
-from xoinvader.sound import Mixer
 from xoinvader.utils import Point, Surface, Timer
 
 
@@ -38,14 +37,10 @@ class Weapon(Renderable):
         self.ready = True
         self._timer = Timer(self._cooldown, self._reload)
         self._pos = Point()  # stub for now, to render nothing as weapon
-        self._loud = True
-
-        Mixer().register(self._type, Settings.path.sound.weapon[self._type])
 
     def _reload(self):
         """Calls by timer when weapon is ready to fire."""
 
-        # TODO: Play sound
         self.ready = True
         self._timer.stop()
         self._timer.reset()
@@ -76,8 +71,6 @@ class Weapon(Renderable):
 
         self.ready = False
         self._timer.start()
-        if self._loud:
-            Mixer().play(self._type)
 
     def get_render_data(self):
         return ([self._pos], self._image.get_image())

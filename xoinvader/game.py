@@ -53,8 +53,6 @@ def parse_args():
     parser.add_argument(
         "-d", "--debug", action="store_true", help="enable debug mode")
     parser.add_argument(
-        "-ns", "--no-sound", action="store_true", help="disable sounds")
-    parser.add_argument(
         "-nc", "--no-color", action="store_true", help="disable colors")
 
     args = parser.parse_args()
