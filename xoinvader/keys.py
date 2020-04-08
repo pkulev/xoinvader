@@ -1,7 +1,5 @@
 """Keys' integer representation."""
 
-import six
-
 from xoinvader.utils import Singleton
 
 
@@ -19,8 +17,7 @@ K_ESCAPE = 27
 K_ENTER = 343
 
 
-@six.add_metaclass(Singleton)
-class _KEY(object):
+class _KEY(metaclass=Singleton):
     """Convenient key container with dot access.
 
     K_KEYNAME can be accessed via KEY.KEYNAME.
