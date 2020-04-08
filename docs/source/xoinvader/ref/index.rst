@@ -7,13 +7,22 @@ Reference
 .. toctree::
    :maxdepth: 4
 
+   animation
    application
    background
+   charge
+   collision
+   common
    curses_utils
-   handlers
+   game
    gui
+   handlers
+   ingame
+   keys
+   level
+   menu
    render
+   scoreboard
    ship
-   state
    utils
    weapon

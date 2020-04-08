@@ -3,5 +3,6 @@
 Requrements
 -----------
 
-* Pygame (pygame.Mixer)
-* ncurses >=5.9 <6.0
+* >= python-3.7
+* >= eaf-0.1
+* ncurses >=5.9
