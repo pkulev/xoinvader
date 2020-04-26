@@ -7,47 +7,99 @@ from xoinvader.common import Settings
 from xoinvader.utils import Singleton
 
 
-# pylint: disable=too-few-public-methods
-class _Color(metaclass=Singleton):
-    """Curses color mapping."""
+class PairAlreadyRegistered(Exception):
 
-    def __init__(self):
-        self._color_names = [
-            # User interface colors
-            "ui_norm",
-            "ui_yellow",
-            # Damage panel colors
-            "dp_blank",
-            "dp_ok",
-            "dp_middle",
-            "dp_critical",
-            "sh_ok",
-            "sh_mid",
-            # Weapon's gauge colors
-            "blaster",
-            "laser",
-            "um",
-        ]
-        self._color_map = dict(
-            zip(self._color_names, range(1, len(self._color_names) + 1))
-        )
+    def __init__(self, attr, value):
+        super().__init__(f"Pair with {attr} = {value} already registered."
+                         " You can use force=True to redefine it.")
+
+
+class Palette:
+    """Palette abstraction for curses color pairs.
+
+    Has some predefined constants (taken directly from curses),
+
+    Pass to init initial palette as list of tuples of 3 elements: name,
+    foreground color, background color:
+
+    palette = Palette([
+        ("normal", Palette.COLOR_WHITE, Palette.COLOR_BLACK),
+        ("error", Palette.COLOR_RED, Palette.COLOR_BLACK),
+    ])
+    """
+
+    COLOR_BLACK = curses.COLOR_BLACK
+    COLOR_BLUE = curses.COLOR_BLUE
+    COLOR_CYAN = curses.COLOR_CYAN
+    COLOR_GREEN = curses.COLOR_GREEN
+    COLOR_MAGENTA = curses.COLOR_MAGENTA
+    COLOR_RED = curses.COLOR_RED
+    COLOR_WHITE = curses.COLOR_WHITE
+    COLOR_YELLOW = curses.COLOR_YELLOW
+
+    A_BOLD = curses.A_BOLD
+
+    def __init__(self, palette=None):
+        self.palette = {}
+
+        idx = 1
+        for name, fg, bg in palette or []:
+            self.add_pair(idx, name, fg, bg, init=False)
+            idx += 1
+
+    def add_pair(self, idx, name, fg, bg, force=False, init=True):
+        if name in self.palette and not force:
+            raise PairAlreadyRegistered("name", name)
+
+        if (
+            idx in [pair["idx"] for pair in self.palette.values()]
+            and not force
+        ):
+            raise PairAlreadyRegistered("idx", idx)
+
+        self.palette[name] = {
+            "idx": idx,
+            "fg": fg,
+            "bg": bg,
+        }
+
+        if init:
+            curses.init_pair(idx, fg, bg)
+
+    def init_colors(self):
+        if not curses.has_colors():
+            return
+
+        for pair in self.palette.values():
+            curses.init_pair(pair["idx"], pair["fg"], pair["bg"])
+
+    def add_style(self, name, attrs):
+        pass
 
     @property
-    def color_names(self):
-        """Color names.
-
-        :getter: yes
-        :setter: no
-        :type: list
-        """
-        return self._color_names
+    def pair_names(self):
+        return sorted(self.palette, key=lambda it: self[it]["idx"])
 
     def __getattr__(self, name):
-        return self._color_map[name]
+        return self.palette[name]["idx"]
 
 
-Color = _Color()  # pylint: disable=invalid-name
-
+palette = Palette([
+    # User interface colors
+    ("ui_norm", Palette.COLOR_WHITE, Palette.COLOR_BLACK),
+    ("ui_yellow", Palette.COLOR_YELLOW, Palette.COLOR_BLACK),
+    # Damage panel colors
+    ("dp_blank", Palette.COLOR_BLACK, Palette.COLOR_BLACK),
+    ("dp_ok", Palette.COLOR_GREEN, Palette.COLOR_BLACK),
+    ("dp_middle", Palette.COLOR_YELLOW, Palette.COLOR_BLACK),
+    ("dp_critical", Palette.COLOR_RED, Palette.COLOR_BLACK),
+    ("sh_ok", Palette.COLOR_BLUE, Palette.COLOR_BLACK),
+    ("sh_mid", Palette.COLOR_CYAN, Palette.COLOR_BLACK),
+    # Weapon's charge colors
+    ("blaster", Palette.COLOR_GREEN, Palette.COLOR_BLACK),
+    ("laser", Palette.COLOR_BLACK, Palette.COLOR_RED),
+    ("um", Palette.COLOR_MAGENTA, Palette.COLOR_BLACK),
+])
 
 # TODO: rewrite this shit
 class Style(metaclass=Singleton):
@@ -65,20 +117,16 @@ class Style(metaclass=Singleton):
         :param module curses_module: curses module to initialize pairs
         """
 
-        if Settings.system.no_color:
-            for key in Color.color_names:
-                self.gui[key] = None
-
         cpair = curses_module.color_pair
 
-        self.gui["normal"] = cpair(Color.ui_norm) | curses.A_BOLD
-        self.gui["yellow"] = cpair(Color.ui_yellow) | curses.A_BOLD
-        self.gui["dp_blank"] = cpair(Color.dp_blank) | curses.A_BOLD
-        self.gui["dp_ok"] = cpair(Color.dp_ok) | curses.A_BOLD
-        self.gui["dp_middle"] = cpair(Color.dp_middle) | curses.A_BOLD
-        self.gui["dp_critical"] = cpair(Color.dp_critical) | curses.A_BOLD
-        self.gui["sh_ok"] = cpair(Color.sh_ok) | curses.A_BOLD
-        self.gui["sh_mid"] = cpair(Color.sh_mid) | curses.A_BOLD
+        self.gui["normal"] = cpair(palette.ui_norm) | curses.A_BOLD
+        self.gui["yellow"] = cpair(palette.ui_yellow) | curses.A_BOLD
+        self.gui["dp_blank"] = cpair(palette.dp_blank) | curses.A_BOLD
+        self.gui["dp_ok"] = cpair(palette.dp_ok) | curses.A_BOLD
+        self.gui["dp_middle"] = cpair(palette.dp_middle) | curses.A_BOLD
+        self.gui["dp_critical"] = cpair(palette.dp_critical) | curses.A_BOLD
+        self.gui["sh_ok"] = cpair(palette.sh_ok) | curses.A_BOLD
+        self.gui["sh_mid"] = cpair(palette.sh_mid) | curses.A_BOLD
 
     def __getattr__(self, name):
         return self._style[name]
@@ -88,32 +136,6 @@ class Style(metaclass=Singleton):
 def get_styles():
     """Return Style object."""
     return Style()
-
-
-def init_curses_pairs(curses_module):
-    """Init curses color pairs.
-
-    :param module curses_module: curses module for pair initialization.
-    """
-
-    init_pair = curses_module.init_pair
-
-    # User interface
-    init_pair(Color.ui_norm, curses.COLOR_WHITE, curses.COLOR_BLACK)
-    init_pair(Color.ui_yellow, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-
-    # Damage panel
-    init_pair(Color.dp_blank, curses.COLOR_BLACK, curses.COLOR_BLACK)
-    init_pair(Color.dp_ok, curses.COLOR_GREEN, curses.COLOR_BLACK)
-    init_pair(Color.dp_middle, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-    init_pair(Color.dp_critical, curses.COLOR_RED, curses.COLOR_BLACK)
-    init_pair(Color.sh_ok, curses.COLOR_BLUE, curses.COLOR_BLACK)
-    init_pair(Color.sh_mid, curses.COLOR_CYAN, curses.COLOR_BLACK)
-
-    # Weapons
-    init_pair(Color.blaster, curses.COLOR_GREEN, curses.COLOR_BLACK)
-    init_pair(Color.laser, curses.COLOR_BLACK, curses.COLOR_RED)
-    init_pair(Color.um, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
 
 
 def create_window(ncols, nlines, begin_x=0, begin_y=0):
@@ -137,8 +159,7 @@ def create_window(ncols, nlines, begin_x=0, begin_y=0):
     curses.initscr()
     curses.start_color()
 
-    if not Settings.system.no_color:
-        init_curses_pairs(curses)
+    palette.init_colors()
 
     # XXX: is this must be the first call of Style?
     Style().init_styles(curses)
