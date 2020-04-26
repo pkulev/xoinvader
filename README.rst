@@ -35,8 +35,7 @@ Development
 
    $ poetry install
 
-   $ poetry run xoigame  # ASCII with sound (Pygame.Mixer required)
-   $ poetry run xoigame -ns  # ASCII without sound (pygame not required)
+   $ poetry run xoigame
 
 Testing
 -------
