@@ -169,7 +169,12 @@ def create_window(ncols, nlines, begin_x=0, begin_y=0):
     screen.nodelay(1)
     curses.noecho()
     curses.cbreak()
-    curses.curs_set(0)
+    try:
+        curses.curs_set(0)
+    except curses.error:
+        # old terminals may have no cursor modes support
+        pass
+
     return screen
 
 
@@ -183,7 +188,11 @@ def deinit_curses(screen):
     screen.keypad(0)
     curses.nocbreak()
     curses.echo()
-    curses.curs_set(1)
+    try:
+        curses.curs_set(1)
+    except curses.error:
+        # old terminals may have no cursor modes support
+        pass
     curses.endwin()
 
 
