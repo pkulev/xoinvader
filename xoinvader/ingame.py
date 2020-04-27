@@ -38,7 +38,7 @@ class TestLevel(Level):
         self.add_event(200, self.del4)
 
         self.bg = Background(Settings.path.level1bg, speed=10, loop=True)
-        self.bg.start(True)
+        self.bg.start(filled=True)
         self._state_add(self.bg)
 
     @staticmethod
