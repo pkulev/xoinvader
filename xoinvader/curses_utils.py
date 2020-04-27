@@ -160,8 +160,6 @@ def create_window(ncols, nlines, begin_x=0, begin_y=0):
     curses.start_color()
 
     palette.init_colors()
-
-    # XXX: is this must be the first call of Style?
     Style().init_styles(curses)
 
     screen = curses.newwin(nlines, ncols, begin_x, begin_y)
