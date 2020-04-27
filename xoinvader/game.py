@@ -19,10 +19,6 @@ LOG = logging.getLogger(__name__)
 def create_game():
     """Create XOInvader game instance."""
 
-    import curses
-
-    from xoinvader.curses_utils import Style
-
     # TODO: config-management: remove import order dependency
     # problem: importing of .common creates settings dict on import time
     #          then importing of game state pulls Ship and then Mixer
@@ -39,7 +35,6 @@ def create_game():
     from xoinvader.ingame import InGameState
     from xoinvader.menu import PauseMenuState, GameOverState
 
-    Style().init_styles(curses)
     app.register(InGameState)
     app.register(PauseMenuState)
     app.register(GameOverState)
