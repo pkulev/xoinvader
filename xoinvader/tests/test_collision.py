@@ -6,7 +6,7 @@ from xoinvader import collision
 from xoinvader.collision import (
     Collider, CollisionManager, CollisionManagerNotFound, TypePair
 )
-from xoinvader.utils import Point
+from xoinvader.utils import Point, Surface
 
 
 # pylint: disable=invalid-name,protected-access
@@ -96,12 +96,16 @@ def test_manager_update(mock_state):
         def __init__(self):
             self.health = 10
             self.pos = Point(0, 10)
-            self._collider = Collider(
-                self, [
-                    "..#..",
-                    "#####",
-                    ".#.#."
-                ])
+            self._image = Surface([
+                "..#..",
+                "#####",
+                ".#.#."
+            ])
+            self._collider = Collider.simple(self)
+
+        @property
+        def image(self):
+            return self._image
 
         def type(self):
             return self.__class__.__name__
