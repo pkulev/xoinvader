@@ -8,6 +8,7 @@ from eaf.render import Renderer
 import xoinvader.curses_utils
 
 from xoinvader.common import Settings
+from xoinvader.curses_utils import Palette
 from xoinvader.utils import Point
 
 
@@ -39,7 +40,7 @@ class CursesRenderer(Renderer):
                 for gpos in gpos_list:
                     lpos, image, style = data
                     cpos = (gpos + lpos)[int]
-    
+
                     if (
                         (cpos.x >= border.x - 1 or cpos.y >= border.y - 1) or
                         (cpos.x <= 0 or cpos.y <= 0)
@@ -79,6 +80,7 @@ class CursesApplication(Application):
         super().__init__(renderer, window)
 
         self._clock = xoinvader.curses_utils.get_clock()
+        self._palette = Palette()
 
     def set_caption(self, caption: str, icontitle: str = ""):
         """Set window caption.
@@ -94,3 +96,18 @@ class CursesApplication(Application):
         self._ioloop.add_callback(
             lambda: xoinvader.curses_utils.deinit_curses(self.renderer.screen))
         super().stop()
+
+    @property
+    def palette(self) -> Palette:
+        """Palette getter."""
+
+        return self._palette
+
+    @palette.setter
+    def palette(self, palette: Palette):
+        """Palette setter."""
+
+        if not isinstance(palette, Palette):
+            raise TypeError(f"Expected Palette class, got {type(palette)}")
+
+        self.palette = palette
