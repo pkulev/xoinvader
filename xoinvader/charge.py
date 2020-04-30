@@ -12,12 +12,12 @@ import logging
 
 from xoinvader import application
 from xoinvader.collision import Collider
-from xoinvader.common import Settings, get_json_config
+from xoinvader.common import Settings, get_config
 from xoinvader.render import Renderable
 from xoinvader.utils import Point, Surface
 
 
-CONFIG = get_json_config(Settings.path.config.charges)
+CONFIG = get_config().charge
 LOG = logging.getLogger(__name__)
 
 

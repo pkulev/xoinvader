@@ -1,0 +1,65 @@
+level1bg = "/res/level1.bg"
+scoreboard = "/data/scoreboard"
+
+[ship.PlayerShip]
+dx = 1
+hull = 100
+shield = 100
+max_hull = 100
+max_shield = 100
+
+[ship.GenericXEnemy]
+dx = 2
+hull = 5
+shield = 0
+max_hull = 5
+max_shield = 0
+
+[ship.TestShip]
+dx = 10
+dy = 2
+hull = 100
+shield = 100
+max_hull = 100
+max_shield = 100
+
+[weapon.Blaster]
+ammo = "infinite"
+max_ammo = "infinite"
+cooldown = 0.2
+
+[weapon.Laser]
+ammo = 50
+max_ammo = 50
+cooldown = 1
+
+[weapon.UM]
+ammo = 15
+max_ammo = 15
+cooldown = 2
+
+[weapon.EBlaster]
+ammo = "infinite"
+max_ammo = "infinite"
+cooldown = 0.7
+
+
+[charge.BasicPlasmaCannon]
+damage = 3
+radius = 0
+dy = -1
+
+[charge.EBasicPlasmaCannon]
+damage = 60
+radius = 1
+dy = 1
+
+[charge.BasicLaserCharge]
+damage = 10
+radius = 0
+dy = -2
+
+[charge.BasicUnguidedMissile]
+damage = 50
+radius = 3
+dy = -1
