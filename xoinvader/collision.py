@@ -2,6 +2,7 @@
 
 import functools
 import logging
+import re
 import weakref
 
 from xoinvader import application
@@ -104,7 +105,7 @@ class CollisionManager(object):
     """
 
     # Marker of solid matter inside collider physics map
-    __solid_matter__ = "#"
+    SOLID_MATTER = "#"
 
     def __init__(self):
         self._colliders = weakref.WeakSet()
@@ -202,7 +203,7 @@ class CollisionManager(object):
                 if (
                         col_1.phys_map[j + overlap_1.y][i + overlap_1.x] ==
                         col_2.phys_map[j + overlap_2.y][i + overlap_2.x] ==
-                        CollisionManager.__solid_matter__
+                        CollisionManager.SOLID_MATTER
                 ):
                     return (topleft_overlap, botright_overlap)
 
@@ -220,7 +221,7 @@ class Collider(object):
     :param object obj: GameObject to which the collider is linked
     :param list phys_map: list of strings representing collider physical
     geometry. All strings must be of equal length. Class member
-    __solid_matter__ of CollisionManager represents solid geometry, all other
+    SOLID_MATTER of CollisionManager represents solid geometry, all other
     chars are treated as void space and may be any.
     """
 
@@ -234,6 +235,18 @@ class Collider(object):
             application.get_current().state.collision.add(self)
         except:
             raise CollisionManagerNotFound()
+
+    @classmethod
+    def simple(cls, obj):
+        """Make simple collider based on object's image.
+
+        All characters except space considered as solid matter.
+        """
+
+        return cls(obj, [
+            re.sub(r"[^\ ]", CollisionManager.SOLID_MATTER, row)
+            for row in obj.image.raw
+        ])
 
     @property
     def phys_map(self):

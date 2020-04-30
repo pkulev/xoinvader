@@ -218,12 +218,7 @@ class GenericXEnemy(Ship):
             " * ",
         ])
 
-        self._collider = Collider(
-            self, [
-                "###",
-                ".#.",
-                ".#.",
-            ])
+        self._collider = Collider.simple(self)
 
         self.add_weapon(EBlaster())
         self._fire = True
@@ -277,12 +272,7 @@ class PlayerShip(Ship):
             x=pos.x - self._image.width // 2,
             y=pos.y - self._image.height)
 
-        self._collider = Collider(
-            self, [
-                "  #  ",
-                "#####",
-                " # # "
-            ])
+        self._collider = Collider.simple(self)
 
         self._fire = False
         self._weapons = InfiniteList([Blaster(), Laser(), UM()])

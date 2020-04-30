@@ -9,7 +9,6 @@ Attention: Next statement related only to GameObject entities.
 
 import curses
 import logging
-import re
 
 from xoinvader import application
 from xoinvader.collision import Collider
@@ -50,14 +49,7 @@ class WeaponCharge(Renderable):
         self._destroy = False
 
         # Common collider for any shape charge
-        # TODO FIXME: objects want know, what '#' means!
-        #             make solid marker accessible to them
-        #             and/or provide 'Collider.from_array(self._image.raw)'
-        self._collider = Collider(
-            self, [
-                re.sub(r"[^\ ]", "#", row)
-                for row in self._image.raw
-            ])
+        self._collider = Collider.simple(self)
 
     @property
     def pos(self):
