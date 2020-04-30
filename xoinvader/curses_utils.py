@@ -3,15 +3,37 @@
 import time
 import curses
 
+from typing import List
+
 from xoinvader.common import Settings
 from xoinvader.utils import Singleton
-
 
 class PairAlreadyRegistered(Exception):
 
     def __init__(self, attr, value):
         super().__init__(f"Pair with {attr} = {value} already registered."
                          " You can use force=True to redefine it.")
+
+
+class Pair:
+    """Color pair representation."""
+
+    def __init__(self, idx, fg, bg, attrs=None):
+        self.idx = idx
+        self.bg = bg
+        self.fg = fg
+        self.attrs = attrs
+
+    def init(self):
+        """Init curses color pair.
+
+        Does nothing if terminal doesn't support colors.
+        """
+
+        if not curses.has_colors():
+            return
+
+        curses.init_pair(self.idx, self.fg, self.bg)
 
 
 class Palette:
@@ -44,44 +66,41 @@ class Palette:
 
         idx = 1
         for name, fg, bg in palette or []:
-            self.add_pair(idx, name, fg, bg, init=False)
+            self.add_pair(name, Pair(idx, fg, bg), init=False)
             idx += 1
 
-    def add_pair(self, idx, name, fg, bg, force=False, init=True):
+    def add_pair(self, name: str, pair: Pair, force: bool = False, init: bool = True):
+        """Add new color pair. Use force to override name and idx."""
+
         if name in self.palette and not force:
             raise PairAlreadyRegistered("name", name)
 
         if (
-            idx in [pair["idx"] for pair in self.palette.values()]
+            pair.idx in [pair.idx for pair in self.palette.values()]
             and not force
         ):
-            raise PairAlreadyRegistered("idx", idx)
+            raise PairAlreadyRegistered("idx", pair.idx)
 
-        self.palette[name] = {
-            "idx": idx,
-            "fg": fg,
-            "bg": bg,
-        }
+        self.palette[name] = pair
 
         if init:
-            curses.init_pair(idx, fg, bg)
+            pair.init()
 
     def init_colors(self):
-        if not curses.has_colors():
-            return
+        """Init all color pairs."""
 
         for pair in self.palette.values():
-            curses.init_pair(pair["idx"], pair["fg"], pair["bg"])
+            pair.init()
 
     def add_style(self, name, attrs):
         pass
 
     @property
-    def pair_names(self):
-        return sorted(self.palette, key=lambda it: self[it]["idx"])
+    def pair_names(self) -> List[str]:
+        return sorted(self.palette, key=lambda it: self[it].idx)
 
-    def __getattr__(self, name):
-        return self.palette[name]["idx"]
+    def __getattr__(self, name: str) -> int:
+        return self.palette[name].idx
 
 
 palette = Palette([
