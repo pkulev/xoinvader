@@ -40,8 +40,6 @@ def rootify(root, config):
 
 __all__ = ["Settings"]
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
 WIDTH = 90
 HEIGHT = 34
 
@@ -52,6 +50,7 @@ DEFAUT_XOI_SETTINGS = dict(
     layout=dict(
         field=dict(
             border=Point(x=WIDTH, y=HEIGHT),
+            camera=Point(x=WIDTH - 1, y=HEIGHT - 1),
             player=Point(x=WIDTH // 2, y=HEIGHT - 1),
             edge=Point(x=WIDTH, y=HEIGHT - 1)),
 
@@ -63,11 +62,6 @@ DEFAUT_XOI_SETTINGS = dict(
             info=dict(
                 weapon=Point(x=44, y=HEIGHT - 1)))),
     path=rootify(_ROOT, get_json_config(_ROOT + "/config/path.json")),
-    color=dict(
-        general=dict(
-            normal=None),
-        gui=None,
-        weapon=None),
     system=dict(
         debug=False,
         encoding=constants.UTF_8,

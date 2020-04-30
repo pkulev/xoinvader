@@ -24,12 +24,11 @@ class Ship(Renderable):
 
     compound = True
 
-    def __init__(self, pos, border):
+    def __init__(self, pos):
         self._type = self.__class__.__name__
         self._image = None
 
         self._pos = pos
-        self._border = border
 
         self._dx = None
         self._fire = False
@@ -133,21 +132,19 @@ class Ship(Renderable):
         self._weapons.append(weapon)
         self._weapon = weapon
 
-    def update(self):
-        """Update ship object's state."""
+    def update_position(self):
+        """Update ship position.
 
-        # TODO:
-        # think about those who has dx > 1
-        if (
-                self._pos.x == self._border.x - self._image.width - 1 and
-                self._dx > 0
-        ):
-            self._pos.x = 0
-        elif self._pos.x == 1 and self._dx < 0:
-            self._pos.x = self._border.x - self._image.width
+        Allows to go behind field borders.
+        """
 
         self._pos.x += self._direction * self._dx
         self._direction = 0
+
+    def update(self):
+        """Update ship object's state."""
+
+        self.update_position()
 
         for weapon in self._weapons:
             weapon.update()
@@ -213,8 +210,8 @@ class Ship(Renderable):
 class GenericXEnemy(Ship):
     """Generic X enemy class."""
 
-    def __init__(self, pos, border):
-        super(GenericXEnemy, self).__init__(pos, border)
+    def __init__(self, pos):
+        super(GenericXEnemy, self).__init__(pos)
         self._image = Surface([
             "x^x",
             " X ",
@@ -265,11 +262,10 @@ class PlayerShip(Ship):
     """PlayerShip class. Contains additional methods for HUD.
 
     :param :class:`xoinvader.utils.Point` pos: left top corner
-    :param :class:`xoinvader.utils.Point` border: max allowed bottom right pos
     """
 
-    def __init__(self, pos, border):
-        super(PlayerShip, self).__init__(pos, border)
+    def __init__(self, pos):
+        super(PlayerShip, self).__init__(pos)
 
         self._image = Surface([
             "  O  ",
@@ -277,7 +273,6 @@ class PlayerShip(Ship):
             " * * ",
         ])
 
-        self._border = border
         self._pos = Point(
             x=pos.x - self._image.width // 2,
             y=pos.y - self._image.height)
@@ -293,6 +288,26 @@ class PlayerShip(Ship):
         self._weapons = InfiniteList([Blaster(), Laser(), UM()])
         self._weapon = self._weapons.current()
         self._wbay = Point(x=self._image.width // 2, y=-1)
+
+    def update_position(self):
+        """Update player ship position.
+
+        Prohibits moving out behind the border.
+        """
+
+        border = Settings.layout.field.camera
+        right = self._pos.x + self._image.width
+
+        if (right >= border.x - 1 and self._direction > 0):
+            self._pos.x = border.x - self._image.width
+
+        elif self._pos.x <= 1 and self._direction < 0:
+            self._pos.x = 1
+
+        else:
+            self._pos.x += self._direction * self._dx
+
+        self._direction = 0
 
     def update(self):
         if self._hull <= 0:
