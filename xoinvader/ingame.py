@@ -28,8 +28,7 @@ class TestLevel(Level):
         super(TestLevel, self).__init__(speed)
         self._state_add = state_object_adder
 
-        self._player_ship = PlayerShip(
-            Settings.layout.field.player, Settings.layout.field.edge)
+        self._player_ship = PlayerShip(Settings.layout.field.player)
         self._state_add(self._player_ship)
         self._enemies = weakref.WeakSet()
 
@@ -62,19 +61,10 @@ class TestLevel(Level):
     def spawn4(self):
         right_side = Settings.layout.field.edge.x
 
-        e1 = GenericXEnemy(
-            Point(10, 1),
-            Settings.layout.field.edge)
-        e2 = GenericXEnemy(
-            Point(25, 1),
-            Settings.layout.field.edge)
-
-        e3 = GenericXEnemy(
-            Point(right_side - 10, 1),
-            Settings.layout.field.edge)
-        e4 = GenericXEnemy(
-            Point(right_side - 25, 1),
-            Settings.layout.field.edge)
+        e1 = GenericXEnemy(Point(10, 1))
+        e2 = GenericXEnemy(Point(25, 1))
+        e3 = GenericXEnemy(Point(right_side - 10, 1))
+        e4 = GenericXEnemy(Point(right_side - 25, 1))
 
         e1.add_animation(
             "", e1, "_pos", self.get_keyframes(1, 10, 1), interp=True)
