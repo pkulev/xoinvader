@@ -5,12 +5,12 @@ from xoinvader.charge import (
     BasicPlasmaCannon, EBasicPlasmaCannon,
     BasicLaserCharge, BasicUnguidedMissile
 )
-from xoinvader.common import Settings, get_json_config
+from xoinvader.common import Settings, get_config
 from xoinvader.render import Renderable
 from xoinvader.utils import Point, Surface, Timer
 
 
-CONFIG = get_json_config(Settings.path.config.weapons)
+CONFIG = get_config().weapon
 INFINITE = "infinite"
 
 

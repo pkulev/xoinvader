@@ -15,6 +15,7 @@ General
 
 * >= python-3.7
 * >= eaf-0.1
+* >= toml-0.10
 * ncurses >=5.9
 
 Installation

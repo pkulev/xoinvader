@@ -9,13 +9,13 @@ from xoinvader.render import Renderable
 from xoinvader.weapon import Blaster, Laser, UM, EBlaster
 from xoinvader.utils import Point, Surface, InfiniteList
 from xoinvader.collision import Collider
-from xoinvader.common import Settings, get_json_config
+from xoinvader.common import Settings, get_config
 
 
 LOG = logging.getLogger(__name__)
 
 # pylint: disable=missing-docstring
-CONFIG = get_json_config(Settings.path.config.ships)
+CONFIG = get_config().ship
 
 
 # Think about composition

@@ -1,14 +1,9 @@
 {
     "config": {
-        "charges": "/config/charges.json",
-        "ships": "/config/ships.json",
-        "weapons": "/config/weapons.json"
+        "charges": "config/charges.json",
+        "ships": "config/ships.json",
+        "weapons": "config/weapons.json"
     },
-    "image": {
-        "ship": {
-            "TestShip": "/res/gfx/ship.png"
-        }
-    },
-    "level1bg": "/res/level1.bg",
-    "scoreboard": "/data/scoreboard"
+    "level1bg": "res/level1.bg",
+    "scoreboard": "data/scoreboard"
 }
