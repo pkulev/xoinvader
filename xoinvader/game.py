@@ -9,8 +9,7 @@ import argparse
 import logging
 
 import xoinvader
-from xoinvader.application import CursesApplication
-from xoinvader import constants
+from xoinvader.app import XOInvader
 
 
 LOG = logging.getLogger(__name__)
@@ -19,25 +18,11 @@ LOG = logging.getLogger(__name__)
 def create_game():
     """Create XOInvader game instance."""
 
-    # TODO: config-management: remove import order dependency
-    # problem: importing of .common creates settings dict on import time
-    #          then importing of game state pulls Ship and then Mixer
-    #          mixer chooses mixer on import time based on settings
-    #          update_system_settings called in run time, updates settings...
-    #          but dependent entities already created when imported.
-    # solutions:
-    #          * Remove import time magic
-    #            Create defaults, but make decisions on run time only
-    #            Maybe this will lead to reorganizing code.
+    app = xo1.Application(
+        Settings.layout.field.border.x,
+        Settings.layout.field.border.y,
+    )
 
-    app = CursesApplication()
-
-    from xoinvader.ingame import InGameState
-    from xoinvader.menu import PauseMenuState, GameOverState
-
-    app.register(InGameState)
-    app.register(PauseMenuState)
-    app.register(GameOverState)
     return app
 
 
@@ -59,8 +44,7 @@ def main():
     # apply settings to engine settings
     xoinvader.init(args.__dict__)
     LOG.debug("Incoming args: %s", args)
-
-    game = create_game()
+    game = XOInvader()
     return game.start()
 
 

@@ -8,7 +8,7 @@ Reference
    :maxdepth: 4
 
    animation
-   application
+   app
    background
    charge
    collision

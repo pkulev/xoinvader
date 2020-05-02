@@ -2,7 +2,7 @@
 
 from eaf.state import State
 
-from xoinvader import application
+from xoinvader import app
 from xoinvader.gui import (
     MenuItemContainer,
     MenuItemWidget,
@@ -25,17 +25,17 @@ class PauseMenuState(State):
             MenuItemWidget(
                 Point(10, 10), "Continue",
                 template=("=> ", ""),
-                action=lambda: application.get_current().trigger_state("InGameState")),
+                action=lambda: app.current().trigger_state("InGameState")),
             MenuItemWidget(
                 Point(10, 11), "Quit",
                 template=("=> ", ""),
-                action=application.get_current().stop),
+                action=app.current().stop),
         ])
         self._items.select(0)
         self.add(self._items)
 
         self._events = EventHandler(self, {
-            KEY.ESCAPE: lambda: application.get_current().trigger_state("InGameState"),
+            KEY.ESCAPE: lambda: app.current().trigger_state("InGameState"),
             KEY.SPACE: self._items.do_action,
             KEY.W: self._items.prev,
             KEY.S: self._items.next,
@@ -65,10 +65,10 @@ class GameOverState(State):
         self._items = MenuItemContainer([
             MenuItemWidget(
                 Point(10, 10), "I must to continue my revenge!",
-                action=lambda: application.get_current().trigger_reinit("InGameState")),
+                action=lambda: app.current().trigger_reinit("InGameState")),
             MenuItemWidget(
                 Point(10, 11), "No! I want to go home!",
-                action=application.get_current().stop),
+                action=app.current().stop),
         ])
         self.add(self._items)
         self._items.select(0)
