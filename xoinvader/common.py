@@ -69,20 +69,19 @@ DEFAULT_XOI_SETTINGS = dict(
             border=Point(x=WIDTH, y=HEIGHT),
             camera=Point(x=WIDTH - 1, y=HEIGHT - 1),
             player=Point(x=WIDTH // 2, y=HEIGHT - 1),
-            edge=Point(x=WIDTH, y=HEIGHT - 1)),
-
+            edge=Point(x=WIDTH, y=HEIGHT - 1),
+        ),
         gui=dict(
             bar=dict(
                 health=Point(x=2, y=HEIGHT - 1),
                 shield=Point(x=22, y=HEIGHT - 1),
-                weapon=Point(x=WIDTH - 18, y=HEIGHT - 1)),
-            info=dict(
-                weapon=Point(x=44, y=HEIGHT - 1)))),
+                weapon=Point(x=WIDTH - 18, y=HEIGHT - 1),
+            ),
+            info=dict(weapon=Point(x=44, y=HEIGHT - 1)),
+        ),
+    ),
     path=rootify(_ROOT, get_json_config(_CONFIG / "path.json")),
-    system=dict(
-        debug=False,
-        encoding=constants.UTF_8,
-    )
+    system=dict(debug=False, encoding=constants.UTF_8,),
 )
 
 Settings = dotdict(DEFAULT_XOI_SETTINGS)  # pylint: disable=invalid-name

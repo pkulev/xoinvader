@@ -22,7 +22,8 @@ class CollisionManagerNotFound(Exception):
     def __init__(self):
         super(CollisionManagerNotFound, self).__init__(
             "You can't use Collider objects without "
-            "CollisionManager. Please create it first.")
+            "CollisionManager. Please create it first."
+        )
 
 
 class TypePair(object):
@@ -39,7 +40,7 @@ class TypePair(object):
     def __init__(self, first, second):
         self._first = first
         self._second = second
-        self._pair = first + '_' + second
+        self._pair = first + "_" + second
 
     @property
     def first(self):
@@ -135,19 +136,21 @@ class CollisionManager(object):
 
         for pair in self._collisions:
             colliders_type_1 = [
-                item for item in self._colliders
-                if item.col_type == pair.first]
+                item for item in self._colliders if item.col_type == pair.first
+            ]
             colliders_type_2 = [
-                item for item in self._colliders
-                if item.col_type == pair.second]
+                item for item in self._colliders if item.col_type == pair.second
+            ]
             for collider_1 in colliders_type_1:
                 for collider_2 in colliders_type_2:
                     collision_rect = self.check_collision(
-                        collider_1, collider_2)
+                        collider_1, collider_2
+                    )
                     if collision_rect:
                         for callback in self._collisions[pair]:
-                            callback(collider_1.obj, collider_2.obj,
-                                     collision_rect)
+                            callback(
+                                collider_1.obj, collider_2.obj, collision_rect
+                            )
 
     # pylint: disable=too-many-locals
     @staticmethod
@@ -174,18 +177,20 @@ class CollisionManager(object):
         topleft_2 = col_2.pos
         botright_2 = topleft_2 + Point(width_2, height_2)
         if (
-                topleft_1.x >= botright_2.x or topleft_1.y >= botright_2.y or
-                botright_1.x <= topleft_2.x or botright_1.y <= topleft_2.y
+            topleft_1.x >= botright_2.x
+            or topleft_1.y >= botright_2.y
+            or botright_1.x <= topleft_2.x
+            or botright_1.y <= topleft_2.y
         ):
             # Definelty not overlapping
             return
         # Now find where exactopleft_y overlapping occured
         topleft_overlap = Point(
-            max(topleft_1.x, topleft_2.x),
-            max(topleft_1.y, topleft_2.y))
+            max(topleft_1.x, topleft_2.x), max(topleft_1.y, topleft_2.y)
+        )
         botright_overlap = Point(
-            min(botright_1.x, botright_2.x),
-            min(botright_1.y, botright_2.y))
+            min(botright_1.x, botright_2.x), min(botright_1.y, botright_2.y)
+        )
         # Now find if they actually collided
         # first, calculate offsets
         overlap_1 = Point()
@@ -201,9 +206,9 @@ class CollisionManager(object):
                 # TODO: check length of current y-level string
                 # it might be not enough to contain i + ox1/2 element
                 if (
-                        col_1.phys_map[j + overlap_1.y][i + overlap_1.x] ==
-                        col_2.phys_map[j + overlap_2.y][i + overlap_2.x] ==
-                        CollisionManager.SOLID_MATTER
+                    col_1.phys_map[j + overlap_1.y][i + overlap_1.x]
+                    == col_2.phys_map[j + overlap_2.y][i + overlap_2.x]
+                    == CollisionManager.SOLID_MATTER
                 ):
                     return (topleft_overlap, botright_overlap)
 
@@ -243,10 +248,13 @@ class Collider(object):
         All characters except space considered as solid matter.
         """
 
-        return cls(obj, [
-            re.sub(r"[^\ ]", CollisionManager.SOLID_MATTER, row)
-            for row in obj.image.raw
-        ])
+        return cls(
+            obj,
+            [
+                re.sub(r"[^\ ]", CollisionManager.SOLID_MATTER, row)
+                for row in obj.image.raw
+            ],
+        )
 
     @property
     def phys_map(self):

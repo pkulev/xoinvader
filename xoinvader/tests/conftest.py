@@ -4,7 +4,7 @@ import pytest
 
 from eaf.state import State
 
-from xoinvader import application
+import xoinvader.app
 
 
 @pytest.fixture
@@ -34,7 +34,7 @@ def mock_state(request, mock_application):
             # We need to create reference or object will be collected by gc
             app = mock_application()
         else:
-            app = application.get_current()
+            app = xoinvader.app.current()
 
         app.register(MockedState)
         return app.state
@@ -47,12 +47,12 @@ def mock_state(request, mock_application):
     return inner
 
 
-class MockedApplication(application.Application):
+class MockedApplication(xoinvader.app.XOInvader):
 
     @staticmethod
     def _finalize():
         try:
-            app = application.get_current()
+            app = xoinvader.app.current()
             app.stop()
             del app
         except:

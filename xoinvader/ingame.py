@@ -66,16 +66,26 @@ class TestLevel(Level):
         e4 = GenericXEnemy(Point(right_side - 25, 1))
 
         e1.add_animation(
-            "", e1, "_pos", self.get_keyframes(1, 10, 1), interp=True)
+            "", e1, "_pos", self.get_keyframes(1, 10, 1), interp=True
+        )
         e2.add_animation(
-            "", e2, "_pos", self.get_keyframes(1, 20, 1), interp=True)
+            "", e2, "_pos", self.get_keyframes(1, 20, 1), interp=True
+        )
 
         e3.add_animation(
-            "", e3, "_pos",
-            self.get_keyframes(1, right_side - 10, -1), interp=True)
+            "",
+            e3,
+            "_pos",
+            self.get_keyframes(1, right_side - 10, -1),
+            interp=True,
+        )
         e4.add_animation(
-            "", e4, "_pos",
-            self.get_keyframes(1, right_side - 20, -1), interp=True)
+            "",
+            e4,
+            "_pos",
+            self.get_keyframes(1, right_side - 20, -1),
+            interp=True,
+        )
 
         self._enemies = weakref.WeakSet([e1, e2, e3, e4])
         self._state_add(list(self._enemies))
@@ -119,15 +129,18 @@ class InGameState(State):
         # TODO: [scoring]
         self.score = 0
 
-        self._events = EventHandler(self, {
-            KEY.A: self.actor.move_left,
-            KEY.D: self.actor.move_right,
-            KEY.E: self.actor.next_weapon,
-            KEY.Q: self.actor.prev_weapon,
-            KEY.R: lambda: self.actor.take_damage(5),
-            KEY.SPACE: self.actor.toggle_fire,
-            KEY.ESCAPE: self.pause_command,
-        })
+        self._events = EventHandler(
+            self,
+            {
+                KEY.A: self.actor.move_left,
+                KEY.D: self.actor.move_right,
+                KEY.E: self.actor.next_weapon,
+                KEY.Q: self.actor.prev_weapon,
+                KEY.R: lambda: self.actor.take_damage(5),
+                KEY.SPACE: self.actor.toggle_fire,
+                KEY.ESCAPE: self.pause_command,
+            },
+        )
 
         self.add(self._create_gui())
         self.level.start()
@@ -172,32 +185,42 @@ class InGameState(State):
 
         return [
             Bar(
-                pos=Settings.layout.gui.bar.health, prefix="Hull: ",
-                general_style=curses.A_BOLD, stylemap={
+                pos=Settings.layout.gui.bar.health,
+                prefix="Hull: ",
+                general_style=curses.A_BOLD,
+                stylemap={
                     comp.high: Style().gui["dp_ok"],
                     comp.normal: Style().gui["dp_middle"],
-                    comp.low: Style().gui["dp_critical"]
-                }, callback=self.actor.get_hull_percentage),
+                    comp.low: Style().gui["dp_critical"],
+                },
+                callback=self.actor.get_hull_percentage,
+            ),
             Bar(
-                pos=Settings.layout.gui.bar.shield, prefix="Shield: ",
-                general_style=curses.A_BOLD, stylemap={
+                pos=Settings.layout.gui.bar.shield,
+                prefix="Shield: ",
+                general_style=curses.A_BOLD,
+                stylemap={
                     comp.high: Style().gui["sh_ok"],
                     comp.normal: Style().gui["sh_mid"],
-                    comp.low: Style().gui["dp_critical"]
-                }, callback=self.actor.get_shield_percentage),
+                    comp.low: Style().gui["dp_critical"],
+                },
+                callback=self.actor.get_shield_percentage,
+            ),
             Bar(
                 pos=Settings.layout.gui.bar.weapon,
-                stylemap={
-                    comp.whatever: Style().gui["dp_ok"]
-                }, callback=self.actor.get_weapon_percentage),
+                stylemap={comp.whatever: Style().gui["dp_ok"]},
+                callback=self.actor.get_weapon_percentage,
+            ),
             WeaponWidget(
-                Settings.layout.gui.info.weapon,
-                self.actor.get_weapon_info)
+                Settings.layout.gui.info.weapon, self.actor.get_weapon_info
+            ),
         ] + [
             TextCallbackWidget(Point(2, 0), self.get_player_score_string),
             TextWidget(
                 Point(Settings.layout.field.edge.x // 2 - 4, 0),
-                "XOInvader", curses.A_BOLD)
+                "XOInvader",
+                curses.A_BOLD,
+            ),
         ]
 
     def events(self):

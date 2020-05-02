@@ -47,12 +47,15 @@ def mock_scorepath(monkeypatch):
     return inner
 
 
-@pytest.mark.parametrize(("path", "expected"), (
-    (SCOREBOARD_EMPTY, []),
-    (SCOREBOARD_NONEXISTENT, []),
-    (SCOREBOARD_CORRUPTED, SCOREBOARD_DATA),
-    (SCOREBOARD_VALID, SCOREBOARD_DATA),
-))
+@pytest.mark.parametrize(
+    ("path", "expected"),
+    (
+        (SCOREBOARD_EMPTY, []),
+        (SCOREBOARD_NONEXISTENT, []),
+        (SCOREBOARD_CORRUPTED, SCOREBOARD_DATA),
+        (SCOREBOARD_VALID, SCOREBOARD_DATA),
+    ),
+)
 def test_items(path, expected, mock_scorepath):
     """xoinvader.scoreboard.items()."""
 
@@ -78,8 +81,7 @@ def test_lowest(mock_scorepath):
     """xoinvader.scoreboard.lowest()."""
 
     mock_scorepath(SCOREBOARD_VALID)
-    assert scoreboard.lowest() == min(SCOREBOARD_DATA,
-                                      key=itemgetter(1))[1]
+    assert scoreboard.lowest() == min(SCOREBOARD_DATA, key=itemgetter(1))[1]
 
     mock_scorepath(SCOREBOARD_EMPTY)
     assert scoreboard.lowest() == 0
@@ -89,8 +91,7 @@ def test_highest(mock_scorepath):
     """xoinvader.scoreboard.highest()."""
 
     mock_scorepath(SCOREBOARD_VALID)
-    assert scoreboard.highest() == max(SCOREBOARD_DATA,
-                                       key=itemgetter(1))[1]
+    assert scoreboard.highest() == max(SCOREBOARD_DATA, key=itemgetter(1))[1]
 
     mock_scorepath(SCOREBOARD_EMPTY)
     assert scoreboard.highest() == 0

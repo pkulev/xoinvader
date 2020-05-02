@@ -79,8 +79,13 @@ def test_animation_interp_loop(loop):
     obj = GameObject()
     animgr = AnimationManager()
     animgr.add(
-        "test", obj, "attr", keyframes=[(0.0, 0), (0.4, 1)],
-        interp=True, loop=loop)
+        "test",
+        obj,
+        "attr",
+        keyframes=[(0.0, 0), (0.4, 1)],
+        interp=True,
+        loop=loop,
+    )
 
     animgr.update()
     assert isclose(obj.attr, 0, abs_tol=0.01)
@@ -131,55 +136,67 @@ def test_animation_manager():
     assert animgr.update() is None
 
 
-@pytest.mark.parametrize(("values", "types", "expected"), (
-    ([1, 2, 3], int, True),
-    ([1, 2, "3"], (int, float), False),
-    ([1, 2, 3.0], int, False),
-    ([1, 2, 3.0], (int, float), True),
-))
+@pytest.mark.parametrize(
+    ("values", "types", "expected"),
+    (
+        ([1, 2, 3], int, True),
+        ([1, 2, "3"], (int, float), False),
+        ([1, 2, 3.0], int, False),
+        ([1, 2, 3.0], (int, float), True),
+    ),
+)
 def test_same_type(values, types, expected):
     assert animation.same_type(values, types) is expected
 
 
-@pytest.mark.parametrize(("args", "result"), (
-    # increasing
-    ((0.0, 2.0, 0.0, 1.0, 0.0), 0.0),
-    ((0.0, 2.0, 0.0, 1.0, 0.2), 0.4),
-    ((0.0, 2.0, 0.0, 1.0, 1.0), 2.0),
-    # decreasing
-    ((2.0, 1.0, 1.0, 2.0, 1.0), 2.0),
-    ((2.0, 1.0, 1.0, 2.0, 1.2), 1.8),
-    ((2.0, 1.0, 1.0, 2.0, 2.0), 1.0),
-    # negative value
-    ((0.0, -1.0, 2.0, 3.0, 2.0), 0.0),
-    ((0.0, -1.0, 2.0, 3.0, 2.5), -0.5),
-    ((0.0, -1.0, 2.0, 3.0, 3.0), -1.0),
-))
+@pytest.mark.parametrize(
+    ("args", "result"),
+    (
+        # increasing
+        ((0.0, 2.0, 0.0, 1.0, 0.0), 0.0),
+        ((0.0, 2.0, 0.0, 1.0, 0.2), 0.4),
+        ((0.0, 2.0, 0.0, 1.0, 1.0), 2.0),
+        # decreasing
+        ((2.0, 1.0, 1.0, 2.0, 1.0), 2.0),
+        ((2.0, 1.0, 1.0, 2.0, 1.2), 1.8),
+        ((2.0, 1.0, 1.0, 2.0, 2.0), 1.0),
+        # negative value
+        ((0.0, -1.0, 2.0, 3.0, 2.0), 0.0),
+        ((0.0, -1.0, 2.0, 3.0, 2.5), -0.5),
+        ((0.0, -1.0, 2.0, 3.0, 3.0), -1.0),
+    ),
+)
 def test_linear_equation(args, result):
     assert animation.linear_equation(*args) == result
 
 
-@pytest.mark.parametrize(("args", "result"), (
-    ([(1, 1), (2, 2), 1.5], 1.5),
-    ([(1.0, 1.0), (2.0, 2.0), 1.5], 1.5),
+@pytest.mark.parametrize(
+    ("args", "result"),
     (
-        [(1.0, Point(1, 2, 1)), (2.0, Point(2, 1, 2)), 1.5],
-        Point(1.5, 1.5, 1.5)
+        ([(1, 1), (2, 2), 1.5], 1.5),
+        ([(1.0, 1.0), (2.0, 2.0), 1.5], 1.5),
+        (
+            [(1.0, Point(1, 2, 1)), (2.0, Point(2, 1, 2)), 1.5],
+            Point(1.5, 1.5, 1.5),
+        ),
+        (
+            [(1.0, Point(1.0, 2.0, 1.0)), (2.0, Point(2.0, 1.0, 2.0)), 1.5],
+            Point(1.5, 1.5, 1.5),
+        ),
     ),
-    (
-        [(1.0, Point(1.0, 2.0, 1.0)), (2.0, Point(2.0, 1.0, 2.0)), 1.5],
-        Point(1.5, 1.5, 1.5)
-    ),
-))
+)
 def test_interpolate_positive(args, result):
     assert animation.interpolate(*args) == result
 
 
-@pytest.mark.parametrize(("args", "expected_error"), (
-    ([(1.0, 1.0), (2.0, 2.0), 0.99], animation.AnimationBoundariesExceeded),
-    ([(1.0, 1.0), (2.0, 2.0), 2.01], animation.AnimationBoundariesExceeded),
-    ([(1.0, "a"), (2.0, "b"), 1.5], animation.InterpolationUnknownTypes),
-))
+@pytest.mark.parametrize(
+    ("args", "expected_error"),
+    (
+        ([(1.0, 1.0), (2.0, 2.0), 0.99], animation.AnimationBoundariesExceeded),
+        ([(1.0, 1.0), (2.0, 2.0), 2.01], animation.AnimationBoundariesExceeded),
+        ([(1.0, "a"), (2.0, "b"), 1.5], animation.InterpolationUnknownTypes),
+    ),
+)
 def test_interpolate_negative(args, expected_error):
     with pytest.raises(expected_error):
         animation.interpolate(*args)

@@ -91,7 +91,7 @@ def test_background():
     assert b._current_chunk is b.chunks[0]
     assert b.background == [
         "   ",
-        "   "
+        "   ",
     ]
 
     b.start(True)
@@ -99,7 +99,7 @@ def test_background():
     assert b._current_chunk is b.chunks[1]
     assert b.background == [
         "qwe",
-        "asd"
+        "asd",
     ]
 
     assert b._chunk_line == 1

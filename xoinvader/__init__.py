@@ -20,6 +20,7 @@ __version__ = "0.1.3"
 
 class XOInitializationError(Exception):
     """Basic initialization exception."""
+
     pass
 
 
@@ -49,7 +50,8 @@ def init(settings=None):
     try:
         settings = setup_locale(settings)
         log = setup_logger(
-            "xoinvader", settings.get("debug", Settings.system.debug))
+            "xoinvader", settings.get("debug", Settings.system.debug)
+        )
     except Exception as exc:
         raise XOInitializationError(exc)
 

@@ -93,8 +93,9 @@ def load_chunks(filename, trim_width=None):
                     raise ValueError("Chunks with empty names are not allowed")
                 name = name_split[1].strip()
                 if name in names:
-                    raise ValueError("Name {0} already defined in background "
-                                     "file {1}".format(name, filename))
+                    raise ValueError(
+                        f"Name {name} already defined in background file {filename}"
+                    )
                 current_chunk = Chunk(name)
                 chunks.append(current_chunk)
                 names.append(name)
@@ -105,8 +106,7 @@ def load_chunks(filename, trim_width=None):
             line_add = line[:trim_width] if trim_width else line
             current_chunk.add_line(line_add)
     if not chunks:
-        raise ValueError("File {0} does not contain "
-                         "any chunks".format(filename))
+        raise ValueError("File {filename} does not contain any chunks")
     return chunks
 
 
@@ -288,8 +288,10 @@ class Background(Renderable):
             return " " * self._w
 
         # start checks
-        if (self._chunk_line < len(self._current_chunk) and
-                self._chunk_line >= 0):
+        if (
+            self._chunk_line < len(self._current_chunk)
+            and self._chunk_line >= 0
+        ):
             line = self._current_chunk[self._chunk_line]
             self._chunk_line += advance
             return line
@@ -306,8 +308,10 @@ class Background(Renderable):
 
         # next chunk or stop advancing
         self._current_chunk_num += advance
-        if (self._current_chunk_num < len(self._chunks) and
-                self._current_chunk_num >= 0):
+        if (
+            self._current_chunk_num < len(self._chunks)
+            and self._current_chunk_num >= 0
+        ):
             # okay, just set new chunk
             self._current_chunk = self._chunks[self._current_chunk_num]
             self._chunk_line = 0

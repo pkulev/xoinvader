@@ -4,7 +4,10 @@ import pytest
 
 from xoinvader import collision
 from xoinvader.collision import (
-    Collider, CollisionManager, CollisionManagerNotFound, TypePair
+    Collider,
+    CollisionManager,
+    CollisionManagerNotFound,
+    TypePair,
 )
 from xoinvader.utils import Point, Surface
 
@@ -28,25 +31,26 @@ def test_collision(mock_state):
     cm = CollisionManager()
     state.collision = cm
 
-    c1 = Collider(
-        Obj(Point()), [
-            "##",
-            "##",
-        ])
+    # fmt: off
+    c1 = Collider(Obj(Point()), [
+        "##",
+        "##",
+    ])
 
-    c2 = Collider(
-        Obj(Point()), [
-            "..",
-            ".."
-        ])
+    c2 = Collider(Obj(Point()), [
+        "..",
+        ".."
+    ])
+    # fmt: on
 
     assert cm.check_collision(c1, c2) is None
 
-    c3 = Collider(
-        Obj(Point()), [
-            "##",
-            "##"
-        ])
+    # fmt: off
+    c3 = Collider(Obj(Point()), [
+        "##",
+        "##"
+    ])
+    # fmt:on
     assert cm.check_collision(c1, c3)
 
     c3.obj.pos = Point(1, 0)
@@ -61,11 +65,12 @@ def test_collision(mock_state):
     c3.obj.pos = Point(2, 0)
     assert cm.check_collision(c1, c3) is None
 
-    c4 = Collider(
-        Obj(Point()), [
-            "..",
-            ".#",
-        ])
+    # fmt: off
+    c4 = Collider(Obj(Point()), [
+        "..",
+        ".#",
+    ])
+    # fmt: on
 
     assert cm.check_collision(c1, c4)
     c4.obj.pos = Point(1, 0)
@@ -96,11 +101,15 @@ def test_manager_update(mock_state):
         def __init__(self):
             self.health = 10
             self.pos = Point(0, 10)
+
+            # fmt: off
             self._image = Surface([
                 "..#..",
                 "#####",
                 ".#.#."
             ])
+            # fmt: on
+
             self._collider = Collider.simple(self)
 
         @property
@@ -115,16 +124,18 @@ def test_manager_update(mock_state):
             self.health -= other.damage
 
     class Rocket(object):
-
         def __init__(self):
             self.damage = 10
             self.pos = Point(0, 0)
+
+            # fmt: off
             self._collider = Collider(
                 self, [
                     "#",
                     "#",
                     "#",
                 ])
+            # fmt: on
 
         def type(self):
             return self.__class__.__name__

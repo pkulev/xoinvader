@@ -19,8 +19,7 @@ def create_game():
     """Create XOInvader game instance."""
 
     app = xo1.Application(
-        Settings.layout.field.border.x,
-        Settings.layout.field.border.y,
+        Settings.layout.field.border.x, Settings.layout.field.border.y,
     )
 
     return app
@@ -31,7 +30,8 @@ def parse_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "-d", "--debug", action="store_true", help="enable debug mode")
+        "-d", "--debug", action="store_true", help="enable debug mode"
+    )
 
     args = parser.parse_args()
     return args
