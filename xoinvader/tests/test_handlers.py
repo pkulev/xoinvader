@@ -47,9 +47,10 @@ def test_event_handler():
     assert not events.handle()
 
     fired = []
-    events = handlers.EventHandler(OwnerMock(), {
-        EventQueueMock.key: lambda: fired.append(EventQueueMock.key)
-    })
+    events = handlers.EventHandler(
+        OwnerMock(),
+        {EventQueueMock.key: lambda: fired.append(EventQueueMock.key)},
+    )
 
     events.handle()
     assert fired == [EventQueueMock.key]
@@ -58,8 +59,9 @@ def test_event_handler():
 def test_event_handler_negative(monkeypatch):
     """Negatively test xoinvader.handlers.EventHandler."""
 
-    monkeypatch.setattr(handlers.EventHandler, "event_queue",
-                        EventQueueMock.mocked_event_queue)
+    monkeypatch.setattr(
+        handlers.EventHandler, "event_queue", EventQueueMock.mocked_event_queue
+    )
 
     events = handlers.EventHandler(OwnerMock())
     with pytest.raises(ValueError):

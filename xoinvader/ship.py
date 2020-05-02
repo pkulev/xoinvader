@@ -176,10 +176,10 @@ class Ship(Renderable):
         border = Settings.layout.field.border
         pos = self._pos[int]
         if (
-                pos.x > self._image.width + border.x or
-                pos.x + self._image.width < 0 or
-                int(pos.y) > self._image.height + border.y or
-                int(pos.y) + self._image.height < 0
+            pos.x > self._image.width + border.x
+            or pos.x + self._image.width < 0
+            or int(pos.y) > self._image.height + border.y
+            or int(pos.y) + self._image.height < 0
         ) and not self._destroy:
             self.destroy()
 
@@ -212,11 +212,13 @@ class GenericXEnemy(Ship):
 
     def __init__(self, pos):
         super(GenericXEnemy, self).__init__(pos)
+        # fmt: off
         self._image = Surface([
             "x^x",
             " X ",
             " * ",
         ])
+        # fmt: on
 
         self._collider = Collider.simple(self)
 
@@ -262,15 +264,17 @@ class PlayerShip(Ship):
     def __init__(self, pos):
         super(PlayerShip, self).__init__(pos)
 
+        # fmt: off
         self._image = Surface([
             "  O  ",
             "<=H=>",
             " * * ",
         ])
+        # fmt: on
 
         self._pos = Point(
-            x=pos.x - self._image.width // 2,
-            y=pos.y - self._image.height)
+            x=pos.x - self._image.width // 2, y=pos.y - self._image.height
+        )
 
         self._collider = Collider.simple(self)
 
@@ -288,7 +292,7 @@ class PlayerShip(Ship):
         border = Settings.layout.field.camera
         right = self._pos.x + self._image.width
 
-        if (right >= border.x - 1 and self._direction > 0):
+        if right >= border.x - 1 and self._direction > 0:
             self._pos.x = border.x - self._image.width
 
         elif self._pos.x <= 1 and self._direction < 0:
@@ -301,7 +305,9 @@ class PlayerShip(Ship):
 
     def update(self):
         if self._hull <= 0:
-            app.current().trigger_state("GameOverState", score=app.current().state.score)
+            app.current().trigger_state(
+                "GameOverState", score=app.current().state.score
+            )
 
         super(PlayerShip, self).update()
 
@@ -309,9 +315,8 @@ class PlayerShip(Ship):
         """Return information about current weapon."""
 
         return "Weapon: {w} | [{c}/{m}]".format(
-            w=self._weapon.type,
-            c=self._weapon.ammo,
-            m=self._weapon.max_ammo)
+            w=self._weapon.type, c=self._weapon.ammo, m=self._weapon.max_ammo
+        )
 
     @collision.register("PlayerShip", "EBasicPlasmaCannon")
     def collide(self, other, rect):

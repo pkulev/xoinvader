@@ -8,8 +8,6 @@ Keyframe:
 
 Objects have animation manager which manages animation graph and switching."""
 
-from __future__ import division
-
 from operator import itemgetter
 
 from xoinvader.utils import Point, Timer
@@ -21,8 +19,8 @@ class AnimationBoundariesExceeded(Exception):
     def __init__(self, first, current_time, second):
         super(AnimationBoundariesExceeded, self).__init__(
             self,
-            "Animation frame boundaries exceeded: {0} <= {1} <= {2}".format(
-                first, current_time, second))
+            f"Animation frame boundaries exceeded: {first} <= {current_time} <= {second}",
+        )
 
 
 class InterpolationUnknownTypes(Exception):
@@ -30,8 +28,8 @@ class InterpolationUnknownTypes(Exception):
 
     def __init__(self, first, second):
         super(InterpolationUnknownTypes, self).__init__(
-            self, "Unknown types of interpolating values: {0} and {1}".format(
-                first, second))
+            self, f"Unknown types of interpolating values: {first} and {second}"
+        )
 
 
 # TODO: Implement animation graph and etc
@@ -63,7 +61,7 @@ class AnimationManager(object):
         if name in self._animations:
             self._animation = self._animations[name]
         else:
-            raise ValueError("No such animation: '{0}'.".format(name))
+            raise ValueError(f"No such animation: '{name}'.")
 
     def add(self, name, *args, **kwargs):
         """Add new animation, pass args to Animation class.
@@ -263,13 +261,21 @@ def interpolate(first, second, current_time):
 
     if frames_of(int, float):
         value = linear_equation(
-            float(first[1]), float(second[1]),
-            float(first[0]), float(second[0]), float(current_time))
+            float(first[1]),
+            float(second[1]),
+            float(first[0]),
+            float(second[0]),
+            float(current_time),
+        )
 
     elif frames_of(Point):
         value = linear_equation(
-            first[1], second[1], float(first[0]), float(second[0]),
-            float(current_time))
+            first[1],
+            second[1],
+            float(first[0]),
+            float(second[0]),
+            float(current_time),
+        )
     else:
         raise InterpolationUnknownTypes(type(first[1]), type(second[1]))
 

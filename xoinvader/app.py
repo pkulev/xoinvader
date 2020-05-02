@@ -33,7 +33,8 @@ class XOInvader(Application):
         )
 
         super().__init__(
-            x=Settings.layout.field.border.x, y=Settings.layout.field.border.y,
+            x=Settings.layout.field.border.x,
+            y=Settings.layout.field.border.y,
             palette=palette,
         )
 

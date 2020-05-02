@@ -2,8 +2,10 @@
 
 
 from xoinvader.charge import (
-    BasicPlasmaCannon, EBasicPlasmaCannon,
-    BasicLaserCharge, BasicUnguidedMissile
+    BasicPlasmaCannon,
+    EBasicPlasmaCannon,
+    BasicLaserCharge,
+    BasicUnguidedMissile,
 )
 from xoinvader.common import Settings, get_config
 from xoinvader.render import Renderable

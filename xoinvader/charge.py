@@ -66,10 +66,10 @@ class WeaponCharge(Renderable):
         border = Settings.layout.field.border
         pos = self._pos[int]
         if (
-                pos.x > self._image.width + border.x or
-                pos.x + self._image.width < 0 or
-                int(pos.y) > self._image.height + border.y or
-                int(pos.y) + self._image.height < 0
+            pos.x > self._image.width + border.x
+            or pos.x + self._image.width < 0
+            or int(pos.y) > self._image.height + border.y
+            or int(pos.y) + self._image.height < 0
         ) and not self._destroy:
             app.current().state.remove(self)
             self._destroy = True
@@ -113,8 +113,10 @@ class BasicPlasmaCannon(Projectile):
 
     def __init__(self, pos):
         super(BasicPlasmaCannon, self).__init__(
-            pos, Surface(["^"], style=[[curses.A_BOLD]]),
-            **CONFIG[self.__class__.__name__])
+            pos,
+            Surface(["^"], style=[[curses.A_BOLD]]),
+            **CONFIG[self.__class__.__name__]
+        )
 
 
 class EBasicPlasmaCannon(Projectile):
@@ -122,8 +124,10 @@ class EBasicPlasmaCannon(Projectile):
 
     def __init__(self, pos):
         super(EBasicPlasmaCannon, self).__init__(
-            pos, Surface([":"], style=[[curses.A_BOLD]]),
-            **CONFIG[self.__class__.__name__])
+            pos,
+            Surface([":"], style=[[curses.A_BOLD]]),
+            **CONFIG[self.__class__.__name__]
+        )
 
 
 class BasicLaserCharge(Projectile):
@@ -131,18 +135,24 @@ class BasicLaserCharge(Projectile):
 
     def __init__(self, pos):
         super(BasicLaserCharge, self).__init__(
-            pos, Surface(["|"], style=[[curses.A_BOLD]]),
-            **CONFIG[self.__class__.__name__])
+            pos,
+            Surface(["|"], style=[[curses.A_BOLD]]),
+            **CONFIG[self.__class__.__name__]
+        )
 
 
 class BasicUnguidedMissile(Projectile):
     """Unguided missile with medium damage and small radius."""
 
     def __init__(self, pos):
+        # fmt: off
         super(BasicUnguidedMissile, self).__init__(
-            pos, Surface([
+            pos,
+            Surface([
                 "^",
                 "|",
-                "*"
+                "*",
             ], style=[[curses.A_BOLD] for _ in range(3)]),
-            **CONFIG[self.__class__.__name__])
+            **CONFIG[self.__class__.__name__]
+        )
+        # fmt: on

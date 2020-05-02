@@ -162,8 +162,9 @@ class Surface(object):
         for y, row in enumerate(self._image):
             for x, image in enumerate(row):
                 yield (
-                    Point(x=x, y=y), image,
-                    self._style[y][x] if self._style else None
+                    Point(x=x, y=y),
+                    image,
+                    self._style[y][x] if self._style else None,
                 )
 
 

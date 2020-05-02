@@ -31,13 +31,16 @@ def test_dotdict_setattr():
     assert pytest.raises(AttributeError, lambda: settings.bad_key)
 
 
-@pytest.mark.parametrize(("left", "right", "kwargs", "expected"), (
-    (0.0, 0.0, {}, True),
-    (1.0, 0.0, {}, False),
-    (0.1, 0.0, {}, False),
-    (0.1, 0.0, {"abs_tol": 0.1}, True),
-    (0.1, 0.0, {"rel_tol": 0.1}, False),
-))
+@pytest.mark.parametrize(
+    ("left", "right", "kwargs", "expected"),
+    (
+        (0.0, 0.0, {}, True),
+        (1.0, 0.0, {}, False),
+        (0.1, 0.0, {}, False),
+        (0.1, 0.0, {"abs_tol": 0.1}, True),
+        (0.1, 0.0, {"rel_tol": 0.1}, False),
+    ),
+)
 def test_isclose(left, right, kwargs, expected):
     """xoinvader.utils.isclose"""
     assert isclose(left, right, **kwargs) is expected
@@ -83,9 +86,12 @@ def test_infinite_list_operations_negative():
     # TODO: test many elements behaviour
 
 
+# fmt: off
 _image = [
     [" ", "O", " "],
-    ["x", "X", "x"]]
+    ["x", "X", "x"],
+]
+# fmt: on
 
 
 def test_surface_attributes():
