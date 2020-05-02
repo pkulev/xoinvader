@@ -21,7 +21,7 @@ Contents:
    :hidden:
 
    xoinvader/ref/animation
-   xoinvader/ref/application
+   xoinvader/ref/app
    xoinvader/ref/background
    xoinvader/ref/charge
    xoinvader/ref/collision

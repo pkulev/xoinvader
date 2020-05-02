@@ -10,7 +10,7 @@ Attention: Next statement related only to GameObject entities.
 import curses
 import logging
 
-from xoinvader import application
+from xoinvader import app
 from xoinvader.collision import Collider
 from xoinvader.common import Settings, get_config
 from xoinvader.render import Renderable
@@ -35,7 +35,7 @@ class WeaponCharge(Renderable):
         self._pos = pos
         self._image = image
         self._type = self.__class__.__name__
-        application.get_current().state.add(self)
+        app.current().state.add(self)
 
         self._damage = damage
         self._radius = radius
@@ -71,7 +71,7 @@ class WeaponCharge(Renderable):
                 int(pos.y) > self._image.height + border.y or
                 int(pos.y) + self._image.height < 0
         ) and not self._destroy:
-            application.get_current().state.remove(self)
+            app.current().state.remove(self)
             self._destroy = True
 
     def update(self):
@@ -84,8 +84,8 @@ class WeaponCharge(Renderable):
 
         if not self._destroy:
             self._destroy = True
-            application.get_current().state.collision.remove(self._collider)
-            application.get_current().state.remove(self)
+            app.current().state.collision.remove(self._collider)
+            app.current().state.remove(self)
 
 
 # TODO: Implement hitscan behaviour

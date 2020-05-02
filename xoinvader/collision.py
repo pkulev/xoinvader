@@ -5,7 +5,7 @@ import logging
 import re
 import weakref
 
-from xoinvader import application
+from xoinvader import app
 from xoinvader.utils import Point
 
 
@@ -232,7 +232,7 @@ class Collider(object):
 
         # TODO: move collision to State.systems
         try:
-            application.get_current().state.collision.add(self)
+            app.current().state.collision.add(self)
         except:
             raise CollisionManagerNotFound()
 

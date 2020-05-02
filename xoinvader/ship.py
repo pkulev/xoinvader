@@ -2,7 +2,7 @@
 
 import logging
 
-from xoinvader import application
+from xoinvader import app
 from xoinvader import collision
 from xoinvader.animation import AnimationManager
 from xoinvader.render import Renderable
@@ -169,8 +169,8 @@ class Ship(Renderable):
 
         if not self._destroy:
             self._destroy = True
-            application.get_current().state.collision.remove(self._collider)
-            application.get_current().state.remove(self)
+            app.current().state.collision.remove(self._collider)
+            app.current().state.remove(self)
 
     def remove_obsolete(self, pos):
         border = Settings.layout.field.border
@@ -237,7 +237,7 @@ class GenericXEnemy(Ship):
             # TODO: [scoring]
             #       * Parametrize scores, move them to ships.conf
             #       * implement better scoring mechanism
-            application.get_current().state.add_player_score(10)
+            app.current().state.add_player_score(10)
             self.destroy()
             return
 
@@ -301,10 +301,7 @@ class PlayerShip(Ship):
 
     def update(self):
         if self._hull <= 0:
-            app = application.get_current()
-            app.trigger_state(
-                "GameOverState",
-                score=app.state.score)
+            app.current().trigger_state("GameOverState", score=app.current().state.score)
 
         super(PlayerShip, self).update()
 

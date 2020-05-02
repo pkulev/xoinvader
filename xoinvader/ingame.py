@@ -6,11 +6,10 @@ import weakref
 
 from eaf.state import State
 
-from xoinvader import application
 from xoinvader.background import Background
 from xoinvader.collision import CollisionManager
 from xoinvader.common import Settings
-from xoinvader.curses_utils import Style
+from xoinvader.style import Style
 from xoinvader.gui import TextCallbackWidget, TextWidget, WeaponWidget, Bar
 from xoinvader.handlers import EventHandler
 from xoinvader.keys import KEY

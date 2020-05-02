@@ -1,6 +1,6 @@
 """Keys' integer representation."""
 
-from xoinvader.utils import Singleton
+from eaf.meta import Singleton
 
 
 K_A = ord("a")

@@ -3,8 +3,7 @@
 
 from typing import Callable, Optional, List, Tuple, Generator
 
-# TODO: make working with styles pretty
-from xoinvader.curses_utils import Style
+from xoinvader.style import Style
 from xoinvader.render import Renderable
 from xoinvader.utils import (
     InfiniteList,
