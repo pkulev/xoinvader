@@ -26,7 +26,6 @@ Contents:
    xoinvader/ref/charge
    xoinvader/ref/collision
    xoinvader/ref/common
-   xoinvader/ref/curses_utils
    xoinvader/ref/game
    xoinvader/ref/gui
    xoinvader/ref/handlers

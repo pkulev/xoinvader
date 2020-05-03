@@ -13,7 +13,6 @@ Reference
    charge
    collision
    common
-   curses_utils
    game
    gui
    handlers
