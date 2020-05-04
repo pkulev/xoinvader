@@ -226,10 +226,10 @@ class InGameState(State):
     def events(self):
         self._events.handle()
 
-    def update(self):
+    def update(self, dt):
         self.collision.update()
         self.level.update()
         if not self.level.running:
             self.level.start()
-
-        super().update()
+        LOG.info(self._objects)
+        super().update(dt)

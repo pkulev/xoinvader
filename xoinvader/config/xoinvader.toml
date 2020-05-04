@@ -2,7 +2,7 @@ level1bg = "/res/level1.bg"
 scoreboard = "/data/scoreboard"
 
 [ship.PlayerShip]
-dx = 1
+dx = 40
 hull = 100
 shield = 100
 max_hull = 100
@@ -41,25 +41,25 @@ cooldown = 2
 [weapon.EBlaster]
 ammo = "infinite"
 max_ammo = "infinite"
-cooldown = 0.7
+cooldown = 1.2
 
 
 [charge.BasicPlasmaCannon]
 damage = 3
 radius = 0
-dy = -1
+dy = -20
 
 [charge.EBasicPlasmaCannon]
 damage = 60
 radius = 1
-dy = 1
+dy = 20
 
 [charge.BasicLaserCharge]
 damage = 10
 radius = 0
-dy = -2
+dy = -25
 
 [charge.BasicUnguidedMissile]
 damage = 50
 radius = 3
-dy = -1
+dy = -15

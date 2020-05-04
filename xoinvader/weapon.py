@@ -99,13 +99,13 @@ class Weapon(Renderable):
             return 100.0
         return self._timer.get_elapsed() * 100.0 / self._cooldown
 
-    def update(self):
+    def update(self, dt):
         """Update weapon timer."""
 
         if self.ready:
             return
 
-        self._timer.update()
+        self._timer.update(dt)
 
 
 class Blaster(Weapon):

@@ -43,7 +43,7 @@ class TextWidget(Renderable):
             [[_style for _ in range(len(self._text))]],
         )
 
-    def update(self, text: Optional[str] = None, style: Optional[int] = None):
+    def update(self, dt: int, text: Optional[str] = None, style: Optional[int] = None):
         """Obtain (or not) new data and refresh image.
 
         :param text: new text
@@ -82,7 +82,7 @@ class TextCallbackWidget(TextWidget):
 
         super(TextCallbackWidget, self).__init__(pos, callback(), style)
 
-    def update(self):
+    def update(self, dt):
         self._text = self._callback()
         self._image = self._make_image()
 
@@ -225,7 +225,7 @@ class MenuItemContainer(Renderable):  # (CompoundMixin)
     def get_render_data(self):
         return [], []
 
-    def update(self):
+    def update(self, dt):
         pass
 
     def get_renderable_objects(self):
@@ -268,9 +268,9 @@ class PopUpNotificationWidget(TextWidget):
         if self._callback:
             self._callback(self)
 
-    def update(self, text=None, style=None):
+    def update(self, dt: int, text: Optional[str] = None, style: Optional[int] = None):
         self._update_text(text, style)
-        self._timer.update()
+        self._timer.update(dt)
 
 
 class WeaponWidget(Renderable):
@@ -302,7 +302,7 @@ class WeaponWidget(Renderable):
             [[Style().gui["yellow"] for _ in range(len(self._data))]],
         )
 
-    def update(self):
+    def update(self, dt):
         """Obtain new data and refresh image."""
 
         self._data = self._get_data()
@@ -418,7 +418,7 @@ class Bar(Renderable):
             [[ch[0] for ch in image]], [[st[1] for st in image]]
         )
 
-    def update(self, val=None):
+    def update(self, dt: int, val=None):
         """Update bar if there's need for it."""
 
         if self._callback:
