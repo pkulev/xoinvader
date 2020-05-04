@@ -1,5 +1,6 @@
 """Level background."""
 
+from xoinvader import app
 from xoinvader.common import Settings
 from xoinvader.render import Renderable
 from xoinvader.utils import Point, Surface
@@ -142,7 +143,7 @@ class Background(Renderable):
         self._current_chunk = None
         self._current_chunk_num = 0  # position of chunk in chunk list
         self._chunk_line = 0  # position in current chunk
-        self._ticks_since_last_update = 0
+        self._elapsed_ms = 0
 
         if filename:
             self.load_file(filename)
@@ -230,14 +231,8 @@ class Background(Renderable):
 
         self._background = [" " * self._w] * self._h
 
-    def load_file(self, filename):
-        """Load background from file.
-
-        Calls `load_chunks` function int trim mode, and stores return value in
-        the `chunks` field.
-
-        :param str filename:
-        """
+    def load_file(self, filename: str):
+        """Load background from file."""
 
         self._chunks = load_chunks(filename, self._w)
 
@@ -262,7 +257,7 @@ class Background(Renderable):
         :param bool filled: if true, perform initial background fill
         """
 
-        self._ticks_since_last_update = 0
+        self._elapsed_ms = 0
         self._current_chunk_num = 0
         self._current_chunk = self._chunks[0]
         self._chunk_line = 0
@@ -349,22 +344,24 @@ class Background(Renderable):
 
         self._background_surface = Surface(self._background)
 
-    def update(self):
+    def update(self, dt):
         """Update background.
 
         Checks if time to update has come, and calls `_advance_chunk` method
         with appropriate parameter. Calls `update_surface` at the end.
-
         """
 
         if self._speed == 0:
             return
 
-        self._ticks_since_last_update += abs(self._speed)
-        if self._ticks_since_last_update < 60:  # TODO FIXME: hardcode wololo
+        # FIXME: now this doesn't work properly
+        self._elapsed_ms += dt * abs(self._speed)
+        if self._elapsed_ms / 1000 > (
+            1.0 / app.current().fps * 1000 * abs(self._speed)
+        ):
             return
 
-        self._ticks_since_last_update = 0
+        self._elapsed_ms = 0
 
         advance = 1 if self._speed > 0 else -1
         new_line = self._advance_chunk(advance)

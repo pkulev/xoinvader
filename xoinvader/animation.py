@@ -77,14 +77,14 @@ class AnimationManager(object):
         if not self._animation:
             self._animation = animation
 
-    def update(self):
+    def update(self, dt):
         """Update manager's state."""
 
         if not self._animation:
             return
 
         try:
-            self._animation.update()
+            self._animation.update(dt)
         except StopIteration:
             return  # TODO: think about method to change animation
 
@@ -152,7 +152,7 @@ class Animation(object):
 
         setattr(self._obj, self._attr, value)
 
-    def _update_interpolated(self):
+    def _update_interpolated(self, dt):
         """Advance animation and interpolate value.
 
         NOTE: animation frame switching depends on interp mode
@@ -161,7 +161,7 @@ class Animation(object):
         """
 
         self._check_animation_state()
-        self._timer.update()
+        self._timer.update(dt)
 
         current_time = self._timer.get_elapsed()
         keyframe = self._keyframes[self._current]
@@ -183,7 +183,7 @@ class Animation(object):
         value = interpolate(keyframe, next_keyframe, current_time)
         self._apply_value(value)
 
-    def _update_discrete(self):
+    def _update_discrete(self, dt):
         """Advance animation without interpolating value.
 
         NOTE: animation frame switching depends on interp mode
@@ -194,7 +194,7 @@ class Animation(object):
         """
 
         self._check_animation_state()
-        self._timer.update()
+        self._timer.update(dt)
 
         keyframe = self._keyframes[self._current]
 

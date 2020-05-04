@@ -74,10 +74,10 @@ class WeaponCharge(Renderable):
             app.current().state.remove(self)
             self._destroy = True
 
-    def update(self):
+    def update(self, dt):
         """Update coords."""
 
-        self._pos += Point(self._dx, self._dy)
+        self._pos += Point(self._dx, self._dy) * dt / 1000
 
     def destroy(self):
         """Self-destroying routine."""

@@ -3,7 +3,6 @@
 import copy
 import datetime
 import logging
-import time
 
 # FIXME: temporary backward compatibility
 from eaf.core import Vec3 as Point
@@ -219,14 +218,14 @@ class Timer(object):
     def __init__(self, end_time, func):
         self._end = float(end_time)
         self._func = func
-        self._start = time.perf_counter()
+        self._start = 0.0
         self._current = self._start
         self._running = False
 
-    def _tick(self):
+    def _tick(self, dt):
         """Refresh counter."""
         if self.running:
-            self._current = time.perf_counter()
+            self._current += dt / 1000
 
     def _time_is_up(self):
         """return is it time to fire fuction or not.
@@ -239,8 +238,8 @@ class Timer(object):
     def start(self):
         """Start timer."""
         self._running = True
-        self._start = time.perf_counter()
-        self._current = time.perf_counter()
+        self._start = 0.0
+        self._current = 0.0
 
     def stop(self):
         """Stop timer."""
@@ -248,23 +247,23 @@ class Timer(object):
 
     def restart(self):
         """Restart timer."""
-        self._start = time.perf_counter()
-        self._current = self._start
+        self._start = 0.0
+        self._current = 0.0
         self.start()
 
     def reset(self):
         """Reset timer."""
         self._running = False
-        self._start = 0
-        self._current = 0
+        self._start = 0.0
+        self._current = 0.0
 
-    def update(self):
+    def update(self, dt):
         """Public method for using in loops."""
         if not self.running:
             return
 
         # Timer's accuracy depends on owner's loop
-        self._tick()
+        self._tick(dt)
         if self._time_is_up() and self.running:
             self._func()
             self.stop()

@@ -14,7 +14,8 @@ General
 -------
 
 * >= python-3.7
-* >= eaf-0.1
+* >= eaf-0.2
+* >= xo1-0.1
 * >= toml-0.10
 * ncurses >=5.9
 
@@ -35,7 +36,6 @@ Development
 .. code-block:: console
 
    $ poetry install
-
    $ poetry run xoigame
 
 Testing

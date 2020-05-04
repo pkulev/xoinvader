@@ -132,22 +132,22 @@ class Ship(Renderable):
         self._weapons.append(weapon)
         self._weapon = weapon
 
-    def update_position(self):
+    def update_position(self, dt):
         """Update ship position.
 
         Allows to go behind field borders.
         """
 
-        self._pos.x += self._direction * self._dx
+        self._pos.x += self._direction * self._dx * dt
         self._direction = 0
 
-    def update(self):
+    def update(self, dt):
         """Update ship object's state."""
 
-        self.update_position()
+        self.update_position(dt)
 
         for weapon in self._weapons:
-            weapon.update()
+            weapon.update(dt)
 
         if self._fire:
             try:
@@ -234,7 +234,7 @@ class GenericXEnemy(Ship):
     def add_animation(self, *args, **kwargs):
         self._animgr.add(*args, **kwargs)
 
-    def update(self):
+    def update(self, dt):
         if self._hull <= 0:
             # TODO: [scoring]
             #       * Parametrize scores, move them to ships.conf
@@ -243,9 +243,9 @@ class GenericXEnemy(Ship):
             self.destroy()
             return
 
-        self._animgr.update()
+        self._animgr.update(dt)
 
-        super(GenericXEnemy, self).update()
+        super(GenericXEnemy, self).update(dt)
 
     @collision.register("GenericXEnemy", "BasicPlasmaCannon")
     @collision.register("GenericXEnemy", "BasicLaserCharge")
@@ -283,7 +283,7 @@ class PlayerShip(Ship):
         self._weapon = self._weapons.current()
         self._wbay = Point(x=self._image.width // 2, y=-1)
 
-    def update_position(self):
+    def update_position(self, dt):
         """Update player ship position.
 
         Prohibits moving out behind the border.
@@ -299,17 +299,19 @@ class PlayerShip(Ship):
             self._pos.x = 1
 
         else:
-            self._pos.x += self._direction * self._dx
+            # NOTE: Converting float to int reduces ship teleportation because
+            #       we have no pixels.
+            self._pos.x += int(self._direction * self._dx * dt / 1000)
 
         self._direction = 0
 
-    def update(self):
+    def update(self, dt):
         if self._hull <= 0:
             app.current().trigger_state(
                 "GameOverState", score=app.current().state.score
             )
 
-        super(PlayerShip, self).update()
+        super(PlayerShip, self).update(dt)
 
     def get_weapon_info(self):
         """Return information about current weapon."""
