@@ -35,7 +35,7 @@ xoigame = "xoinvader.game:main"
 [tool.poetry.dependencies]
 python = "^3.7"
 eaf = "^0.2"
-xo1 = "^0.1"
+xo1 = "^0.1.2"
 toml = "^0.10"
 
 [tool.poetry.dev-dependencies]

@@ -36,6 +36,7 @@ class XOInvader(Application):
             x=Settings.layout.field.border.x,
             y=Settings.layout.field.border.y,
             palette=palette,
+            title="XOInvader",
         )
 
         Style().init_styles(palette)
