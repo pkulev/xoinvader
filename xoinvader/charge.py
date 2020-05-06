@@ -44,8 +44,6 @@ class WeaponCharge(Renderable):
         self._dx = dx
         self._dy = dy
 
-        # Set to True means that object in destroying phase
-        # and will ignore remove_obsolete signal
         self._destroy = False
 
         # Common collider for any shape charge
@@ -62,27 +60,30 @@ class WeaponCharge(Renderable):
     def get_render_data(self):
         return ([self._pos], self._image.get_image())
 
-    def remove_obsolete(self, pos):
+    def out_of_border(self):
         border = Settings.layout.field.border
         pos = self._pos[int]
-        if (
+
+        return (
             pos.x > self._image.width + border.x
             or pos.x + self._image.width < 0
             or int(pos.y) > self._image.height + border.y
             or int(pos.y) + self._image.height < 0
-        ) and not self._destroy:
-            app.current().state.remove(self)
-            self._destroy = True
+        )
 
     def update(self, dt):
         """Update coords."""
 
         self._pos += Point(self._dx, self._dy) * dt / 1000
 
+        if self.out_of_border():
+            self.destroy()
+
     def destroy(self):
         """Self-destroying routine."""
 
         if not self._destroy:
+            LOG.debug("Destroying charge %s", self)
             self._destroy = True
             app.current().state.collision.remove(self._collider)
             app.current().state.remove(self)

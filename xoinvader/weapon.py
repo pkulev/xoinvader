@@ -19,10 +19,7 @@ INFINITE = "infinite"
 # TODO: think about composition
 # pylint: disable=too-many-instance-attributes,too-many-arguments
 class Weapon(Renderable):
-    """Main weapon class that implements main methods and behaviour.
-
-    Callbacks for rendering: get_render_data(), remove_obsolete(pos).
-    """
+    """Weapon representation, spawns charges."""
 
     allowed_charges = []
     default_charge = None

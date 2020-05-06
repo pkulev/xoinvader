@@ -42,10 +42,7 @@ class Ship(Renderable):
         self._hull = None
         self._shield = None
 
-        # Set to True means that object in destroying phase
-        # and will ignore remove_obsolete signal
         self._destroy = False
-
         self._collider = None
 
         # first initialization
@@ -146,6 +143,9 @@ class Ship(Renderable):
 
         self.update_position(dt)
 
+        if self.out_of_border():
+            self.destroy()
+
         for weapon in self._weapons:
             weapon.update(dt)
 
@@ -165,23 +165,22 @@ class Ship(Renderable):
     def destroy(self):
         """Self-destroying routine."""
 
-        LOG.debug("Destroying ship %s", self)
-
         if not self._destroy:
+            LOG.debug("Destroying ship %s", self)
+
             self._destroy = True
             app.current().state.collision.remove(self._collider)
             app.current().state.remove(self)
 
-    def remove_obsolete(self, pos):
+    def out_of_border(self):
         border = Settings.layout.field.border
         pos = self._pos[int]
-        if (
+        return (
             pos.x > self._image.width + border.x
             or pos.x + self._image.width < 0
             or int(pos.y) > self._image.height + border.y
             or int(pos.y) + self._image.height < 0
-        ) and not self._destroy:
-            self.destroy()
+        )
 
     def take_damage(self, damage):
         """Calculate and apply damage to shield and hull."""
