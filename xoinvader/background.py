@@ -130,6 +130,9 @@ class Background(Renderable):
     render_priority = -1000  # TODO: render-priority
 
     def __init__(self, filename=None, speed=0, loop=False, loop_all=False):
+
+        super().__init__(Point(0, 0))
+
         self._speed = speed
         self._loop = loop
         self._loop_all = loop_all
@@ -333,7 +336,7 @@ class Background(Renderable):
         return " " * self._w
 
     def get_render_data(self):
-        return [Point(0, 0)], self._background_surface.get_image()
+        return [self.pos], self._background_surface.get_image()
 
     def update_surface(self):
         """Regenerate background surface.

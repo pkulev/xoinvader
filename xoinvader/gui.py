@@ -25,7 +25,9 @@ class TextWidget(Renderable):
     draw_on_border = True
 
     def __init__(self, pos: Point, text: str, style: int = None):
-        self._pos = pos
+
+        super().__init__(pos)
+
         self._text = text
         self._style = style
         self._image = self._make_image()
@@ -187,6 +189,11 @@ class MenuItemContainer(Renderable):  # (CompoundMixin)
     compound = True
 
     def __init__(self, items: Optional[List[MenuItemWidget]] = None):
+
+        # This object is containter, it doesn't matter where it placed
+        # (while we have no local coordinates of childs implemented).
+        super().__init__(Point())
+
         self._items = InfiniteList(items) if items else InfiniteList()
 
     def add(self, item: MenuItemWidget):

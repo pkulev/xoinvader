@@ -24,11 +24,9 @@ class Ship(Renderable):
 
     compound = True
 
-    def __init__(self, pos):
-        self._type = self.__class__.__name__
-        self._image = None
+    def __init__(self, pos: Point):
 
-        self._pos = pos
+        super().__init__(pos)
 
         self._dx = None
         self._fire = False
@@ -46,7 +44,7 @@ class Ship(Renderable):
         self._collider = None
 
         # first initialization
-        self._load_config(CONFIG[self._type])
+        self._load_config(CONFIG[self.type])
 
     def _load_config(self, config):
         """Load config from mapping."""
@@ -221,9 +219,9 @@ class GenericXEnemy(Ship):
 
         self._collider = Collider.simple(self)
 
-        self.add_weapon(EBlaster())
         self._fire = True
         self._wbay = Point(x=self._image.width // 2, y=1)
+        self.add_weapon(EBlaster(self._wbay))
 
         self._animgr = AnimationManager()
 
@@ -271,6 +269,7 @@ class PlayerShip(Ship):
         ])
         # fmt: on
 
+        # FIXME: Center the ship where it's created
         self._pos = Point(
             x=pos.x - self._image.width // 2, y=pos.y - self._image.height
         )
@@ -278,9 +277,13 @@ class PlayerShip(Ship):
         self._collider = Collider.simple(self)
 
         self._fire = False
-        self._weapons = InfiniteList([Blaster(), Laser(), UM()])
-        self._weapon = self._weapons.current()
         self._wbay = Point(x=self._image.width // 2, y=-1)
+        self._weapons = InfiniteList([
+            Blaster(self._wbay),
+            Laser(self._wbay),
+            UM(self._wbay)
+        ])
+        self._weapon = self._weapons.current()
 
     def update_position(self, dt):
         """Update player ship position.

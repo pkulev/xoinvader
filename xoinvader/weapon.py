@@ -24,8 +24,10 @@ class Weapon(Renderable):
     allowed_charges = []
     default_charge = None
 
-    def __init__(self, ammo, max_ammo, cooldown):
-        self._type = self.__class__.__name__
+    def __init__(self, pos, ammo, max_ammo, cooldown):
+
+        super().__init__(pos)
+
         self._image = Surface([" "])  # stub for now, to render nothing
         self._current_charge = self.default_charge
         self._ammo = ammo
@@ -35,7 +37,6 @@ class Weapon(Renderable):
 
         self.ready = True
         self._timer = Timer(self._cooldown, self._reload)
-        self._pos = Point()  # stub for now, to render nothing as weapon
 
     def _reload(self):
         """Calls by timer when weapon is ready to fire."""
@@ -84,11 +85,6 @@ class Weapon(Renderable):
         """Return maximal ammo."""
         return 999 if self._max_ammo == INFINITE else self._max_ammo
 
-    @property
-    def type(self):
-        """Return weapon type."""
-        return self._type
-
     def load_percentage(self):
         """Return weapon load percentage."""
 
@@ -111,8 +107,8 @@ class Blaster(Weapon):
     allowed_charges = [BasicPlasmaCannon]
     default_charge = BasicPlasmaCannon
 
-    def __init__(self):
-        super(Blaster, self).__init__(**CONFIG[self.__class__.__name__])
+    def __init__(self, pos: Point):
+        super().__init__(pos, **CONFIG[self.__class__.__name__])
 
 
 class EBlaster(Weapon):
@@ -121,8 +117,8 @@ class EBlaster(Weapon):
     allowed_charges = [EBasicPlasmaCannon]
     default_charge = EBasicPlasmaCannon
 
-    def __init__(self):
-        super(EBlaster, self).__init__(**CONFIG[self.__class__.__name__])
+    def __init__(self, pos: Point):
+        super().__init__(pos, **CONFIG[self.__class__.__name__])
 
 
 class Laser(Weapon):
@@ -131,8 +127,8 @@ class Laser(Weapon):
     allowed_charges = [BasicLaserCharge]
     default_charge = BasicLaserCharge
 
-    def __init__(self):
-        super(Laser, self).__init__(**CONFIG[self.__class__.__name__])
+    def __init__(self, pos: Point):
+        super().__init__(pos, **CONFIG[self.__class__.__name__])
 
 
 class UM(Weapon):
@@ -141,5 +137,5 @@ class UM(Weapon):
     allowed_charges = [BasicUnguidedMissile]
     default_charge = BasicUnguidedMissile
 
-    def __init__(self):
-        super(UM, self).__init__(**CONFIG[self.__class__.__name__])
+    def __init__(self, pos: Point):
+        super().__init__(pos, **CONFIG[self.__class__.__name__])

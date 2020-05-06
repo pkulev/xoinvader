@@ -232,7 +232,7 @@ class Collider(object):
 
     def __init__(self, obj, phys_map):
         self._obj = obj
-        self._col_type = self._obj.type()
+        self._col_type = self._obj.type
         self._phys_map = phys_map
 
         # TODO: move collision to State.systems

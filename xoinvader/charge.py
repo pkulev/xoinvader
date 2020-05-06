@@ -31,10 +31,13 @@ class WeaponCharge(Renderable):
     add/remove methods.
     """
 
-    def __init__(self, pos, image, damage=0, radius=0, dx=0, dy=0):
-        self._pos = pos
+    def __init__(self, pos: Point, image, damage=0, radius=0, dx=0, dy=0):
+
+        super().__init__(pos)
+
         self._image = image
-        self._type = self.__class__.__name__
+
+        # TODO: move out from constructor
         app.current().state.add(self)
 
         self._damage = damage
