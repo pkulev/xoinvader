@@ -8,7 +8,6 @@ from xoinvader.utils import (
     isclose,
     InfiniteList,
     Point,
-    Surface,
     Timer,
 )
 
@@ -84,29 +83,6 @@ def test_infinite_list_operations_negative():
         inf_list.select(1)
 
     # TODO: test many elements behaviour
-
-
-# fmt: off
-_image = [
-    [" ", "O", " "],
-    ["x", "X", "x"],
-]
-# fmt: on
-
-
-def test_surface_attributes():
-    surface = Surface(_image)
-    assert surface.height == len(_image)
-    assert surface.width == len(_image[0])
-    assert surface.raw == _image
-
-
-def test_image_generator():
-    surface = Surface(_image)
-    image_gen = surface.get_image()
-    for lpos, image, style in image_gen:
-        assert _image[lpos.y][lpos.x] == image
-        assert style is None
 
 
 @pytest.mark.slow

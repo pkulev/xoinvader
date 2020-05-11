@@ -1,9 +1,10 @@
 """Level background."""
 
+from xo1 import Surface, Renderable
+
 from xoinvader import app
 from xoinvader.common import Settings
-from xoinvader.render import Renderable
-from xoinvader.utils import Point, Surface
+from xoinvader.utils import Point
 
 
 CHUNK_MAGIC = "~chunk~"
@@ -142,7 +143,6 @@ class Background(Renderable):
         # pylint: disable=invalid-name
         self._w = Settings.layout.field.edge.x
         self._h = Settings.layout.field.edge.y
-        self._background_surface = None
         self._current_chunk = None
         self._current_chunk_num = 0  # position of chunk in chunk list
         self._chunk_line = 0  # position in current chunk
@@ -335,9 +335,6 @@ class Background(Renderable):
         self._current_chunk = None
         return " " * self._w
 
-    def get_render_data(self):
-        return [self.pos], self._background_surface.get_image()
-
     def update_surface(self):
         """Regenerate background surface.
 
@@ -345,7 +342,7 @@ class Background(Renderable):
         member list so updated info will immediately come into effect.
         """
 
-        self._background_surface = Surface(self._background)
+        self._image = Surface(self._background)
 
     def update(self, dt):
         """Update background.

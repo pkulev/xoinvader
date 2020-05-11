@@ -10,11 +10,12 @@ Attention: Next statement related only to GameObject entities.
 import curses
 import logging
 
+from xo1 import Surface, Renderable
+
 from xoinvader import app
 from xoinvader.collision import Collider
 from xoinvader.common import Settings, get_config
-from xoinvader.render import Renderable
-from xoinvader.utils import Point, Surface
+from xoinvader.utils import Point
 
 
 CONFIG = get_config().charge
@@ -59,9 +60,6 @@ class WeaponCharge(Renderable):
     @property
     def damage(self):
         return self._damage
-
-    def get_render_data(self):
-        return ([self._pos], self._image.get_image())
 
     def out_of_border(self):
         border = Settings.layout.field.border
@@ -118,7 +116,7 @@ class BasicPlasmaCannon(Projectile):
     def __init__(self, pos):
         super(BasicPlasmaCannon, self).__init__(
             pos,
-            Surface(["^"], style=[[curses.A_BOLD]]),
+            Surface(["^"], color=[[curses.A_BOLD]]),
             **CONFIG[self.__class__.__name__]
         )
 
@@ -129,7 +127,7 @@ class EBasicPlasmaCannon(Projectile):
     def __init__(self, pos):
         super(EBasicPlasmaCannon, self).__init__(
             pos,
-            Surface([":"], style=[[curses.A_BOLD]]),
+            Surface([":"], color=[[curses.A_BOLD]]),
             **CONFIG[self.__class__.__name__]
         )
 
@@ -140,7 +138,7 @@ class BasicLaserCharge(Projectile):
     def __init__(self, pos):
         super(BasicLaserCharge, self).__init__(
             pos,
-            Surface(["|"], style=[[curses.A_BOLD]]),
+            Surface(["|"], color=[[curses.A_BOLD]]),
             **CONFIG[self.__class__.__name__]
         )
 
@@ -156,7 +154,7 @@ class BasicUnguidedMissile(Projectile):
                 "^",
                 "|",
                 "*",
-            ], style=[[curses.A_BOLD] for _ in range(3)]),
+            ], color=[[curses.A_BOLD] for _ in range(3)]),
             **CONFIG[self.__class__.__name__]
         )
         # fmt: on

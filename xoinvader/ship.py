@@ -2,12 +2,13 @@
 
 import logging
 
+from xo1 import Surface, Renderable
+
 from xoinvader import app
 from xoinvader import collision
 from xoinvader.animation import AnimationManager
-from xoinvader.render import Renderable
 from xoinvader.weapon import Blaster, Laser, UM, EBlaster
-from xoinvader.utils import Point, Surface, InfiniteList
+from xoinvader.utils import Point, InfiniteList
 from xoinvader.collision import Collider
 from xoinvader.common import Settings, get_config
 
@@ -92,10 +93,6 @@ class Ship(Renderable):
     def get_weapon_percentage(self):
         """Return weapon load percentage."""
         return self._weapon.load_percentage()
-
-    def get_render_data(self):
-        """Callback for rendering."""
-        return [self._pos], self._image.get_image()
 
     def get_renderable_objects(self):
         """CORP stub."""
@@ -253,10 +250,7 @@ class GenericXEnemy(Ship):
 
 
 class PlayerShip(Ship):
-    """PlayerShip class. Contains additional methods for HUD.
-
-    :param :class:`xoinvader.utils.Point` pos: left top corner
-    """
+    """PlayerShip class."""
 
     def __init__(self, pos):
         super(PlayerShip, self).__init__(pos)

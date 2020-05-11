@@ -252,7 +252,7 @@ class Collider(object):
             obj,
             [
                 re.sub(r"[^\ ]", CollisionManager.SOLID_MATTER, row)
-                for row in obj.image.raw
+                for row in obj.image.raw.image
             ],
         )
 

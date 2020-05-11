@@ -3,12 +3,12 @@
 
 from typing import Callable, Optional, List, Tuple, Generator
 
+from xo1 import Surface, Renderable
+
 from xoinvader.style import Style
-from xoinvader.render import Renderable
 from xoinvader.utils import (
     InfiniteList,
     Point,
-    Surface,
     Timer,
 )
 
@@ -58,9 +58,6 @@ class TextWidget(Renderable):
             self._style = style
         if text or style:
             self._image = self._make_image()
-
-    def get_render_data(self) -> Tuple[List[Point], Generator]:
-        return [self._pos], self._image.get_image()
 
 
 # TODO XXX FIXME: [proper-gui-hierarchy]
@@ -173,9 +170,6 @@ class MenuItemWidget(TextWidget):
 
         return self._selected
 
-    def get_render_data(self) -> Tuple[List[Point], Generator]:
-        return [self._pos], self._image.get_image()
-
     def do_action(self):
         """Call action callback."""
 
@@ -193,6 +187,7 @@ class MenuItemContainer(Renderable):  # (CompoundMixin)
         # This object is containter, it doesn't matter where it placed
         # (while we have no local coordinates of childs implemented).
         super().__init__(Point())
+        self._image = None
 
         self._items = InfiniteList(items) if items else InfiniteList()
 
@@ -228,9 +223,6 @@ class MenuItemContainer(Renderable):  # (CompoundMixin)
 
     def current(self):
         return self._items.current()
-
-    def get_render_data(self):
-        return [], []
 
     def update(self, dt):
         pass
@@ -314,10 +306,6 @@ class WeaponWidget(Renderable):
 
         self._data = self._get_data()
         self._image = self._make_image()
-
-    def get_render_data(self):
-        """Return render specific data."""
-        return [self._pos], self._image.get_image()
 
 
 # pylint: disable=too-many-instance-attributes
@@ -437,6 +425,3 @@ class Bar(Renderable):
         self._marker_style = self._style(val)
         self._update_current_count(val)
         self._update_image()
-
-    def get_render_data(self) -> Tuple[List[Point], Generator]:
-        return [self._pos], self._image.get_image()

@@ -131,8 +131,6 @@ def test_background():
     assert b._advance_chunk(1) == "!@#"
     assert b._advance_chunk(1) == "   "
 
-    pos, gen = b.get_render_data()
-    assert pos == [Point(0, 0)]
     assert next(gen) == (Point(0, 0, 0), "q", None)
     assert next(gen) == (Point(1, 0, 0), "w", None)
     assert next(gen) == (Point(2, 0, 0), "e", None)

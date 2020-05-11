@@ -2,6 +2,8 @@
 
 import pytest
 
+from xo1 import Surface
+
 from xoinvader import collision
 from xoinvader.collision import (
     Collider,
@@ -9,7 +11,7 @@ from xoinvader.collision import (
     CollisionManagerNotFound,
     TypePair,
 )
-from xoinvader.utils import Point, Surface
+from xoinvader.utils import Point
 
 
 # pylint: disable=invalid-name,protected-access

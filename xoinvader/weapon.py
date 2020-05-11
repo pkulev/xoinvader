@@ -1,15 +1,16 @@
 """Game weapon classes."""
 
 
+from xo1 import Surface, Renderable
+
 from xoinvader.charge import (
     BasicPlasmaCannon,
     EBasicPlasmaCannon,
     BasicLaserCharge,
     BasicUnguidedMissile,
 )
-from xoinvader.common import Settings, get_config
-from xoinvader.render import Renderable
-from xoinvader.utils import Point, Surface, Timer
+from xoinvader.common import get_config
+from xoinvader.utils import Point, Timer
 
 
 CONFIG = get_config().weapon
@@ -71,9 +72,6 @@ class Weapon(Renderable):
 
         self.ready = False
         self._timer.start()
-
-    def get_render_data(self):
-        return ([self._pos], self._image.get_image())
 
     @property
     def ammo(self):
