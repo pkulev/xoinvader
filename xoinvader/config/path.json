@@ -1,9 +1,0 @@
-{
-    "config": {
-        "charges": "config/charges.json",
-        "ships": "config/ships.json",
-        "weapons": "config/weapons.json"
-    },
-    "level1bg": "res/level1.bg",
-    "scoreboard": "data/scoreboard"
-}

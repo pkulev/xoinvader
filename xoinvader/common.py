@@ -80,7 +80,6 @@ DEFAULT_XOI_SETTINGS = dict(
             info=dict(weapon=Point(x=44, y=HEIGHT - 1)),
         ),
     ),
-    path=rootify(_ROOT, get_json_config(_CONFIG / "path.json")),
     system=dict(debug=False, encoding=constants.UTF_8,),
 )
 
