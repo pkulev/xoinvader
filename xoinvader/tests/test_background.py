@@ -8,7 +8,6 @@ import pytest
 from xoinvader.background import Background, Chunk, load_chunks
 from xoinvader.common import Settings
 from xoinvader.tests.common import PREFIX
-from xoinvader.utils import Point
 
 
 CHUNK_NO_NAME = os.path.join(PREFIX, "chunk_no_name.bg")
@@ -69,11 +68,9 @@ def test_background():
     assert not b.speed
     assert not b.chunks
     assert not b.background
-    assert not b._background_surface
     assert not b._current_chunk
     assert not b._current_chunk_num
     assert not b._chunk_line
-    assert not b._ticks_since_last_update
 
     b.background = ["qwe", "asd"]
     assert b.background == ["qwe", "asd"]
@@ -131,26 +128,17 @@ def test_background():
     assert b._advance_chunk(1) == "!@#"
     assert b._advance_chunk(1) == "   "
 
-    assert next(gen) == (Point(0, 0, 0), "q", None)
-    assert next(gen) == (Point(1, 0, 0), "w", None)
-    assert next(gen) == (Point(2, 0, 0), "e", None)
-    assert next(gen) == (Point(0, 1, 0), "a", None)
-    assert next(gen) == (Point(1, 1, 0), "s", None)
-    assert next(gen) == (Point(2, 1, 0), "d", None)
-    with pytest.raises(StopIteration):
-        next(gen)
-
-    assert not b.update()
+    assert not b.update(13)
     b.speed = 40
     bg = copy(b.background)
-    b.update()
+    b.update(13)
     assert bg == b.background
-    b.update()
-    assert not bg == b.background
+    b.update(13)
+    assert bg != b.background
 
     b.speed = -40
     bg = copy(b.background)
-    b.update()
+    b.update(13)
     assert bg == b.background
-    b.update()
-    assert not bg == b.background
+    b.update(13)
+    assert bg != b.background

@@ -85,11 +85,10 @@ def test_infinite_list_operations_negative():
     # TODO: test many elements behaviour
 
 
-@pytest.mark.slow
 def test_timer_get_elapsed():
     timer = Timer(5.0, lambda: True)
     timer.start()
     while timer.running:
         assert timer.get_elapsed() >= 0.0
-        timer.update()
+        timer.update(13)
         assert timer.get_elapsed() >= 0.0
