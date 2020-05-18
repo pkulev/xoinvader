@@ -8,7 +8,7 @@ from eaf.state import State
 
 from xoinvader.background import Background
 from xoinvader.collision import CollisionManager
-from xoinvader.common import Settings
+from xoinvader.common import get_config, Settings, _ROOT
 from xoinvader.style import Style
 from xoinvader.gui import TextCallbackWidget, TextWidget, WeaponWidget, Bar
 from xoinvader.handlers import EventHandler
@@ -35,7 +35,7 @@ class TestLevel(Level):
         self.add_event(100, lambda: None)
         self.add_event(200, self.del4)
 
-        self.bg = Background(Settings.path.level1bg, speed=10, loop=True)
+        self.bg = Background(_ROOT / get_config().level1bg, speed=1, loop=True)
         self.bg.start(filled=True)
         self._state_add(self.bg)
 

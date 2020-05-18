@@ -32,7 +32,7 @@ SCOREBOARD_CORRUPTED = os.path.join(PREFIX, "scoreboard_corrupted")
 # pylint: disable=redefined-outer-name
 @pytest.fixture()
 def mock_scorepath(monkeypatch):
-    """Fixture to mock Settings.path.scoreboard entry and revert it back."""
+    """Fixture to mock scoreboard path and revert it back."""
 
     def inner(path):
         """Inner routine.
@@ -40,9 +40,7 @@ def mock_scorepath(monkeypatch):
         :param str path: new path to set
         """
 
-        mocked = scoreboard.Settings.fullcopy()
-        mocked.path.scoreboard = path
-        monkeypatch.setattr(scoreboard, "Settings", mocked)
+        monkeypatch.setattr(scoreboard, "SCOREBOARD_FILE", path)
 
     return inner
 

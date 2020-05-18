@@ -8,7 +8,10 @@ import operator
 import os
 import csv
 
-from xoinvader.common import Settings
+from xoinvader.common import get_config, _ROOT
+
+
+SCOREBOARD_FILE = _ROOT / get_config().scoreboard
 
 
 def items():
@@ -69,7 +72,7 @@ def _load():
     scores = []
 
     try:
-        with open(Settings.path.scoreboard) as scorefile:
+        with open(SCOREBOARD_FILE) as scorefile:
             for entry in csv.reader(scorefile):
                 try:
                     name, score = entry
@@ -89,10 +92,10 @@ def _save(scores):
     :param [(str, int)] scores: scores to save
     """
 
-    dirname = os.path.dirname(Settings.path.scoreboard)
+    dirname = os.path.dirname(SCOREBOARD_FILE)
 
     if not os.path.isdir(dirname):
         os.mkdir(dirname)
 
-    with open(Settings.path.scoreboard, "w") as scorefile:
+    with open(SCOREBOARD_FILE, "w") as scorefile:
         csv.writer(scorefile).writerows(scores)

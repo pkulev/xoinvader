@@ -1,5 +1,5 @@
-level1bg = "/res/level1.bg"
-scoreboard = "/data/scoreboard"
+level1bg = "res/level1.bg"
+scoreboard = "data/scoreboard"
 
 [ship.PlayerShip]
 dx = 40
