@@ -29,7 +29,22 @@ class XOInvader(Application):
                 ("blaster", Palette.COLOR_GREEN, Palette.COLOR_BLACK),
                 ("laser", Palette.COLOR_BLACK, Palette.COLOR_RED),
                 ("um", Palette.COLOR_MAGENTA, Palette.COLOR_BLACK),
-            ]
+                ("B", Palette.COLOR_BLACK),
+                ("b", Palette.COLOR_BLUE),
+                ("c", Palette.COLOR_CYAN),
+                ("g", Palette.COLOR_GREEN),
+                ("m", Palette.COLOR_MAGENTA),
+                ("r", Palette.COLOR_RED),
+                ("w", Palette.COLOR_WHITE),
+                ("y", Palette.COLOR_YELLOW),
+                ("d", Palette.COLOR_DEFAULT),
+            ],
+            attr_map={
+                "B": Palette.A_BOLD,
+                "b": Palette.A_BLINK,
+                "n": Palette.A_NORMAL,
+                "r": Palette.A_REVERSE,
+            },
         )
 
         super().__init__(
