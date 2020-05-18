@@ -1,7 +1,5 @@
 """Test xoinvader.animation module."""
 
-import time
-
 import pytest
 
 from xoinvader import animation
@@ -19,7 +17,6 @@ class GameObject(object):
         self.anim = None
 
 
-@pytest.mark.slow
 def test_animation():
 
     with pytest.raises(ValueError):
@@ -36,44 +33,39 @@ def test_animation():
     obj.anim = anim
     assert anim.name == "test"
 
-    anim.update()
+    anim.update(100)
     assert obj.attr == 1
-    time.sleep(1)
+    anim.update(450)
+    assert obj.attr == 2
 
     # Frame must be unchanged
     for _ in range(10):
-        anim.update()
+        anim.update(100)
 
     assert obj.attr == 2
-    time.sleep(1)
-    anim.update()  # here time is > 2
+    anim.update(1000)  # here time is > 2
     assert obj.attr == 10
     with pytest.raises(StopIteration):
-        anim.update()  # It's time to switch animation
+        anim.update(1)  # It's time to switch animation
 
 
-@pytest.mark.slow
 def test_animation_loop():
     obj = GameObject()
     animgr = AnimationManager()
     animgr.add("test", obj, "attr", keyframes=[(0.0, 0), (1.0, 1)], loop=True)
 
-    animgr.update()
+    animgr.update(1)
     assert obj.attr == 0
-    time.sleep(1)
-    animgr.update()
+    animgr.update(1000)
     assert obj.attr == 1
-    time.sleep(1)
-    animgr.update()
+    animgr.update(1)
     assert obj.attr == 0
-    animgr.update()
+    animgr.update(500)
     assert obj.attr == 0
-    time.sleep(1)
-    animgr.update()
+    animgr.update(500)
     assert obj.attr == 1
 
 
-@pytest.mark.slow
 @pytest.mark.parametrize("loop", (True, False))
 def test_animation_interp_loop(loop):
     obj = GameObject()
@@ -87,28 +79,24 @@ def test_animation_interp_loop(loop):
         loop=loop,
     )
 
-    animgr.update()
-    assert isclose(obj.attr, 0, abs_tol=0.01)
-    time.sleep(0.2)
-    animgr.update()
-    assert isclose(obj.attr, 0.5, abs_tol=0.01)
-    time.sleep(0.2)
-    animgr.update()
+    animgr.update(100)
+    assert isclose(obj.attr, 0.25, abs_tol=0.01)
+    animgr.update(200)
+    assert isclose(obj.attr, 0.75, abs_tol=0.01)
+    animgr.update(200)
     assert obj.attr == 1
-    time.sleep(0.2)
-    animgr.update()
+    animgr.update(200)
 
     # if not looped - animation stops
     # TODO: test StopIteration, now animgr suppresses it
     if loop:
         assert isclose(obj.attr, 0.5, abs_tol=0.01)
-        animgr.update()
+        animgr.update(13)
     else:
         assert obj.attr == 1
-        animgr.update()
+        animgr.update(13)
 
 
-@pytest.mark.slow
 def test_animation_manager():
     obj = GameObject()
     animgr = AnimationManager()
@@ -116,7 +104,7 @@ def test_animation_manager():
     with pytest.raises(AttributeError):
         assert animgr.animation
 
-    assert not animgr._animation and animgr.update() is None
+    assert not animgr._animation and animgr.update(13) is None
 
     animgr.add("test1", bind=obj, attr="attr", keyframes=[(0.0, 1)])
     animgr.add("test2", bind=obj, attr="attr", keyframes=[(0.0, 2)])
@@ -130,10 +118,9 @@ def test_animation_manager():
     assert animgr.animation == "test2"
     animgr.animation = "test1"
 
-    animgr.update()
-    time.sleep(1)
+    animgr.update(13)
 
-    assert animgr.update() is None
+    assert animgr.update(13) is None
 
 
 @pytest.mark.parametrize(
