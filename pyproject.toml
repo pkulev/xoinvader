@@ -46,7 +46,6 @@ pytest-coverage = "*"
 pytest-pylint = "*"
 sphinx = "*"
 sphinx_rtd_theme = "*"
-tox = "*"
 
 [tool.black]
 line-length = 80
