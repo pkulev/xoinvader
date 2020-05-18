@@ -50,18 +50,6 @@ def setup_logger(name, debug=False, msgfmt=None, timefmt=None):
     return logger
 
 
-def isclose(left, right, rel_tol=1e-9, abs_tol=0.0):
-    """Check if values are approximately equal.
-
-    :param int,float left: first value
-    :param int,float right: second value
-    :param float rel_tol: relative tolerance (amount of error allowed)
-    :param float abs_tol: minimum absolute tolerance level
-    """
-    approx = max(rel_tol * max(abs(left), abs(right)), abs_tol)
-    return abs(left - right) <= approx
-
-
 class dotdict(dict):  # pylint: disable=invalid-name
     """Container for dot elements access."""
 

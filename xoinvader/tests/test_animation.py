@@ -1,10 +1,12 @@
 """Test xoinvader.animation module."""
 
+from math import isclose
+
 import pytest
 
 from xoinvader import animation
 from xoinvader.animation import Animation, AnimationManager
-from xoinvader.utils import Point, isclose
+from xoinvader.utils import Point
 
 
 # pylint: disable=invalid-name,protected-access,missing-docstring
