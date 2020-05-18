@@ -1,0 +1,15 @@
+[meta]
+name = "enemy"
+
+[layers]
+image = [
+  " /x^x\\ ",
+  "+--X--+",
+  "  \\W/  ",
+]
+
+color = [
+  " drdrd ",
+  "dddrddd",
+  "  rrr  ",
+]

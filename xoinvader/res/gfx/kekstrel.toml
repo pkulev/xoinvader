@@ -1,0 +1,21 @@
+[meta]
+name = "kekstrel"
+
+[layers]
+image = [
+  "  O  ",
+  "<=H=>",
+  " * * ",
+]
+
+color = [
+  "  w  ",
+  "rwwwr",
+  " b b ",
+]
+
+attr = [
+  "  n  ",
+  "nnnnn",
+  " B B ",
+]

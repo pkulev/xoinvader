@@ -10,7 +10,7 @@ from xoinvader.animation import AnimationManager
 from xoinvader.weapon import Blaster, Laser, UM, EBlaster
 from xoinvader.utils import Point, InfiniteList
 from xoinvader.collision import Collider
-from xoinvader.common import Settings, get_config
+from xoinvader.common import Settings, get_config, _ROOT
 
 
 LOG = logging.getLogger(__name__)
@@ -207,11 +207,7 @@ class GenericXEnemy(Ship):
     def __init__(self, pos):
         super(GenericXEnemy, self).__init__(pos)
         # fmt: off
-        self._image = Surface([
-            "x^x",
-            " X ",
-            " * ",
-        ])
+        self._image = Surface.from_file(_ROOT / (CONFIG[self.type]["image"]))
         # fmt: on
 
         self._collider = Collider.simple(self)
@@ -254,14 +250,7 @@ class PlayerShip(Ship):
 
     def __init__(self, pos):
         super(PlayerShip, self).__init__(pos)
-
-        # fmt: off
-        self._image = Surface([
-            "  O  ",
-            "<=H=>",
-            " * * ",
-        ])
-        # fmt: on
+        self.image = Surface.from_file(_ROOT / (CONFIG[self.type]["image"]))
 
         # FIXME: Center the ship where it's created
         self._pos = Point(
@@ -275,7 +264,7 @@ class PlayerShip(Ship):
         self._weapons = InfiniteList([
             Blaster(self._wbay),
             Laser(self._wbay),
-            UM(self._wbay)
+            UM(self._wbay),
         ])
         self._weapon = self._weapons.current()
 
