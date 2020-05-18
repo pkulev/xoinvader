@@ -3,11 +3,12 @@
 import pytest
 
 from xoinvader.utils import (
-    setup_logger,
-    dotdict,
     InfiniteList,
     Point,
     Timer,
+    clamp,
+    dotdict,
+    setup_logger,
 )
 
 
@@ -27,6 +28,23 @@ def test_dotdict_setattr():
     assert settings.test_entry == 42
 
     assert pytest.raises(AttributeError, lambda: settings.bad_key)
+
+
+@pytest.mark.parametrize(
+    ("val", "min_val", "max_val", "expected"),
+    (
+        (-10, -5, 5, -5),
+        (-10, -10, -8, -10),
+        (-10, -5, -2, -5),
+        (0, -1, 1, 0),
+        (20, 0, 100, 20),
+        (120, 0, 100, 100),
+    ),
+)
+def test_clamp(val, min_val, max_val, expected):
+    """xoinvader.utils.clamp"""
+
+    assert clamp(val, min_val, max_val) == expected
 
 
 def test_infinite_list_operations():

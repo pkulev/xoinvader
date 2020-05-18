@@ -50,6 +50,15 @@ def setup_logger(name, debug=False, msgfmt=None, timefmt=None):
     return logger
 
 
+def clamp(val, min_val, max_val):
+    """Clamp value between boundaries."""
+
+    if max_val < min_val:
+        raise ValueError("max_val must be >= min_val")
+
+    return min(max(val, min_val), max_val)
+
+
 class dotdict(dict):  # pylint: disable=invalid-name
     """Container for dot elements access."""
 
