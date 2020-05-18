@@ -41,11 +41,12 @@ class TextWidget(Renderable):
 
         _style = self._style or Style().gui["normal"]
         return Surface(
-            [[ch for ch in self._text]],
-            [[_style for _ in range(len(self._text))]],
+            [self._text], [[_style] * len(self._text)], ["B" * len(self._text)],
         )
 
-    def update(self, dt: int, text: Optional[str] = None, style: Optional[int] = None):
+    def update(
+        self, dt: int, text: Optional[str] = None, style: Optional[int] = None
+    ):
         """Obtain (or not) new data and refresh image.
 
         :param text: new text
@@ -82,8 +83,10 @@ class TextCallbackWidget(TextWidget):
         super(TextCallbackWidget, self).__init__(pos, callback(), style)
 
     def update(self, dt):
-        self._text = self._callback()
-        self._image = self._make_image()
+        text = self._callback()
+        if self._text != text:
+            self._text = text
+            self._image = self._make_image()
 
 
 class MenuItemWidget(TextWidget):
@@ -124,11 +127,7 @@ class MenuItemWidget(TextWidget):
         super(MenuItemWidget, self).__init__(pos, text, style)
 
     def _make_image(self) -> Surface:
-        """Make Surface object from text, markers and style.
-
-        :return: Surface instance
-        :rtype: `xoinvader.utils.Surface`
-        """
+        """Make Surface object from text, markers and style."""
 
         _style = self._style or Style().gui["yellow"]
         if self._selected:
@@ -142,6 +141,7 @@ class MenuItemWidget(TextWidget):
         return Surface(
             [[ch for ch in _full_text]],
             [[_style for _ in range(len(_full_text))]],
+            ["B" * len(_full_text)],
         )
 
     def toggle_select(self):
@@ -267,7 +267,9 @@ class PopUpNotificationWidget(TextWidget):
         if self._callback:
             self._callback(self)
 
-    def update(self, dt: int, text: Optional[str] = None, style: Optional[int] = None):
+    def update(
+        self, dt: int, text: Optional[str] = None, style: Optional[int] = None
+    ):
         self._update_text(text, style)
         self._timer.update(dt)
 
@@ -297,8 +299,9 @@ class WeaponWidget(Renderable):
         """Return Surface object."""
 
         return Surface(
-            [[ch for ch in self._data]],
+            [self._data],
             [[Style().gui["yellow"] for _ in range(len(self._data))]],
+            ["B" * len(self._data)],
         )
 
     def update(self, dt):
@@ -410,7 +413,9 @@ class Bar(Renderable):
             else:
                 image.append((char, self._general_style))
         self._image = Surface(
-            [[ch[0] for ch in image]], [[st[1] for st in image]]
+            [[ch[0] for ch in image]],
+            [[st[1] for st in image]],
+            ["B" * len(image)],
         )
 
     def update(self, dt: int, val=None):
