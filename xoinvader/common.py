@@ -57,31 +57,37 @@ def rootify(root, config):
 
 __all__ = ["Settings"]
 
-WIDTH = 90
-HEIGHT = 34
+WIDTH = 130
+HEIGHT = 40
+
 
 _ROOT = pathlib.Path(dirname(xoinvader.__file__))
 _CONFIG = _ROOT / "config"
 
-DEFAULT_XOI_SETTINGS = dict(
-    layout=dict(
-        field=dict(
-            border=Point(x=WIDTH, y=HEIGHT),
-            camera=Point(x=WIDTH - 1, y=HEIGHT - 1),
-            player=Point(x=WIDTH // 2, y=HEIGHT - 1),
-            edge=Point(x=WIDTH, y=HEIGHT - 1),
-        ),
-        gui=dict(
-            bar=dict(
-                health=Point(x=2, y=HEIGHT - 1),
-                shield=Point(x=22, y=HEIGHT - 1),
-                weapon=Point(x=WIDTH - 18, y=HEIGHT - 1),
-            ),
-            info=dict(weapon=Point(x=44, y=HEIGHT - 1)),
-        ),
-    ),
-    system=dict(debug=False, encoding=constants.UTF_8,),
-)
+DEFAULT_XOI_SETTINGS = {
+    "layout": {
+        "field": {
+            "border": Point(x=WIDTH, y=HEIGHT),
+            "camera": Point(x=WIDTH - 1, y=HEIGHT - 1),
+            "player": Point(x=WIDTH // 2, y=HEIGHT - 1),
+            "edge": Point(x=WIDTH, y=HEIGHT - 1),
+        },
+        "gui": {
+            "bar": {
+                "health": Point(x=2, y=HEIGHT - 1),
+                "shield": Point(x=22, y=HEIGHT - 1),
+                "weapon": Point(x=WIDTH - 18, y=HEIGHT - 1),
+            },
+            "info": {
+                "weapon": Point(x=WIDTH - 47, y=HEIGHT - 1),
+            }
+        }
+    },
+    "system": {
+        "debug": False,
+        "encoding": constants.UTF_8,
+    },
+}
 
 Settings = dotdict(DEFAULT_XOI_SETTINGS)  # pylint: disable=invalid-name
 
