@@ -47,10 +47,10 @@ class Ship(Renderable):
         self._collider = None
 
         # first initialization
-        self._load_config(CONFIG[self.type])
+        self._apply_config(CONFIG[self.type])
 
-    def _load_config(self, config):
-        """Load config from mapping."""
+    def _apply_config(self, config):
+        """Apply values from object's configuration."""
 
         if not config:
             raise ValueError
@@ -62,10 +62,6 @@ class Ship(Renderable):
         self._max_shield = int(config.max_shield)
 
     @property
-    def pos(self):
-        return self._pos
-
-    @property
     def direction(self):
         return self._direction
 
@@ -75,10 +71,6 @@ class Ship(Renderable):
             self._direction = 0
         else:
             self._direction = 1 if value > 0 else -1
-
-    @property
-    def pos(self):
-        return self._pos
 
     @property
     def max_hull(self):
@@ -124,13 +116,14 @@ class Ship(Renderable):
         """Select previous weapon."""
         self._weapon = self._weapons.prev()
 
-    def add_weapon(self, weapon):
-        """Add new weapon."""
+    def add_weapon(self, weapon: Weapon, autoselect: bool = True):
+        """Add new weapon and optionally select it."""
 
         self._weapons.append(weapon)
-        self._weapon = weapon
+        if autoselect:
+            self._weapon = weapon
 
-    def update_position(self, dt):
+    def update_position(self, dt: int):
         """Update ship position.
 
         Allows to go behind field borders.
@@ -185,28 +178,28 @@ class Ship(Renderable):
             or int(pos.y) + self._image.height < 0
         )
 
-    def take_damage(self, damage):
+    def take_damage(self, damage: int):
         """Calculate and apply damage to shield and hull."""
 
-        if self._shield < damage:
-            rest_damage = damage - self._shield
-            self._shield = 0
-            self._hull -= rest_damage
-        else:
+        # shield absorbs all damage
+        if self._shield >= damage:
             self._shield -= damage
-        if self._hull < 0:
-            self._hull = 0
+            return
 
-    def refresh_shield(self, amount=1):
+        # shield fully discharged
+        damage = clamp(damage - self._shield, 0, damage)
+        self._shield = 0
+
+        # hull takes all rest damage
+        self._hull = clamp(self._hull - damage, 0, self._hull)
+
+    def refresh_shield(self, amount: int = 1):
         """Refresh shield."""
 
         if self._shield == self._max_shield:
             return
 
-        if self._shield + amount > self._max_shield:
-            self._shield = self._max_shield
-        else:
-            self._shield += amount
+        self._shield = clamp(self._shield + amount, 0, self._max_shield)
 
     def collect(self, collectible):
         """Collect bonus or power-up and apply it now or later.
