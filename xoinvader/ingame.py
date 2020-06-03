@@ -231,5 +231,4 @@ class InGameState(State):
         self.level.update()
         if not self.level.running:
             self.level.start()
-        LOG.info(self._objects)
         super().update(dt)

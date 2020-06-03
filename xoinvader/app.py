@@ -1,11 +1,18 @@
 """XOInvader game application class."""
 
+import logging
+
+from pprint import pformat
+
 from xoinvader import Settings
 from xoinvader.ingame import InGameState
 from xoinvader.menu import PauseMenuState, GameOverState
 from xoinvader.style import Style
 
 from xo1 import Application, Palette
+
+
+LOG = logging.getLogger(__name__)
 
 
 class XOInvader(Application):
@@ -59,6 +66,14 @@ class XOInvader(Application):
         self.register(InGameState)
         self.register(PauseMenuState)
         self.register(GameOverState)
+
+    def tick(self):
+
+        try:
+            super().tick()
+        except Exception as exc:
+            LOG.error("Error: %s", exc)
+            LOG.info(pformat(self.state._objects))
 
 
 def current():
