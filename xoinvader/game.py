@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 
 """Main XOInvader module, that is entry point to game.
 
@@ -13,16 +13,6 @@ from xoinvader.app import XOInvader
 
 
 LOG = logging.getLogger(__name__)
-
-
-def create_game():
-    """Create XOInvader game instance."""
-
-    app = xo1.Application(
-        Settings.layout.field.border.x, Settings.layout.field.border.y,
-    )
-
-    return app
 
 
 def parse_args():
