@@ -5,7 +5,6 @@ import pytest
 from xoinvader.utils import (
     InfiniteList,
     Point,
-    Timer,
     clamp,
     dotdict,
     setup_logger,
@@ -83,14 +82,3 @@ def test_infinite_list_operations_negative():
         inf_list.select(-1)
     with pytest.raises(IndexError):
         inf_list.select(1)
-
-    # TODO: test many elements behaviour
-
-
-def test_timer_get_elapsed():
-    timer = Timer(5.0, lambda: True)
-    timer.start()
-    while timer.running:
-        assert timer.get_elapsed() >= 0.0
-        timer.update(13)
-        assert timer.get_elapsed() >= 0.0

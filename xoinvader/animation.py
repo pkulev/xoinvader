@@ -10,7 +10,9 @@ Objects have animation manager which manages animation graph and switching."""
 
 from operator import itemgetter
 
-from xoinvader.utils import Point, Timer
+from eaf import Timer
+
+from xoinvader.utils import Point
 
 
 class AnimationBoundariesExceeded(Exception):
@@ -163,7 +165,7 @@ class Animation(object):
         self._check_animation_state()
         self._timer.update(dt)
 
-        current_time = self._timer.get_elapsed()
+        current_time = self._timer.elapsed
         keyframe = self._keyframes[self._current]
         next_keyframe = self._keyframes[self._current + 1]
 
@@ -199,7 +201,7 @@ class Animation(object):
         keyframe = self._keyframes[self._current]
 
         # Check if animation need to switch keyframe
-        if self._timer.get_elapsed() >= keyframe[0]:
+        if self._timer.elapsed >= keyframe[0]:
             self._apply_value(keyframe[1])
             self._current += 1
 

@@ -3,13 +3,13 @@
 
 from typing import Callable, Optional, List, Tuple, Generator
 
+from eaf import Timer
 from xo1 import Surface, Renderable
 
 from xoinvader.style import Style
 from xoinvader.utils import (
     InfiniteList,
     Point,
-    Timer,
 )
 
 

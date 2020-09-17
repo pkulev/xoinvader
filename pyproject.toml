@@ -33,7 +33,7 @@ xoigame = "xoinvader.game:main"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-eaf = "^0.2.1"
+eaf = "^0.2.2"
 xo1 = "^0.2"
 toml = "^0.10"
 
@@ -51,5 +51,5 @@ sphinx_rtd_theme = "*"
 line-length = 80
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

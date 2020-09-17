@@ -1,6 +1,7 @@
 """Game weapon classes."""
 
 
+from eaf import Timer
 from xo1 import Surface, Renderable
 
 from xoinvader.charge import (
@@ -10,7 +11,7 @@ from xoinvader.charge import (
     BasicUnguidedMissile,
 )
 from xoinvader.common import get_config
-from xoinvader.utils import clamp, Point, Timer
+from xoinvader.utils import clamp, Point
 
 
 CONFIG = get_config().weapon
@@ -96,7 +97,7 @@ class Weapon(Renderable):
 
         if self._ammo and self.ready:
             return 100.0
-        return self._timer.get_elapsed() * 100.0 / self._cooldown
+        return self._timer.elapsed * 100.0 / self._cooldown
 
     def update(self, dt):
         """Update weapon timer."""
