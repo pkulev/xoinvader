@@ -1,15 +1,16 @@
 """XOInvader game application class."""
 
 import logging
-
+import shutil
 from pprint import pformat
 
+from xo1 import Application, Palette
+
 from xoinvader import Settings
+from xoinvader.common import update_resized
 from xoinvader.ingame import InGameState
 from xoinvader.menu import PauseMenuState, GameOverState
 from xoinvader.style import Style
-
-from xo1 import Application, Palette
 
 
 LOG = logging.getLogger(__name__)
@@ -63,9 +64,18 @@ class XOInvader(Application):
 
         Style().init_styles(palette)
 
+        self.resize_to_terminal()
+
         self.register(InGameState)
         self.register(PauseMenuState)
         self.register(GameOverState)
+
+    @staticmethod
+    def resize_to_terminal():
+        """Adjust size with terminal size."""
+
+        col, lines = shutil.get_terminal_size()
+        update_resized(col - 1, lines - 1)
 
     def tick(self):
 
