@@ -55,6 +55,20 @@ def rootify(root, config):
     return config
 
 
+def update_resized(new_x: int, new_y: int):
+    """Calculate new borders and stuff and populate config with new values."""
+
+    Settings.layout.field.border = Point(x=new_x, y=new_y)
+    Settings.layout.field.camera = Point(x=new_x - 1, y=new_y - 1)
+    Settings.layout.field.player = Point(x=new_x // 2, y=new_y - 1)
+    Settings.layout.field.edge = Point(x=new_x, y=new_y - 1)
+
+    Settings.layout.gui.bar.health = Point(x=2, y=new_y - 1)
+    Settings.layout.gui.bar.shield = Point(x=22, y=new_y - 1)
+    Settings.layout.gui.bar.weapon = Point(x=new_x - 18, y=new_y - 1)
+    Settings.layout.gui.info.weapon = Point(x=new_x - 47, y=new_y - 1)
+
+
 __all__ = ["Settings"]
 
 WIDTH = 130
