@@ -70,12 +70,12 @@ class XOInvader(Application):
         self.register(PauseMenuState)
         self.register(GameOverState)
 
-    @staticmethod
-    def resize_to_terminal():
+    def resize_to_terminal(self):
         """Adjust size with terminal size."""
 
         col, lines = shutil.get_terminal_size()
-        update_resized(col - 1, lines - 1)
+        if col < self.renderer.get_width() or lines < self.renderer.get_height():
+            update_resized(col - 1, lines - 1)
 
     def tick(self):
 
