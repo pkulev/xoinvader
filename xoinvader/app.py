@@ -83,7 +83,7 @@ class XOInvader(Application):
             super().tick()
         except Exception as exc:
             LOG.error("Error: %s", exc)
-            LOG.info(pformat(self.state._objects))
+            LOG.info(pformat(self.state.objects))
 
 
 def current():

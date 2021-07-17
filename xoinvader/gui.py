@@ -1,7 +1,7 @@
-""" Graphical user interface widgets."""
+"""Graphical user interface widgets."""
 
 
-from typing import Callable, Optional, List, Tuple, Generator
+from typing import Callable, Optional, List, Tuple
 
 from eaf import Timer
 from xo1 import Surface, Renderable
@@ -24,7 +24,7 @@ class TextWidget(Renderable):
     render_priority = 1
     draw_on_border = True
 
-    def __init__(self, pos: Point, text: str, style: int = None):
+    def __init__(self, pos: Point, text: str, style: Optional[int] = None):
 
         super().__init__(pos)
 
@@ -33,11 +33,7 @@ class TextWidget(Renderable):
         self._image = self._make_image()
 
     def _make_image(self) -> Surface:
-        """Make Surface object from text and style.
-
-        :return: Surface instance
-        :rtype: `xoinvader.utils.Surface`
-        """
+        """Make Surface object from text and style."""
 
         _style = self._style or Style().gui["normal"]
         return Surface(
@@ -47,11 +43,7 @@ class TextWidget(Renderable):
     def update(
         self, dt: int, text: Optional[str] = None, style: Optional[int] = None
     ):
-        """Obtain (or not) new data and refresh image.
-
-        :param text: new text
-        :param style: new style
-        """
+        """Obtain (or not) new data and refresh image."""
 
         if text:
             self._text = text
@@ -77,10 +69,8 @@ class TextCallbackWidget(TextWidget):
     def __init__(
         self, pos: Point, callback: Callable, style: Optional[int] = None
     ):
-
         self._callback = callback
-
-        super(TextCallbackWidget, self).__init__(pos, callback(), style)
+        super().__init__(pos, callback(), style)
 
     def update(self, dt):
         text = self._callback()
@@ -124,7 +114,7 @@ class MenuItemWidget(TextWidget):
         self._selected = False
         self._align_left = align_left
 
-        super(MenuItemWidget, self).__init__(pos, text, style)
+        super().__init__(pos, text, style)
 
     def _make_image(self) -> Surface:
         """Make Surface object from text, markers and style."""
@@ -139,7 +129,7 @@ class MenuItemWidget(TextWidget):
                 _full_text = self._text
 
         return Surface(
-            [[ch for ch in _full_text]],
+            [_full_text],
             [[_style for _ in range(len(_full_text))]],
             ["B" * len(_full_text)],
         )
@@ -177,10 +167,8 @@ class MenuItemWidget(TextWidget):
             self._action()
 
 
-class MenuItemContainer(Renderable):  # (CompoundMixin)
+class MenuItemContainer(Renderable):
     """Container for menu items, manages current selected, dispatches action."""
-
-    compound = True
 
     def __init__(self, items: Optional[List[MenuItemWidget]] = None):
 
@@ -254,7 +242,7 @@ class PopUpNotificationWidget(TextWidget):
     """
 
     def __init__(self, pos, text, style=None, timeout=1.0, callback=None):
-        super(PopUpNotificationWidget, self).__init__(pos, text, style)
+        super().__init__(pos, text, style)
 
         self._callback = callback
         self._timer = Timer(timeout, self._finalize_cb)
@@ -290,7 +278,8 @@ class WeaponWidget(Renderable):
     draw_on_border = True
 
     def __init__(self, pos, get_data):
-        self._pos = pos
+        super().__init__(pos)
+
         self._get_data = get_data
         self._data = self._get_data()
         self._image = self._make_image()
@@ -355,8 +344,8 @@ class Bar(Renderable):
         stylemap=None,
         callback=None,
     ):
+        super().__init__(pos)
 
-        self._pos = pos
         self._prefix = prefix
         self._postfix = postfix
         self._left = left

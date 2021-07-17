@@ -1,0 +1,38 @@
+a = 10
+[engine.xo1]
+format = "level"
+version = 1
+name = "Lucky escape"
+description = "Your grandpa promised to show something in his hangar."
+
+[background]
+file = "lucky-escape.bg.toml"
+
+[events]
+file = "lucky-escape.bg.toml"
+
+story = [
+    {},
+    {},
+    {},
+]
+
+[[ev]]
+idx = 1
+kind = "dialog"
+
+[[ev]]
+idx = 2
+kind = "escape movie"
+
+[[ev]]
+idx = 3
+kind = "first contact"
+
+[[ev]]
+idx = 4
+kind = "sudden help"
+
+[[ev]]
+idx = 5
+kind = "lucky escape"

@@ -2,7 +2,6 @@
 
 from eaf.state import State
 
-from xoinvader import app
 from xoinvader.gui import (
     MenuItemContainer,
     MenuItemWidget,

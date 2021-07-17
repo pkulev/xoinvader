@@ -1,0 +1,4 @@
+xo1:event@1
+
+~ev: spawn4
+call spawn4 100

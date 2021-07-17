@@ -128,6 +128,8 @@ class InGameState(State):
 
         # TODO: [scoring]
         self.score = 0
+        # TODO: [upgrades]
+        self.scrap = 0
 
         self._events = EventHandler(
             self,
@@ -142,7 +144,9 @@ class InGameState(State):
             },
         )
 
-        self.add(self._create_gui())
+        for gui_element in self._create_gui():
+            self.add(gui_element)
+
         self.level.start()
 
     def pause_command(self):
@@ -156,22 +160,20 @@ class InGameState(State):
 
         self.score += amount
 
+    def add_player_scrap(self, amount):
+
+        self.scrap += amount
+
     def get_player_score_string(self):
         """Callback for TextCallbackWidget.
 
         :return str: score string
         """
 
-        return "Score: {0}".format(self.score)
+        return f"Score: {self.score}"
 
-        # TODO: [collider-destruction]
-        #       Remove this after collider instant destruction.
-        #       Now colliders in weakref set garbage-collected with noticeable
-        #       delay. In future we need to drop weakrefs and manually manage
-        #       objects.
-        LOG.debug("Colliders: %s", len(self.collision._colliders))
-        LOG.debug("Collisions: %s", len(self.collision._collisions))
-        LOG.debug("Objects in state: %s", len(self._objects))
+    def get_player_scrap_string(self):
+        return f"Scrap: {self.scrap}"
 
     def _create_gui(self):
         """Create user interface."""
@@ -216,6 +218,7 @@ class InGameState(State):
             ),
         ] + [
             TextCallbackWidget(Point(2, 0), self.get_player_score_string),
+            TextCallbackWidget(Point(15, 0), self.get_player_scrap_string),
             TextWidget(
                 Point(Settings.layout.field.edge.x // 2 - 4, 0),
                 "XOInvader",

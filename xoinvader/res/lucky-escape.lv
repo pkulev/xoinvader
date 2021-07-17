@@ -1,0 +1,11 @@
+xo1:level@1
+
+# TODO: change name
+bg:level1.bg
+
+ev:lucky-escape.ev
+
+level:
+ev-every spawn4 100
+ev wait 100
+ev spawn4
