@@ -13,7 +13,7 @@ Requirements
 General
 -------
 
-* >= python-3.7
+* python >=3.10; <3.13
 * >= eaf-0.2
 * >= xo1-0.1
 * >= toml-0.10
@@ -35,8 +35,8 @@ Development
 
 .. code-block:: console
 
-   $ poetry install
-   $ poetry run xoigame
+   $ uv sync --extra dev
+   $ uv run xoigame
 
 Testing
 -------
