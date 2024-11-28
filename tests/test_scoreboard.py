@@ -6,7 +6,8 @@ import os
 import pytest
 
 from xoinvader import scoreboard
-from xoinvader.tests.common import PREFIX
+
+from .common import PREFIX
 
 
 SCOREBOARD_DATA = [

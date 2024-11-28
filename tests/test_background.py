@@ -7,7 +7,8 @@ import pytest
 
 from xoinvader.background import Background, Chunk, load_chunks
 from xoinvader.common import Settings
-from xoinvader.tests.common import PREFIX
+
+from .common import PREFIX
 
 
 CHUNK_NO_NAME = os.path.join(PREFIX, "chunk_no_name.bg")

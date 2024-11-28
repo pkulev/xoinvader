@@ -3,7 +3,7 @@
 from eaf.state import State
 
 
-PREFIX = "xoinvader/tests/fixtures/"
+PREFIX = "tests/fixtures/"
 """Test fixture data prefix."""
 
 
