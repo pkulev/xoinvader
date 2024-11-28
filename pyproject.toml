@@ -46,8 +46,10 @@ documentation = "http://mmap.me/"
 [project.optional-dependencies]
 dev = [
     "codecov==2.1.13",
+    "poethepoet==0.31.1",
     "pytest==8.3.3",
     "pytest-coverage",
+    "ruff==0.8.0",
 ]
 
 docs = [
@@ -58,5 +60,39 @@ docs = [
 [project.scripts]
 xoigame = "xoinvader.game:main"
 
-[tool.black]
-line-length = 80
+[tool.poe.tasks.format]
+help = "Format all the code. You can add '--diff' or '--check' also."
+cmd = "ruff format"
+
+[tool.poe.tasks.lint]
+help = "Lint all the code."
+cmd = "ruff check"
+
+[tool.poe.tasks.typecheck]
+help = "Typecheck all the code."
+cmd = "mypy xoinvader"
+
+[tool.poe.tasks.test]
+help = "Run unit tests."
+cmd = "pytest --strict-markers -vvv tests/"
+
+[tool.poe.tasks.ci]
+help = "Run full CI sequence."
+sequence = [
+  "format",
+  "lint",
+  "typecheck",
+  "test",
+]
+ignore_fail = true  # TODO: drop after all lint errors being fixed
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "W", "I", "N", "UP", "YTT", "ANN", "S", "B"]
+
+[tool.mypy]
+strict = true
+implicit_reexport = true

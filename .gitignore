@@ -3,33 +3,16 @@ __pycache__/
 *.py[cod]
 
 # Distribution / packaging
-.Python
-env/
-bin/
 build/
-develop-eggs/
 dist/
-eggs/
-lib/
-lib64/
-parts/
 sdist/
-var/
-tmp/
 *.egg-info/
-.installed.cfg
 *.egg
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
 
 # Unit test / coverage reports
 htmlcov/
-.tox/
 .coverage
 .cache
-nosetests.xml
 coverage.xml
 
 # Virtualenv
@@ -44,3 +27,4 @@ coverage.xml
 docs/_build/
 
 .mypy_cache/
+.ruff_cache/
