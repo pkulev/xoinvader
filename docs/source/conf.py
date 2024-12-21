@@ -16,6 +16,7 @@
 
 import xoinvader
 
+
 # -- Project information -----------------------------------------------------
 
 project = "XOInvader"

@@ -39,7 +39,7 @@ def setup_logger(name, debug=False, msgfmt=None, timefmt=None):
     logger.propagate = False
     level = logging.DEBUG if debug else logging.INFO
     logger.setLevel(level)
-    handler = logging.FileHandler("{0}.log".format(name))
+    handler = logging.FileHandler(f"{name}.log")
     handler.setLevel(level)
     formatter = logging.Formatter(msgfmt or LOG_FORMAT, timefmt or TIME_FORMAT)
     handler.setFormatter(formatter)
@@ -62,12 +62,12 @@ def clamp(val, min_val, max_val):
 class dotdict(dict):  # pylint: disable=invalid-name
     """Container for dot elements access."""
 
-    def __init__(self, *args, **kwargs):
-        super(dotdict, self).__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
         self.__dict__ = self
         self._wrap_nested()
 
-    def _wrap_nested(self):
+    def _wrap_nested(self) -> None:
         """Wrap nested dicts for deep dot access."""
 
         for key, value in self.items():
@@ -86,8 +86,8 @@ class dotdict(dict):  # pylint: disable=invalid-name
 class InfiniteList(list):
     """Infinite list container."""
 
-    def __init__(self, *args, **kwargs):
-        super(InfiniteList, self).__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
         self._index = 0
 
     def select(self, index: int) -> object:

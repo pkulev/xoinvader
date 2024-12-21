@@ -1,7 +1,6 @@
 """Pytest configuration."""
 
 import pytest
-
 from eaf.state import State
 
 import xoinvader.app
@@ -39,7 +38,7 @@ def mock_state(request, mock_application):
         app.register(MockedState)
         return app.state
 
-    def stop():
+    def stop() -> None:
         app.deregister(MockedState.__name__)
 
     request.addfinalizer(stop)
@@ -50,7 +49,7 @@ def mock_state(request, mock_application):
 class MockedApplication(xoinvader.app.XOInvader):
 
     @staticmethod
-    def _finalize():
+    def _finalize() -> None:
         try:
             app = xoinvader.app.current()
             app.stop()

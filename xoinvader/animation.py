@@ -8,6 +8,7 @@ Keyframe:
 
 Objects have animation manager which manages animation graph and switching."""
 
+from collections.abc import Iterable
 from operator import itemgetter
 
 from eaf import Timer
@@ -18,8 +19,8 @@ from xoinvader.utils import Point
 class AnimationBoundariesExceeded(Exception):
     """Exception to show that interpolated value will be incorrect."""
 
-    def __init__(self, first, current_time, second):
-        super(AnimationBoundariesExceeded, self).__init__(
+    def __init__(self, first, current_time, second) -> None:
+        super().__init__(
             self,
             f"Animation frame boundaries exceeded: {first} <= {current_time} <= {second}",
         )
@@ -28,22 +29,22 @@ class AnimationBoundariesExceeded(Exception):
 class InterpolationUnknownTypes(Exception):
     """Such type combination is unsupported."""
 
-    def __init__(self, first, second):
-        super(InterpolationUnknownTypes, self).__init__(
+    def __init__(self, first, second) -> None:
+        super().__init__(
             self, f"Unknown types of interpolating values: {first} and {second}"
         )
 
 
 # TODO: Implement animation graph and etc
-class AnimationManager(object):
+class AnimationManager:
     """Manage list of object animation."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._animations = {}
         self._animation = None
 
     @property
-    def animation(self):
+    def animation(self) -> str:
         """AnimationManager's current animation name.
 
         To set animation - assign it's name.
@@ -59,13 +60,13 @@ class AnimationManager(object):
             raise AttributeError("There is no available animation.")
 
     @animation.setter
-    def animation(self, name):
+    def animation(self, name: str) -> None:
         if name in self._animations:
             self._animation = self._animations[name]
         else:
             raise ValueError(f"No such animation: '{name}'.")
 
-    def add(self, name, *args, **kwargs):
+    def add(self, name: str, *args, **kwargs) -> None:
         """Add new animation, pass args to Animation class.
 
         See interface of `class::xoinvader.animation.Animation`.
@@ -79,7 +80,7 @@ class AnimationManager(object):
         if not self._animation:
             self._animation = animation
 
-    def update(self, dt):
+    def update(self, dt: int) -> None:
         """Update manager's state."""
 
         if not self._animation:
@@ -91,9 +92,7 @@ class AnimationManager(object):
             return  # TODO: think about method to change animation
 
 
-# pylint: disable=too-many-instance-attributes,too-many-arguments
-# pylint: disable=too-few-public-methods
-class Animation(object):
+class Animation:
     """Animation unit.
 
     Animation object holds sorted list of (time, value) items and changes
@@ -112,7 +111,15 @@ class Animation(object):
     :param bool loop: loop animation or not
     """
 
-    def __init__(self, name, bind, attr, keyframes, interp=False, loop=False):
+    def __init__(
+        self,
+        name: str,
+        bind: object,
+        attr: str,
+        keyframes: list[tuple[float, object]],
+        interp: bool = False,
+        loop: bool = False,
+    ) -> None:
         self._name = name
         self._obj = bind
         self._attr = attr
@@ -137,29 +144,25 @@ class Animation(object):
             self.update = self._update_discrete
 
     @property
-    def name(self):
-        """Animation's name.
-
-        :getter: yes
-        :setter: no
-        :type: str
-        """
+    def name(self) -> str:
+        """Animation's name."""
         return self._name
 
-    def _apply_value(self, value):
+    def _apply_value(self, value: object) -> None:
         """Apply new value to linked object.
 
-        :param obj value: value to apply
+        :param value: value to apply
         """
 
         setattr(self._obj, self._attr, value)
 
-    def _update_interpolated(self, dt):
+    def _update_interpolated(self, dt: int) -> None:
         """Advance animation and interpolate value.
 
-        NOTE: animation frame switching depends on interp mode
-        animation with interpolation switches frame only when current local
-        time exceeds NEXT frames' time border.
+        .. important::
+
+           Animation frame switching depends on interp mode animation with interpolation
+           switches frame only when current local time exceeds NEXT frames' time border.
         """
 
         self._check_animation_state()
@@ -185,14 +188,16 @@ class Animation(object):
         value = interpolate(keyframe, next_keyframe, current_time)
         self._apply_value(value)
 
-    def _update_discrete(self, dt):
+    def _update_discrete(self, dt: int) -> None:
         """Advance animation without interpolating value.
 
-        NOTE: animation frame switching depends on interp mode
-        discrete animation swiches frame and updates value only if
-        current local time is >= time of current keyframe.
-        No need to worry about calculating value between frames - thus
-        no need to complicate behaviour.
+        .. important::
+
+           Animation frame switching depends on interp mode discrete animation swiches frame and
+           updates value only if current local time is >= time of current keyframe.
+
+           No need to worry about calculating value between frames - thus no need to complicate
+           behaviour.
         """
 
         self._check_animation_state()
@@ -205,7 +210,7 @@ class Animation(object):
             self._apply_value(keyframe[1])
             self._current += 1
 
-    def _check_animation_state(self):
+    def _check_animation_state(self) -> None:
         """Check animation state and restart if needed.
 
         :raise StopIteration: when animation exceeded frames.
@@ -220,24 +225,30 @@ class Animation(object):
                 raise StopIteration
 
 
-def linear_equation(val1, val2, time1, time2, current_time):
+def linear_equation(
+    val1: float,
+    val2: float,
+    time1: float,
+    time2: float,
+    current_time: float,
+) -> float:
     """Linear equation to get interpolated value.
 
-    :param float val1: first keyframe value
-    :param float val2: second keyframe value
-    :param float time1: first keyframe local time
-    :param float time2: second keyframe local time
-    :param float current_time: current animation local time
+    :param val1: first keyframe value
+    :param val2: second keyframe value
+    :param time1: first keyframe local time
+    :param time2: second keyframe local time
+    :param current_time: current animation local time
     """
 
     return val1 + (val2 - val1) / (time2 - time1) * (current_time - time1)
 
 
-def same_type(values, types):
+def same_type(values: Iterable[object], types: type | tuple[type]) -> bool:
     """Check if values are belongs to same type or type tuple.
 
-    :param collections.Iterable values: values to check type similarity
-    :param tuple|type types: type or tuple of types
+    :param values: values to check type similarity
+    :param types: type or tuple of types
     """
 
     return all(map(lambda it: isinstance(it, types), values))
@@ -257,8 +268,9 @@ def interpolate(first, second, current_time):
     if not first[0] <= current_time <= second[0]:
         raise AnimationBoundariesExceeded(first[0], current_time, second[0])
 
-    def frames_of(*args):
-        """If frames both of specified type."""
+    def frames_of(*args: type) -> None:
+        """Return whether frames both of specified type."""
+
         return same_type((first[1], second[1]), args)
 
     if frames_of(int, float):
@@ -272,7 +284,7 @@ def interpolate(first, second, current_time):
 
     elif frames_of(Point):
         value = linear_equation(
-            first[1],
+            first[1],  # TODO FIXME: check, it seems that this case is broken
             second[1],
             float(first[0]),
             float(second[0]),

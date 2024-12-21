@@ -24,12 +24,10 @@ class XOInitializationError(Exception):
     pass
 
 
-def setup_locale(settings):
+def setup_locale(settings: dict) -> dict:
     """Setup locale settings.
 
-    :param dict settings:
-
-    :return dict: updated settings
+    :return: updated settings
     """
 
     locale.setlocale(locale.LC_ALL, "")
@@ -38,7 +36,7 @@ def setup_locale(settings):
     return settings
 
 
-def init(settings=None):
+def init(settings: dict | None = None) -> None:
     """Do engine initialization first.
 
     :param dict settings:
@@ -53,7 +51,7 @@ def init(settings=None):
             "xoinvader", settings.get("debug", Settings.system.debug)
         )
     except Exception as exc:
-        raise XOInitializationError(exc)
+        raise XOInitializationError(exc) from exc
 
     log.debug("Updating engine settings")
 
@@ -63,7 +61,7 @@ def init(settings=None):
             _update_system_settings(settings)
     except Exception as exc:
         log.exception(exc)
-        raise XOInitializationError(exc)
+        raise XOInitializationError(exc) from exc
 
 
 __all__ = ["Settings"]

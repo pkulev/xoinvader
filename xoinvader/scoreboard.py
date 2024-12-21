@@ -4,30 +4,30 @@ Scoreboard file is CSV of username,score rows.
 If file doesn't exist it will be recreated from default stub.
 """
 
+import csv
 import operator
 import os
-import csv
 
-from xoinvader.common import get_config, _ROOT
+from xoinvader.common import _ROOT, get_config
 
 
 SCOREBOARD_FILE = _ROOT / get_config().scoreboard
 
 
-def items():
+def items() -> list[tuple[str, int]]:
     """Return all scorefile entries.
 
-    :return [(str, int)]: (username, score) pairs
+    :return: (username, score) pairs
     """
 
     return _load()
 
 
-def add(username, score):
+def add(username: str, score: int) -> None:
     """Add new entry to scoreboard file, sorted by score.
 
-    :param str username: username
-    :param int score: user score
+    :param username: username
+    :param score: user score
     """
 
     scores = items()
@@ -37,7 +37,7 @@ def add(username, score):
     _save(scores)
 
 
-def lowest():
+def lowest() -> None:
     """Return lowest result in game.
 
     :return int: lowest score
@@ -50,7 +50,7 @@ def lowest():
         return 0
 
 
-def highest():
+def highest() -> int:
     """Return highest result in game.
 
     :return int: highest score
@@ -63,10 +63,10 @@ def highest():
         return 0
 
 
-def _load():
+def _load() -> list[tuple[str, int]]:
     """Load scores from scorefile.
 
-    :return [(str, int)]: scores
+    :return: scores
     """
 
     scores = []
@@ -80,16 +80,16 @@ def _load():
                 except ValueError:
                     # probably CSV is corrupted, skip failure entries
                     pass
-    except IOError:
+    except OSError:
         pass
 
     return scores
 
 
-def _save(scores):
+def _save(scores: list[tuple[str, int]]) -> None:
     """Save scores to scorefile.
 
-    :param [(str, int)] scores: scores to save
+    :param scores: scores to save
     """
 
     dirname = os.path.dirname(SCOREBOARD_FILE)
