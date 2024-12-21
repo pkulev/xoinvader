@@ -1,7 +1,7 @@
 """Module for creating and maintaining xoinvader levels."""
 
 
-class Level(object):
+class Level:
     """Container for level event sequence and resources.
 
     Intended to use as just container, but may be subclassed. It's useful in
@@ -15,7 +15,7 @@ class Level(object):
     :param bool running: if event sequence currently advances.
     """
 
-    def __init__(self, speed=0):
+    def __init__(self, speed=0) -> None:
         self._running = False
         self._counter = 0
         self._speed = speed
@@ -33,7 +33,7 @@ class Level(object):
         return self._speed
 
     @speed.setter
-    def speed(self, value):
+    def speed(self, value) -> None:
         """Setter."""
         self._speed = value
 
@@ -47,7 +47,7 @@ class Level(object):
         """
         return self._running
 
-    def add_event(self, time, callback):
+    def add_event(self, time, callback) -> None:
         """Add event to some point in time.
 
         :param int time: point in time relative to level start when to run
@@ -56,7 +56,7 @@ class Level(object):
         """
         self._events.setdefault(time, []).append(callback)
 
-    def start(self):
+    def start(self) -> None:
         """Start the level.
 
         Resets the counter, recomputes the list of event timeouts and sets the
@@ -67,7 +67,7 @@ class Level(object):
         self._counter = 0
         self._event_timeouts = sorted(self._events)
 
-    def update(self):
+    def update(self) -> None:
         """Update the counter and fire appropriate events.
 
         Function is doing anything useful only when the Level has been started

@@ -4,7 +4,6 @@ import pytest
 
 from xoinvader.utils import (
     InfiniteList,
-    Point,
     clamp,
     dotdict,
     setup_logger,
@@ -12,12 +11,12 @@ from xoinvader.utils import (
 
 
 # pylint: disable=invalid-name,protected-access,missing-docstring
-def test_setup_logger():
+def test_setup_logger() -> None:
     logger = setup_logger("test", True)
     assert logger
 
 
-def test_dotdict_setattr():
+def test_dotdict_setattr() -> None:
     settings = dotdict()
     settings.test_entry = 42
     assert settings["test_entry"] == 42
@@ -40,13 +39,13 @@ def test_dotdict_setattr():
         (120, 0, 100, 100),
     ),
 )
-def test_clamp(val, min_val, max_val, expected):
+def test_clamp(val, min_val, max_val, expected) -> None:
     """xoinvader.utils.clamp"""
 
     assert clamp(val, min_val, max_val) == expected
 
 
-def test_infinite_list_operations():
+def test_infinite_list_operations() -> None:
 
     # Test one element behaviour
     data = "test1"
@@ -62,7 +61,7 @@ def test_infinite_list_operations():
     # TODO: Test many elements behaviour
 
 
-def test_infinite_list_operations_negative():
+def test_infinite_list_operations_negative() -> None:
 
     # Test empty InfiniteList behaviour
     inf_list = InfiniteList()

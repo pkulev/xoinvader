@@ -1,10 +1,10 @@
 """ Graphical user interface widgets."""
 
 
-from typing import Callable, Optional, List, Tuple, Generator
+from collections.abc import Callable
 
 from eaf import Timer
-from xo1 import Surface, Renderable
+from xo1 import Renderable, Surface
 
 from xoinvader.style import Style
 from xoinvader.utils import (
@@ -24,7 +24,7 @@ class TextWidget(Renderable):
     render_priority = 1
     draw_on_border = True
 
-    def __init__(self, pos: Point, text: str, style: int = None):
+    def __init__(self, pos: Point, text: str, style: int = None) -> None:
 
         super().__init__(pos)
 
@@ -45,8 +45,8 @@ class TextWidget(Renderable):
         )
 
     def update(
-        self, dt: int, text: Optional[str] = None, style: Optional[int] = None
-    ):
+        self, dt: int, text: str | None = None, style: int | None = None
+    ) -> None:
         """Obtain (or not) new data and refresh image.
 
         :param text: new text
@@ -75,14 +75,14 @@ class TextCallbackWidget(TextWidget):
     """
 
     def __init__(
-        self, pos: Point, callback: Callable, style: Optional[int] = None
-    ):
+        self, pos: Point, callback: Callable, style: int | None = None
+    ) -> None:
 
         self._callback = callback
 
-        super(TextCallbackWidget, self).__init__(pos, callback(), style)
+        super().__init__(pos, callback(), style)
 
-    def update(self, dt):
+    def update(self, dt) -> None:
         text = self._callback()
         if self._text != text:
             self._text = text
@@ -113,18 +113,18 @@ class MenuItemWidget(TextWidget):
         self,
         pos: Point,
         text: str,
-        action: Optional[Callable] = None,
-        template: Tuple[str, str] = ("* ", " *"),
+        action: Callable | None = None,
+        template: tuple[str, str] = ("* ", " *"),
         style=None,
         align_left=True,
-    ):
+    ) -> None:
         self._action = action
         self._left = template[0]
         self._right = template[1]
         self._selected = False
         self._align_left = align_left
 
-        super(MenuItemWidget, self).__init__(pos, text, style)
+        super().__init__(pos, text, style)
 
     def _make_image(self) -> Surface:
         """Make Surface object from text, markers and style."""
@@ -144,18 +144,18 @@ class MenuItemWidget(TextWidget):
             ["B" * len(_full_text)],
         )
 
-    def toggle_select(self):
+    def toggle_select(self) -> None:
         """Draw or not selector characters."""
         self._selected = not self._selected
         self._image = self._make_image()
 
-    def select(self):
+    def select(self) -> None:
         """Select and refresh image."""
 
         self._selected = True
         self._image = self._make_image()
 
-    def deselect(self):
+    def deselect(self) -> None:
         """Deselect and refresh image."""
 
         self._selected = False
@@ -170,7 +170,7 @@ class MenuItemWidget(TextWidget):
 
         return self._selected
 
-    def do_action(self):
+    def do_action(self) -> None:
         """Call action callback."""
 
         if callable(self._action):
@@ -182,7 +182,7 @@ class MenuItemContainer(Renderable):  # (CompoundMixin)
 
     compound = True
 
-    def __init__(self, items: Optional[List[MenuItemWidget]] = None):
+    def __init__(self, items: list[MenuItemWidget] | None = None) -> None:
 
         # This object is containter, it doesn't matter where it placed
         # (while we have no local coordinates of childs implemented).
@@ -191,11 +191,11 @@ class MenuItemContainer(Renderable):  # (CompoundMixin)
 
         self._items = InfiniteList(items) if items else InfiniteList()
 
-    def add(self, item: MenuItemWidget):
+    def add(self, item: MenuItemWidget) -> None:
         self._items.append(item)
 
     # TODO: add ability to update infinity list index after changing?
-    def remove(self, item: MenuItemWidget):
+    def remove(self, item: MenuItemWidget) -> None:
         self._items.remove(item)
 
     def select(self, index: int) -> MenuItemWidget:
@@ -206,7 +206,7 @@ class MenuItemContainer(Renderable):  # (CompoundMixin)
         selected.select()
         return selected
 
-    def do_action(self):
+    def do_action(self) -> None:
         self._items.current().do_action()
 
     def prev(self):
@@ -224,7 +224,7 @@ class MenuItemContainer(Renderable):  # (CompoundMixin)
     def current(self):
         return self._items.current()
 
-    def update(self, dt):
+    def update(self, dt) -> None:
         pass
 
     def get_renderable_objects(self):
@@ -253,23 +253,23 @@ class PopUpNotificationWidget(TextWidget):
     :type callback: function
     """
 
-    def __init__(self, pos, text, style=None, timeout=1.0, callback=None):
-        super(PopUpNotificationWidget, self).__init__(pos, text, style)
+    def __init__(self, pos, text, style=None, timeout=1.0, callback=None) -> None:
+        super().__init__(pos, text, style)
 
         self._callback = callback
         self._timer = Timer(timeout, self._finalize_cb)
-        self._update_text = super(PopUpNotificationWidget, self).update
+        self._update_text = super().update
         self._timer.start()
 
-    def _finalize_cb(self):
+    def _finalize_cb(self) -> None:
         """Finalize callback, e.g. pass to it self for removal."""
 
         if self._callback:
             self._callback(self)
 
     def update(
-        self, dt: int, text: Optional[str] = None, style: Optional[int] = None
-    ):
+        self, dt: int, text: str | None = None, style: int | None = None
+    ) -> None:
         self._update_text(text, style)
         self._timer.update(dt)
 
@@ -289,7 +289,7 @@ class WeaponWidget(Renderable):
     render_priority = 1
     draw_on_border = True
 
-    def __init__(self, pos, get_data):
+    def __init__(self, pos, get_data) -> None:
         self._pos = pos
         self._get_data = get_data
         self._data = self._get_data()
@@ -304,7 +304,7 @@ class WeaponWidget(Renderable):
             ["B" * len(self._data)],
         )
 
-    def update(self, dt):
+    def update(self, dt) -> None:
         """Obtain new data and refresh image."""
 
         self._data = self._get_data()
@@ -346,15 +346,15 @@ class Bar(Renderable):
         left: str = "[",
         right: str = "]",
         marker: str = "█",
-        marker_style: Optional[int] = None,
+        marker_style: int | None = None,
         empty: str = "-",
-        empty_style: Optional[int] = None,
+        empty_style: int | None = None,
         count: int = 10,
         maxval: int = 100,
-        general_style: Optional[int] = None,
+        general_style: int | None = None,
         stylemap=None,
         callback=None,
-    ):
+    ) -> None:
 
         self._pos = pos
         self._prefix = prefix
@@ -385,7 +385,7 @@ class Bar(Renderable):
         self._image = None
         self._update_image()
 
-    def _update_current_count(self, val):
+    def _update_current_count(self, val) -> None:
         """Normalize current percentage and update count of marker blocks.
 
         :param int val: value to normalize
@@ -400,7 +400,7 @@ class Bar(Renderable):
                 return bar_style
         return None
 
-    def _update_image(self):
+    def _update_image(self) -> None:
         """Update image in depend on percentage."""
 
         left = self._marker * self._current_count
@@ -418,7 +418,7 @@ class Bar(Renderable):
             ["B" * len(image)],
         )
 
-    def update(self, dt: int, val=None):
+    def update(self, dt: int, val=None) -> None:
         """Update bar if there's need for it."""
 
         if self._callback:

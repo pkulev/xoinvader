@@ -10,7 +10,7 @@ Attention: Next statement related only to GameObject entities.
 import curses
 import logging
 
-from xo1 import Surface, Renderable
+from xo1 import Renderable, Surface
 
 from xoinvader import app
 from xoinvader.collision import Collider
@@ -32,7 +32,7 @@ class WeaponCharge(Renderable):
     add/remove methods.
     """
 
-    def __init__(self, pos: Point, image, damage=0, radius=0, dx=0, dy=0):
+    def __init__(self, pos: Point, image, damage=0, radius=0, dx=0, dy=0) -> None:
 
         super().__init__(pos)
 
@@ -72,7 +72,7 @@ class WeaponCharge(Renderable):
             or int(pos.y) + self._image.height < 0
         )
 
-    def update(self, dt):
+    def update(self, dt) -> None:
         """Update coords."""
 
         self._pos += Point(self._dx, self._dy) * dt / 1000
@@ -80,7 +80,7 @@ class WeaponCharge(Renderable):
         if self.out_of_border():
             self.destroy()
 
-    def destroy(self):
+    def destroy(self) -> None:
         """Self-destroying routine."""
 
         if not self._destroy:
@@ -98,23 +98,23 @@ class Hitscan(WeaponCharge):
     Can pierce enemies?
     """
 
-    def __init__(self, pos, image, **kwargs):
-        super(Hitscan, self).__init__(pos, image, **kwargs)
+    def __init__(self, pos, image, **kwargs) -> None:
+        super().__init__(pos, image, **kwargs)
 
 
 class Projectile(WeaponCharge):
     """Projectile weapon has generic physics of movement."""
 
-    def __init__(self, pos, image, **kwargs):
-        super(Projectile, self).__init__(pos, image, **kwargs)
+    def __init__(self, pos, image, **kwargs) -> None:
+        super().__init__(pos, image, **kwargs)
 
 
 # TODO: write template documentation for charges and weapons
 class BasicPlasmaCannon(Projectile):
     """Small damage, no radius."""
 
-    def __init__(self, pos):
-        super(BasicPlasmaCannon, self).__init__(
+    def __init__(self, pos) -> None:
+        super().__init__(
             pos,
             Surface(["^"], color=[[curses.A_BOLD]]),
             **CONFIG[self.__class__.__name__]
@@ -124,8 +124,8 @@ class BasicPlasmaCannon(Projectile):
 class EBasicPlasmaCannon(Projectile):
     """Enemy plasma cannon."""
 
-    def __init__(self, pos):
-        super(EBasicPlasmaCannon, self).__init__(
+    def __init__(self, pos) -> None:
+        super().__init__(
             pos,
             Surface([":"], color=[[curses.A_BOLD]]),
             **CONFIG[self.__class__.__name__]
@@ -135,8 +135,8 @@ class EBasicPlasmaCannon(Projectile):
 class BasicLaserCharge(Projectile):
     """Laser. Quite fast but cannot pierce enemies."""
 
-    def __init__(self, pos):
-        super(BasicLaserCharge, self).__init__(
+    def __init__(self, pos) -> None:
+        super().__init__(
             pos,
             Surface(["|"], color=[[curses.A_BOLD]]),
             **CONFIG[self.__class__.__name__]
@@ -146,9 +146,9 @@ class BasicLaserCharge(Projectile):
 class BasicUnguidedMissile(Projectile):
     """Unguided missile with medium damage and small radius."""
 
-    def __init__(self, pos):
+    def __init__(self, pos) -> None:
         # fmt: off
-        super(BasicUnguidedMissile, self).__init__(
+        super().__init__(
             pos,
             Surface([
                 "^",

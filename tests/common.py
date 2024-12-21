@@ -11,11 +11,11 @@ PREFIX = "tests/fixtures/"
 class StateMock(State):
     """Mock State interface."""
 
-    def __init__(self, app):
-        super(StateMock, self).__init__(app)
+    def __init__(self, app) -> None:
+        super().__init__(app)
         self.loop_count = 1
 
-        def noop():
+        def noop() -> None:
             pass
 
         # Hooks for loop testing
@@ -23,13 +23,13 @@ class StateMock(State):
         self.on_update = noop
         self.on_render = noop
 
-    def events(self):
+    def events(self) -> None:
         self.on_events()
 
-    def update(self):
+    def update(self) -> None:
         self.on_update()
 
-    def render(self):
+    def render(self) -> None:
         self.on_render()
         if self.loop_count <= 0:
             self.app.stop()

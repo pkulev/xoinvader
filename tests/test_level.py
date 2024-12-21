@@ -4,15 +4,15 @@ from xoinvader.level import Level
 
 
 # pylint: disable=invalid-name,protected-access,missing-docstring
-def test_level():
+def test_level() -> None:
     e = Level()
 
     # pylint: disable=too-few-public-methods
-    class MockObject(object):
-        def __init__(self):
+    class MockObject:
+        def __init__(self) -> None:
             self.value = 0
 
-        def add(self):
+        def add(self) -> None:
             self.value += 10
 
     a = MockObject()

@@ -2,16 +2,16 @@
 
 
 from eaf import Timer
-from xo1 import Surface, Renderable
+from xo1 import Renderable, Surface
 
 from xoinvader.charge import (
-    BasicPlasmaCannon,
-    EBasicPlasmaCannon,
     BasicLaserCharge,
+    BasicPlasmaCannon,
     BasicUnguidedMissile,
+    EBasicPlasmaCannon,
 )
 from xoinvader.common import get_config
-from xoinvader.utils import clamp, Point
+from xoinvader.utils import Point, clamp
 
 
 CONFIG = get_config().weapon
@@ -26,7 +26,7 @@ class Weapon(Renderable):
     allowed_charges = []
     default_charge = None
 
-    def __init__(self, pos, ammo, max_ammo, cooldown):
+    def __init__(self, pos, ammo, max_ammo, cooldown) -> None:
 
         super().__init__(pos)
 
@@ -40,14 +40,14 @@ class Weapon(Renderable):
         self.ready = True
         self._timer = Timer(self._cooldown, self._reload)
 
-    def _reload(self):
+    def _reload(self) -> None:
         """Calls by timer when weapon is ready to fire."""
 
         self.ready = True
         self._timer.stop()
         self._timer.reset()
 
-    def make_shot(self, pos):
+    def make_shot(self, pos) -> None:
         """Check load and ammo, perform shot if ready.
 
         :param xoinvader.utils.Point pos: position of fire
@@ -84,7 +84,7 @@ class Weapon(Renderable):
         """Return maximal ammo."""
         return 999 if self._max_ammo == INFINITE else self._max_ammo
 
-    def refill(self, amount: int):
+    def refill(self, amount: int) -> None:
         """Refill this weapon."""
 
         if self._ammo == INFINITE:
@@ -99,7 +99,7 @@ class Weapon(Renderable):
             return 100.0
         return self._timer.elapsed * 100.0 / self._cooldown
 
-    def update(self, dt):
+    def update(self, dt) -> None:
         """Update weapon timer."""
 
         if self.ready:
@@ -114,7 +114,7 @@ class Blaster(Weapon):
     allowed_charges = [BasicPlasmaCannon]
     default_charge = BasicPlasmaCannon
 
-    def __init__(self, pos: Point):
+    def __init__(self, pos: Point) -> None:
         super().__init__(pos, **CONFIG[self.__class__.__name__])
 
 
@@ -124,7 +124,7 @@ class EBlaster(Weapon):
     allowed_charges = [EBasicPlasmaCannon]
     default_charge = EBasicPlasmaCannon
 
-    def __init__(self, pos: Point):
+    def __init__(self, pos: Point) -> None:
         super().__init__(pos, **CONFIG[self.__class__.__name__])
 
 
@@ -134,7 +134,7 @@ class Laser(Weapon):
     allowed_charges = [BasicLaserCharge]
     default_charge = BasicLaserCharge
 
-    def __init__(self, pos: Point):
+    def __init__(self, pos: Point) -> None:
         super().__init__(pos, **CONFIG[self.__class__.__name__])
 
 
@@ -144,5 +144,5 @@ class UM(Weapon):
     allowed_charges = [BasicUnguidedMissile]
     default_charge = BasicUnguidedMissile
 
-    def __init__(self, pos: Point):
+    def __init__(self, pos: Point) -> None:
         super().__init__(pos, **CONFIG[self.__class__.__name__])

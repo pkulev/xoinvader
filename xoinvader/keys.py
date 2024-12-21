@@ -28,7 +28,7 @@ class _KEY(metaclass=Singleton):
     KEY_PREFIX = "K_"
     """Prefix for all keys."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         for key, scancode in globals().items():
             if key.startswith(self.KEY_PREFIX):
                 self.__dict__[key.split("_")[1]] = scancode

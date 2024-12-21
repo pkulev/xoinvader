@@ -11,7 +11,7 @@ class Handler(metaclass=ABCMeta):
     :param :class:`xoinvader.state.State` owner: handler's owner
     """
 
-    def __init__(self, owner):
+    def __init__(self, owner) -> None:
         self._owner = owner
 
     @property
@@ -46,8 +46,8 @@ class EventHandler(Handler):
     :param dict command_map: key->command mapping
     """
 
-    def __init__(self, owner, command_map=None):
-        super(EventHandler, self).__init__(owner)
+    def __init__(self, owner, command_map=None) -> None:
+        super().__init__(owner)
 
         self._command_map = command_map or {}
         # TODO: implement proper queue object
@@ -66,7 +66,7 @@ class EventHandler(Handler):
 
         return self._event_queue.getch()
 
-    def handle(self):
+    def handle(self) -> None:
         """Handle input event."""
 
         for event in self.event_queue():
@@ -75,4 +75,4 @@ class EventHandler(Handler):
                 if callable(command):
                     command()
             else:
-                raise ValueError("Unknown event type: {0}".format(event[0]))
+                raise ValueError(f"Unknown event type: {event[0]}")

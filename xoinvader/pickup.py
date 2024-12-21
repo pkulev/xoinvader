@@ -2,13 +2,13 @@
 
 import logging
 import random
+from typing import NoReturn
 
-from xo1 import Surface, Renderable
+from xo1 import Renderable, Surface
 
-from xoinvader import app
-from xoinvader import collision
+from xoinvader import app, collision
 from xoinvader.collision import Collider
-from xoinvader.common import Settings, get_config, _ROOT
+from xoinvader.common import _ROOT, Settings, get_config
 
 
 CONFIG = get_config().pickup
@@ -19,7 +19,7 @@ LOG = logging.getLogger(__name__)
 class Pickup(Renderable):
     """Pickup base class."""
 
-    def __init__(self, pos, image, dy=0, instant=True, use_amount=1, **kwargs):
+    def __init__(self, pos, image, dy=0, instant=True, use_amount=1, **kwargs) -> None:
         super().__init__(pos)
 
         self._image = Surface.from_file(_ROOT / image)
@@ -37,7 +37,7 @@ class Pickup(Renderable):
     def from_droptable(obj):
         droptable = CONFIG.get("droptable", {})
         table = droptable.get(obj.type)["one_of"]
-        total_weight = sum((it["weight"] for it in table))
+        total_weight = sum(it["weight"] for it in table)
         value = random.randint(0, total_weight)
         for entry in table:
             if value < entry["weight"]:
@@ -58,12 +58,12 @@ class Pickup(Renderable):
     def instant(self):
         return self._instant
 
-    def apply(self, owner):
+    def apply(self, owner) -> NoReturn:
         """Apply pickup effect to owner."""
 
         raise NotImplementedError
 
-    def update(self, dt):
+    def update(self, dt) -> None:
         """Pickups are falling down til bottom border."""
 
         border = Settings.layout.field.camera
@@ -71,7 +71,7 @@ class Pickup(Renderable):
         if self.pos.y + self.image.height > border.y:
             self.pos.y = border.y - self.image.height
 
-    def destroy(self):
+    def destroy(self) -> None:
         LOG.debug("Destroying collectible %s", self)
         if not self._destroy:
             self._destroy = True
@@ -81,7 +81,7 @@ class Pickup(Renderable):
     @collision.register("FullAmmoCratePickup", "PlayerShip")
     @collision.register("HullCratePickup", "PlayerShip")
     @collision.register("WeaponUpgradePickup", "PlayerShip")
-    def collide(self, player, rect):
+    def collide(self, player, rect) -> None:
         self.apply(player)
         self.destroy()
 
@@ -92,26 +92,26 @@ class FullAmmoCratePickup(Pickup):
     Should be rare to drop. Maybe chance have to increase if player low on ammo.
     """
 
-    def __init__(self, pos):
+    def __init__(self, pos) -> None:
         super().__init__(pos, **self.get_config())
 
-    def apply(self, owner):
+    def apply(self, owner) -> None:
         owner.refill_all_weapons()
 
 
 class HullCratePickup(Pickup):
 
-    def __init__(self, pos):
+    def __init__(self, pos) -> None:
         super().__init__(pos, **self.get_config())
 
-    def apply(self, owner):
+    def apply(self, owner) -> None:
         owner.refill_hull(self.amount)
 
 
 class WeaponUpgradePickup(Pickup):
 
-    def __init__(self, pos):
+    def __init__(self, pos) -> None:
         super().__init__(pos, **self.get_config())
 
-    def apply(self, owner):
+    def apply(self, owner) -> None:
         owner.upgrade_weapon()

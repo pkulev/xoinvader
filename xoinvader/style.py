@@ -6,13 +6,13 @@ from eaf.meta import Singleton
 class Style(metaclass=Singleton):
     """Container for style mappings."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._style = {
             "gui": {},
             "obj": {},
         }
 
-    def init_styles(self, palette):
+    def init_styles(self, palette) -> None:
         """Initialize styles."""
 
         self.gui["normal"] = palette.ui_norm

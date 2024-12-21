@@ -3,16 +3,15 @@
 import logging
 import random
 
-from xo1 import Surface, Renderable
+from xo1 import Renderable, Surface
 
-from xoinvader import app
-from xoinvader import collision
+from xoinvader import app, collision
 from xoinvader.animation import AnimationManager
-from xoinvader.pickup import Pickup
-from xoinvader.weapon import Blaster, Laser, UM, EBlaster, Weapon
-from xoinvader.utils import clamp, Point, InfiniteList
 from xoinvader.collision import Collider
-from xoinvader.common import Settings, get_config, _ROOT
+from xoinvader.common import _ROOT, Settings, get_config
+from xoinvader.pickup import Pickup
+from xoinvader.utils import InfiniteList, Point, clamp
+from xoinvader.weapon import UM, Blaster, EBlaster, Laser, Weapon
 
 
 LOG = logging.getLogger(__name__)
@@ -27,7 +26,7 @@ class Ship(Renderable):
 
     compound = True
 
-    def __init__(self, pos: Point):
+    def __init__(self, pos: Point) -> None:
 
         super().__init__(pos)
 
@@ -49,7 +48,7 @@ class Ship(Renderable):
         # first initialization
         self._apply_config(CONFIG[self.type])
 
-    def _apply_config(self, config):
+    def _apply_config(self, config) -> None:
         """Apply values from object's configuration."""
 
         if not config:
@@ -66,7 +65,7 @@ class Ship(Renderable):
         return self._direction
 
     @direction.setter
-    def direction(self, value):
+    def direction(self, value) -> None:
         if value == 0:
             self._direction = 0
         else:
@@ -96,34 +95,34 @@ class Ship(Renderable):
         """CORP stub."""
         return self._weapons
 
-    def move_left(self):
+    def move_left(self) -> None:
         """Change direction."""
         self._direction = -1
 
-    def move_right(self):
+    def move_right(self) -> None:
         """Change direction."""
         self._direction = 1
 
-    def toggle_fire(self):
+    def toggle_fire(self) -> None:
         """Toggle current weapon fire mode."""
         self._fire = not self._fire
 
-    def next_weapon(self):
+    def next_weapon(self) -> None:
         """Select next weapon."""
         self._weapon = self._weapons.next()
 
-    def prev_weapon(self):
+    def prev_weapon(self) -> None:
         """Select previous weapon."""
         self._weapon = self._weapons.prev()
 
-    def add_weapon(self, weapon: Weapon, autoselect: bool = True):
+    def add_weapon(self, weapon: Weapon, autoselect: bool = True) -> None:
         """Add new weapon and optionally select it."""
 
         self._weapons.append(weapon)
         if autoselect:
             self._weapon = weapon
 
-    def update_position(self, dt: int):
+    def update_position(self, dt: int) -> None:
         """Update ship position.
 
         Allows to go behind field borders.
@@ -132,7 +131,7 @@ class Ship(Renderable):
         self._pos.x += self._direction * self._dx * dt
         self._direction = 0
 
-    def update(self, dt: int):
+    def update(self, dt: int) -> None:
         """Update ship object's state."""
 
         self.update_position(dt)
@@ -156,7 +155,7 @@ class Ship(Renderable):
 
         self.refresh_shield()
 
-    def destroy(self):
+    def destroy(self) -> None:
         """Self-destroying routine."""
 
         if not self._destroy:
@@ -178,7 +177,7 @@ class Ship(Renderable):
             or int(pos.y) + self._image.height < 0
         )
 
-    def take_damage(self, damage: int):
+    def take_damage(self, damage: int) -> None:
         """Calculate and apply damage to shield and hull."""
 
         # shield absorbs all damage
@@ -193,7 +192,7 @@ class Ship(Renderable):
         # hull takes all rest damage
         self._hull = clamp(self._hull - damage, 0, self._hull)
 
-    def refresh_shield(self, amount: int = 1):
+    def refresh_shield(self, amount: int = 1) -> None:
         """Refresh shield."""
 
         if self._shield == self._max_shield:
@@ -201,7 +200,7 @@ class Ship(Renderable):
 
         self._shield = clamp(self._shield + amount, 0, self._max_shield)
 
-    def collect(self, collectible):
+    def collect(self, collectible) -> None:
         """Collect bonus or power-up and apply it now or later.
 
         :param xoinvader.Collectible collectible:
@@ -212,18 +211,18 @@ class Ship(Renderable):
         else:
             raise Exception("_collectibles not implemented")
 
-    def refill_hull(self, amount: int = 0):
+    def refill_hull(self, amount: int = 0) -> None:
         """Refill hull."""
 
         self._hull = clamp(self._hull + amount, 0, self._max_hull)
 
-    def refill_all_weapons(self, percent: int):
+    def refill_all_weapons(self, percent: int) -> None:
         """Refill all mounted weapons with provided persentage."""
 
         for weapon in self.weapons:
             self.refill_weapon(weapon, percent * weapon.max_ammo / 100)
 
-    def refill_weapon(self, weapon: Weapon, amount: int):
+    def refill_weapon(self, weapon: Weapon, amount: int) -> None:
         """Refill provided or current weapon."""
 
         if not weapon:
@@ -235,8 +234,8 @@ class Ship(Renderable):
 class GenericXEnemy(Ship):
     """Generic X enemy class."""
 
-    def __init__(self, pos):
-        super(GenericXEnemy, self).__init__(pos)
+    def __init__(self, pos) -> None:
+        super().__init__(pos)
         self._image = Surface.from_file(_ROOT / (CONFIG[self.type]["image"]))
 
         self._collider = Collider.simple(self)
@@ -252,10 +251,10 @@ class GenericXEnemy(Ship):
     # TODO: rethink this method
     #       Problem of emerging such methods is more complex problem
     #       of creating and configuring GameObjects.
-    def add_animation(self, *args, **kwargs):
+    def add_animation(self, *args, **kwargs) -> None:
         self._animgr.add(*args, **kwargs)
 
-    def _maybe_drop_something(self):
+    def _maybe_drop_something(self) -> None:
         drop_chance = 0.4
         if 1 - random.random() > drop_chance:
             return
@@ -264,14 +263,14 @@ class GenericXEnemy(Ship):
         if drop is not None:
             app.current().state.add(drop(self.pos))
 
-    def take_damage(self, amount: int):
+    def take_damage(self, amount: int) -> None:
         """Naive wrapper to distinguish destroy by player and out of boundary."""
 
         super().take_damage(amount)
         if self._hull <= 0:
             self._destroyed_by_player = True
 
-    def update(self, dt):
+    def update(self, dt) -> None:
         if self._hull <= 0:
             # TODO: [scoring]
             #       * Parametrize scores, move them to ships.conf
@@ -282,12 +281,12 @@ class GenericXEnemy(Ship):
 
         self._animgr.update(dt)
 
-        super(GenericXEnemy, self).update(dt)
+        super().update(dt)
 
     @collision.register("GenericXEnemy", "BasicPlasmaCannon")
     @collision.register("GenericXEnemy", "BasicLaserCharge")
     @collision.register("GenericXEnemy", "BasicUnguidedMissile")
-    def collide(self, other, rect):
+    def collide(self, other, rect) -> None:
         self.take_damage(other.damage)
         other.destroy()
 
@@ -295,8 +294,8 @@ class GenericXEnemy(Ship):
 class PlayerShip(Ship):
     """PlayerShip class."""
 
-    def __init__(self, pos):
-        super(PlayerShip, self).__init__(pos)
+    def __init__(self, pos) -> None:
+        super().__init__(pos)
         self.image = Surface.from_file(_ROOT / (CONFIG[self.type]["image"]))
 
         # FIXME: Center the ship where it's created
@@ -315,7 +314,7 @@ class PlayerShip(Ship):
         ])
         self._weapon = self._weapons.current()
 
-    def update_position(self, dt):
+    def update_position(self, dt) -> None:
         """Update player ship position.
 
         Prohibits moving out behind the border.
@@ -337,22 +336,20 @@ class PlayerShip(Ship):
 
         self._direction = 0
 
-    def update(self, dt):
+    def update(self, dt) -> None:
         if self._hull <= 0:
             app.current().trigger_state(
                 "GameOverState", score=app.current().state.score
             )
 
-        super(PlayerShip, self).update(dt)
+        super().update(dt)
 
-    def get_weapon_info(self):
+    def get_weapon_info(self) -> str:
         """Return information about current weapon."""
 
-        return "Weapon: {w} | [{c}/{m}]".format(
-            w=self._weapon.type, c=self._weapon.ammo, m=self._weapon.max_ammo
-        )
+        return f"Weapon: {self._weapon.type} | [{self._weapon.ammo}/{self._weapon.max_ammo}]"
 
     @collision.register("PlayerShip", "EBasicPlasmaCannon")
-    def collide(self, other, rect):
+    def collide(self, other, rect) -> None:
         self.take_damage(other.damage)
         other.destroy()

@@ -1,7 +1,6 @@
 """Test xoinvader.collision module."""
 
 import pytest
-
 from xo1 import Surface
 
 from xoinvader import collision
@@ -15,11 +14,11 @@ from xoinvader.utils import Point
 
 
 # pylint: disable=invalid-name,protected-access
-def test_collision(mock_state):
+def test_collision(mock_state) -> None:
     """Generic test for Collider and CollisionManager."""
 
-    class Obj(object):
-        def __init__(self, pos):
+    class Obj:
+        def __init__(self, pos) -> None:
             self.pos = pos
 
         def type(self):
@@ -83,7 +82,7 @@ def test_collision(mock_state):
     assert len(cm._colliders) == 3
 
 
-def test_type_pair():
+def test_type_pair() -> None:
     p1 = TypePair("t1", "t2")
     p2 = TypePair("t2", "t1")
     assert p1._pair != p2._pair
@@ -92,15 +91,15 @@ def test_type_pair():
     assert str(p1) == "TypePair(t1, t2)"
 
 
-def test_manager_update(mock_state):
+def test_manager_update(mock_state) -> None:
 
     state = mock_state(mock_app=True)
     cmanager = CollisionManager()
     state.collision = cmanager
 
     # pylint: disable=too-few-public-methods
-    class Ship(object):
-        def __init__(self):
+    class Ship:
+        def __init__(self) -> None:
             self.health = 10
             self.pos = Point(0, 10)
 
@@ -122,11 +121,11 @@ def test_manager_update(mock_state):
             return self.__class__.__name__
 
         @collision.register("Ship", "Rocket")
-        def collide(self, other, rect):
+        def collide(self, other, rect) -> None:
             self.health -= other.damage
 
-    class Rocket(object):
-        def __init__(self):
+    class Rocket:
+        def __init__(self) -> None:
             self.damage = 10
             self.pos = Point(0, 0)
 

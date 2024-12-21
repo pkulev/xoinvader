@@ -2,13 +2,12 @@
 
 import pytest
 
-import xoinvader
 from xoinvader import weapon
 
 
 # pylint: disable=missing-docstring
 @pytest.mark.skip
-def test_weapon(monkeypatch):
+def test_weapon(monkeypatch) -> None:
     monkeypatch.setattr(weapon, "CONFIG", {})
 
     # pytest.raises(KeyError, lambda:

@@ -8,13 +8,13 @@ from eaf.state import State
 
 from xoinvader.background import Background
 from xoinvader.collision import CollisionManager
-from xoinvader.common import get_config, Settings, _ROOT
-from xoinvader.style import Style
-from xoinvader.gui import TextCallbackWidget, TextWidget, WeaponWidget, Bar
+from xoinvader.common import _ROOT, Settings, get_config
+from xoinvader.gui import Bar, TextCallbackWidget, TextWidget, WeaponWidget
 from xoinvader.handlers import EventHandler
 from xoinvader.keys import KEY
 from xoinvader.level import Level
 from xoinvader.ship import GenericXEnemy, PlayerShip
+from xoinvader.style import Style
 from xoinvader.utils import Point, dotdict
 
 
@@ -23,8 +23,8 @@ LOG = logging.getLogger(__name__)
 
 # pylint: disable=invalid-name
 class TestLevel(Level):
-    def __init__(self, state_object_adder, speed):
-        super(TestLevel, self).__init__(speed)
+    def __init__(self, state_object_adder, speed) -> None:
+        super().__init__(speed)
         self._state_add = state_object_adder
 
         self._player_ship = PlayerShip(Settings.layout.field.player)
@@ -57,7 +57,7 @@ class TestLevel(Level):
             (7.0, Point(new_x(30), y_offset + 10)),
         ]
 
-    def spawn4(self):
+    def spawn4(self) -> None:
         right_side = Settings.layout.field.edge.x
 
         e1 = GenericXEnemy(Point(10, 1))
@@ -90,7 +90,7 @@ class TestLevel(Level):
         self._enemies = weakref.WeakSet([e1, e2, e3, e4])
         self._state_add(list(self._enemies))
 
-    def del4(self):
+    def del4(self) -> None:
         for enemy in self._enemies:
             enemy.destroy()
 
@@ -117,7 +117,7 @@ class InGameState(State):
     #       create them before state initialization, maybe here in classfields.
     collision = CollisionManager()
 
-    def postinit(self):
+    def postinit(self) -> None:
         """Deferred initialization.
 
         Prepare GameObjects that require created and registered State object.
@@ -145,10 +145,10 @@ class InGameState(State):
         self.add(self._create_gui())
         self.level.start()
 
-    def pause_command(self):
+    def pause_command(self) -> None:
         self.app.state = "PauseMenuState"
 
-    def add_player_score(self, amount):
+    def add_player_score(self, amount) -> None:
         """Add player score.
 
         :param int amount: scores to add
@@ -156,13 +156,13 @@ class InGameState(State):
 
         self.score += amount
 
-    def get_player_score_string(self):
+    def get_player_score_string(self) -> str:
         """Callback for TextCallbackWidget.
 
         :return str: score string
         """
 
-        return "Score: {0}".format(self.score)
+        return f"Score: {self.score}"
 
         # TODO: [collider-destruction]
         #       Remove this after collider instant destruction.
@@ -223,10 +223,10 @@ class InGameState(State):
             ),
         ]
 
-    def events(self):
+    def events(self) -> None:
         self._events.handle()
 
-    def update(self, dt):
+    def update(self, dt) -> None:
         self.collision.update()
         self.level.update()
         if not self.level.running:

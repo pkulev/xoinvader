@@ -1,7 +1,7 @@
 """Test xoinvader.background module."""
 
-from copy import copy
 import os
+from copy import copy
 
 import pytest
 
@@ -25,7 +25,7 @@ CHUNK_NORMAL = os.path.join(PREFIX, "chunk_normal.bg")
 
 
 # pylint: disable=invalid-name,protected-access,missing-docstring
-def test_chunk():
+def test_chunk() -> None:
     c = Chunk("test")
     assert not c.lines
     assert len(c) == 0  # pylint: disable=len-as-condition
@@ -39,7 +39,7 @@ def test_chunk():
     assert c[0] == "ugh"
 
 
-def test_load_chunks():
+def test_load_chunks() -> None:
     with pytest.raises(ValueError):
         load_chunks(CHUNK_NO_NAME)
 
@@ -59,7 +59,7 @@ def test_load_chunks():
 
 
 # pylint: disable=too-many-statements
-def test_background():
+def test_background() -> None:
     Settings.layout.field.edge.x = 3
     Settings.layout.field.edge.y = 2
 

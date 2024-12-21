@@ -8,7 +8,7 @@ from xoinvader.utils import dotdict
 
 
 # pylint: disable=missing-docstring
-def test_init():
+def test_init() -> None:
     Settings.system.test_section = dotdict(key="value")
     xoinvader.init()
     xoinvader.init({"test_section": dotdict(another_key="another-value")})

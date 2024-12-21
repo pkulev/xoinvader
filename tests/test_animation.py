@@ -11,15 +11,15 @@ from xoinvader.utils import Point
 
 # pylint: disable=invalid-name,protected-access,missing-docstring
 # pylint: disable=too-few-public-methods
-class GameObject(object):
+class GameObject:
     """Game object mock."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.attr = 0
         self.anim = None
 
 
-def test_animation():
+def test_animation() -> None:
 
     with pytest.raises(ValueError):
         Animation("dummy", bind=None, attr=None, keyframes=[])
@@ -51,7 +51,7 @@ def test_animation():
         anim.update(1)  # It's time to switch animation
 
 
-def test_animation_loop():
+def test_animation_loop() -> None:
     obj = GameObject()
     animgr = AnimationManager()
     animgr.add("test", obj, "attr", keyframes=[(0.0, 0), (1.0, 1)], loop=True)
@@ -69,7 +69,7 @@ def test_animation_loop():
 
 
 @pytest.mark.parametrize("loop", (True, False))
-def test_animation_interp_loop(loop):
+def test_animation_interp_loop(loop) -> None:
     obj = GameObject()
     animgr = AnimationManager()
     animgr.add(
@@ -99,7 +99,7 @@ def test_animation_interp_loop(loop):
         animgr.update(13)
 
 
-def test_animation_manager():
+def test_animation_manager() -> None:
     obj = GameObject()
     animgr = AnimationManager()
 
@@ -134,7 +134,7 @@ def test_animation_manager():
         ([1, 2, 3.0], (int, float), True),
     ),
 )
-def test_same_type(values, types, expected):
+def test_same_type(values, types, expected) -> None:
     assert animation.same_type(values, types) is expected
 
 
@@ -155,7 +155,7 @@ def test_same_type(values, types, expected):
         ((0.0, -1.0, 2.0, 3.0, 3.0), -1.0),
     ),
 )
-def test_linear_equation(args, result):
+def test_linear_equation(args, result) -> None:
     assert animation.linear_equation(*args) == result
 
 
@@ -174,7 +174,7 @@ def test_linear_equation(args, result):
         ),
     ),
 )
-def test_interpolate_positive(args, result):
+def test_interpolate_positive(args, result) -> None:
     assert animation.interpolate(*args) == result
 
 
@@ -186,6 +186,6 @@ def test_interpolate_positive(args, result):
         ([(1.0, "a"), (2.0, "b"), 1.5], animation.InterpolationUnknownTypes),
     ),
 )
-def test_interpolate_negative(args, expected_error):
+def test_interpolate_negative(args, expected_error) -> None:
     with pytest.raises(expected_error):
         animation.interpolate(*args)

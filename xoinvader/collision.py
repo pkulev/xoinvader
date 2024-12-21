@@ -19,14 +19,14 @@ COLLISIONS = {}
 class CollisionManagerNotFound(Exception):
     """Raises on try to register collider without instantiated manager."""
 
-    def __init__(self):
-        super(CollisionManagerNotFound, self).__init__(
+    def __init__(self) -> None:
+        super().__init__(
             "You can't use Collider objects without "
             "CollisionManager. Please create it first."
         )
 
 
-class TypePair(object):
+class TypePair:
     """Class for hashable ordered string pairs.
 
     Used as collision dictionary keys, containing pair of collider types.
@@ -37,7 +37,7 @@ class TypePair(object):
     :param str second: second collider type
     """
 
-    def __init__(self, first, second):
+    def __init__(self, first, second) -> None:
         self._first = first
         self._second = second
         self._pair = first + "_" + second
@@ -68,8 +68,8 @@ class TypePair(object):
     def __hash__(self):
         return hash(self._pair)
 
-    def __str__(self):
-        return "TypePair({0}, {1})".format(self._first, self._second)
+    def __str__(self) -> str:
+        return f"TypePair({self._first}, {self._second})"
 
 
 def register(left, right):
@@ -93,7 +93,7 @@ def register(left, right):
     return decorator
 
 
-class CollisionManager(object):
+class CollisionManager:
     """Class for collision detection between known components.
 
     To process collisions, first update the positions of all objects of
@@ -108,11 +108,11 @@ class CollisionManager(object):
     # Marker of solid matter inside collider physics map
     SOLID_MATTER = "#"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._colliders = weakref.WeakSet()
         self._collisions = COLLISIONS
 
-    def add(self, collider):
+    def add(self, collider) -> None:
         """Add collider.
 
         :param :class:`xoinvader.collision.Collider` collider:
@@ -121,7 +121,7 @@ class CollisionManager(object):
         LOG.debug("Adding collider %s\n pos: %s", collider, collider.pos)
         self._colliders.add(collider)
 
-    def remove(self, collider):
+    def remove(self, collider) -> None:
         """Remove collider.
 
         :param :class:`xoinvader.collision.Collider` collider:
@@ -131,7 +131,7 @@ class CollisionManager(object):
         self._colliders.remove(collider)
 
     # pylint: disable=too-many-nested-blocks
-    def update(self):
+    def update(self) -> None:
         """Detect and process all collisions."""
 
         for pair in self._collisions:
@@ -213,7 +213,7 @@ class CollisionManager(object):
                     return (topleft_overlap, botright_overlap)
 
 
-class Collider(object):
+class Collider:
     """Collider component class.
 
     When added to object, enables it to participate in coliision processing
@@ -230,7 +230,7 @@ class Collider(object):
     chars are treated as void space and may be any.
     """
 
-    def __init__(self, obj, phys_map):
+    def __init__(self, obj, phys_map) -> None:
         self._obj = obj
         self._col_type = self._obj.type
         self._phys_map = phys_map

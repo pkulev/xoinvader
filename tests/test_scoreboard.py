@@ -1,7 +1,7 @@
 """Tests for xoinvader.scoreboard module."""
 
-from operator import itemgetter
 import os
+from operator import itemgetter
 
 import pytest
 
@@ -35,7 +35,7 @@ SCOREBOARD_CORRUPTED = os.path.join(PREFIX, "scoreboard_corrupted")
 def mock_scorepath(monkeypatch):
     """Fixture to mock scoreboard path and revert it back."""
 
-    def inner(path):
+    def inner(path) -> None:
         """Inner routine.
 
         :param str path: new path to set
@@ -55,7 +55,7 @@ def mock_scorepath(monkeypatch):
         (SCOREBOARD_VALID, SCOREBOARD_DATA),
     ),
 )
-def test_items(path, expected, mock_scorepath):
+def test_items(path, expected, mock_scorepath) -> None:
     """xoinvader.scoreboard.items()."""
 
     mock_scorepath(path)
@@ -63,7 +63,7 @@ def test_items(path, expected, mock_scorepath):
     assert scoreboard._load() == expected
 
 
-def test_add(tmpdir, mock_scorepath):
+def test_add(tmpdir, mock_scorepath) -> None:
     """xoinvader.scoreboard.add()."""
 
     mock_scorepath(str(tmpdir.mkdir("data").join("scoreboard")))
@@ -76,7 +76,7 @@ def test_add(tmpdir, mock_scorepath):
     assert ("test", 2000) in items
 
 
-def test_lowest(mock_scorepath):
+def test_lowest(mock_scorepath) -> None:
     """xoinvader.scoreboard.lowest()."""
 
     mock_scorepath(SCOREBOARD_VALID)
@@ -86,7 +86,7 @@ def test_lowest(mock_scorepath):
     assert scoreboard.lowest() == 0
 
 
-def test_highest(mock_scorepath):
+def test_highest(mock_scorepath) -> None:
     """xoinvader.scoreboard.highest()."""
 
     mock_scorepath(SCOREBOARD_VALID)
@@ -96,7 +96,7 @@ def test_highest(mock_scorepath):
     assert scoreboard.highest() == 0
 
 
-def test__save(tmpdir, mock_scorepath):
+def test__save(tmpdir, mock_scorepath) -> None:
     """xoinvader.scoreboard._save()."""
 
     datadir = tmpdir.mkdir("data")

@@ -1,23 +1,11 @@
 DOCPATH    = ./docs
-COV_FMT   ?= html
-PIP       ?= $(VENV)/bin/pip
-RM         = rm -f
 
 all: help
 
 clean:
-	$(RM) -r *~ ./xoinvader/*~ ./xoinvader/tests/*~ ./xoinvader/*.pyc ./xoinvader/tests/*.pyc ./dist ./build
+	$(RM) -r ./**/__pycache__ ./dist ./build
 	$(RM) -r *.egg-info
 	$(RM) -r ./htmlcov ./docs/build/
-
-install:
-	$(PIP) install .
-
-devel:
-	poetry install
-
-help:
-	@printf "USAGE: make [params]\n"
 
 lint:
 	@printf "Warnings are disabled. To full check use 'make lint-full'\n"
@@ -40,10 +28,9 @@ view_docs: docs
 
 count:
 	@printf "Sources:\n" && git ls-files "*.py" | grep -v "tests\/" | xargs wc -l
-	@printf "Tests:\n" && git ls-files "*/tests/*.py" | xargs wc -l
+	@printf "Tests:\n" && git ls-files "tests/*.py" | xargs wc -l
 	@printf "Configs:\n" && git ls-files "*.json" | xargs wc -l
 	@printf "Documentation:\n" && git ls-files "*.rst" | xargs wc -l
 	@printf "All files:\n" && git ls-files "*.rst" "*.py" "*.json" | xargs wc -l | tail -n 1
 
-.PHONY: all clean install devel help lint lint-full test view count docs \
-	view_docs
+.PHONY: count

@@ -25,15 +25,15 @@ class OwnerMock:  # pylint: disable=too-few-public-methods
     """Owner mock to provide access to app and event queue for handler."""
 
     @property
-    def app(cls):
-        return cls
+    def app(self):
+        return self
 
     @property
-    def event_queue(cls):
+    def event_queue(self):
         return EventQueueMock()
 
 
-def test_event_handler():
+def test_event_handler() -> None:
     """Test xoinvader.handlers.EventHandler."""
 
     events = handlers.EventHandler(OwnerMock())
@@ -56,7 +56,7 @@ def test_event_handler():
     assert fired == [EventQueueMock.key]
 
 
-def test_event_handler_negative(monkeypatch):
+def test_event_handler_negative(monkeypatch) -> None:
     """Negatively test xoinvader.handlers.EventHandler."""
 
     monkeypatch.setattr(

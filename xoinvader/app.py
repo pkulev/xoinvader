@@ -9,7 +9,7 @@ from xo1 import Application, Palette
 from xoinvader import Settings
 from xoinvader.common import update_resized
 from xoinvader.ingame import InGameState
-from xoinvader.menu import PauseMenuState, GameOverState
+from xoinvader.menu import GameOverState, PauseMenuState
 from xoinvader.style import Style
 
 
@@ -19,7 +19,7 @@ LOG = logging.getLogger(__name__)
 class XOInvader(Application):
     """XOInvader game application class."""
 
-    def __init__(self):
+    def __init__(self) -> None:
 
         palette = Palette(
             [
@@ -71,13 +71,13 @@ class XOInvader(Application):
         self.register(GameOverState)
 
     @staticmethod
-    def resize_to_terminal():
+    def resize_to_terminal() -> None:
         """Adjust size with terminal size."""
 
         col, lines = shutil.get_terminal_size()
         update_resized(col - 1, lines - 1)
 
-    def tick(self):
+    def tick(self) -> None:
 
         try:
             super().tick()

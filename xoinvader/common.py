@@ -8,7 +8,7 @@ import toml
 
 import xoinvader
 from xoinvader import constants
-from xoinvader.utils import dotdict, Point
+from xoinvader.utils import Point, dotdict
 
 
 def get_json_config(path):
@@ -55,7 +55,7 @@ def rootify(root, config):
     return config
 
 
-def update_resized(new_x: int, new_y: int):
+def update_resized(new_x: int, new_y: int) -> None:
     """Calculate new borders and stuff and populate config with new values."""
 
     Settings.layout.field.border = Point(x=new_x, y=new_y)
@@ -106,7 +106,7 @@ DEFAULT_XOI_SETTINGS = {
 Settings = dotdict(DEFAULT_XOI_SETTINGS)  # pylint: disable=invalid-name
 
 
-def update_system_settings(args):
+def update_system_settings(args) -> None:
     """Update system settings from startup arguments.
 
     :param dict args: arguments
@@ -116,4 +116,4 @@ def update_system_settings(args):
         if arg in Settings.system:
             Settings.system[arg] = val
         else:
-            raise KeyError("No such argument: '{0}'.".format(arg))
+            raise KeyError(f"No such argument: '{arg}'.")

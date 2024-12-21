@@ -1,6 +1,6 @@
 """Level background."""
 
-from xo1 import Surface, Renderable
+from xo1 import Renderable, Surface
 
 from xoinvader import app
 from xoinvader.common import Settings
@@ -11,14 +11,14 @@ CHUNK_MAGIC = "~chunk~"
 """Background file format chunk marker."""
 
 
-class Chunk(object):
+class Chunk:
     """Class for storing background chunks.
 
     :param str name: name of the chunk
     :param list lines: list of all chunk lines
     """
 
-    def __init__(self, name):
+    def __init__(self, name) -> None:
         self._name = name
         self._lines = []
 
@@ -42,7 +42,7 @@ class Chunk(object):
         """
         return self._lines
 
-    def add_line(self, line):
+    def add_line(self, line) -> None:
         """Add line to `lines` list of the chunk.
 
         :param str line: line to add
@@ -52,10 +52,10 @@ class Chunk(object):
     def __getitem__(self, index):
         return self._lines[index]
 
-    def __setitem__(self, index, item):
+    def __setitem__(self, index, item) -> None:
         self._lines[index] = item
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._lines)
 
 
@@ -84,7 +84,7 @@ def load_chunks(filename, trim_width=None):
     chunks = []
     current_chunk = None
     names = []
-    with open(filename, "r") as f:
+    with open(filename) as f:
         for line in f:
             line = line.rstrip("\n")
             if not line:
@@ -130,7 +130,7 @@ class Background(Renderable):
 
     render_priority = -1000  # TODO: render-priority
 
-    def __init__(self, filename=None, speed=0, loop=False, loop_all=False):
+    def __init__(self, filename=None, speed=0, loop=False, loop_all=False) -> None:
 
         super().__init__(Point(0, 0))
 
@@ -162,7 +162,7 @@ class Background(Renderable):
         return self._loop
 
     @loop.setter
-    def loop(self, value):
+    def loop(self, value) -> None:
         """Setter."""
         self._loop = value
 
@@ -177,7 +177,7 @@ class Background(Renderable):
         return self._loop_all
 
     @loop_all.setter
-    def loop_all(self, value):
+    def loop_all(self, value) -> None:
         """Setter."""
         self._loop_all = value
 
@@ -192,7 +192,7 @@ class Background(Renderable):
         return self._speed
 
     @speed.setter
-    def speed(self, value):
+    def speed(self, value) -> None:
         """Setter."""
         self._speed = value
 
@@ -207,7 +207,7 @@ class Background(Renderable):
         return self._chunks
 
     @chunks.setter
-    def chunks(self, value):
+    def chunks(self, value) -> None:
         """Setter."""
         self._chunks = value
 
@@ -222,11 +222,11 @@ class Background(Renderable):
         return self._background
 
     @background.setter
-    def background(self, value):
+    def background(self, value) -> None:
         """Setter."""
         self._background = value
 
-    def clear(self):
+    def clear(self) -> None:
         """Clear all background.
 
         Doesn't prevent subsequent updating, if speed is not 0.
@@ -234,12 +234,12 @@ class Background(Renderable):
 
         self._background = [" " * self._w] * self._h
 
-    def load_file(self, filename: str):
+    def load_file(self, filename: str) -> None:
         """Load background from file."""
 
         self._chunks = load_chunks(filename, self._w)
 
-    def _fill(self):
+    def _fill(self) -> None:
         """Fills the whole background.
 
         Takes first chunk and fills background with it's contents. If there's
@@ -251,7 +251,7 @@ class Background(Renderable):
         for _ in range(self._h):
             self._background.append(self._advance_chunk(1))
 
-    def start(self, filled=False):
+    def start(self, filled=False) -> None:
         """Start background from the beginning.
 
         If `filled` parameter is provided, fills the background starting with
@@ -335,7 +335,7 @@ class Background(Renderable):
         self._current_chunk = None
         return " " * self._w
 
-    def update_surface(self):
+    def update_surface(self) -> None:
         """Regenerate background surface.
 
         Intended to be call after all update operations on the `background`
@@ -344,7 +344,7 @@ class Background(Renderable):
 
         self._image = Surface(self._background)
 
-    def update(self, dt):
+    def update(self, dt) -> None:
         """Update background.
 
         Checks if time to update has come, and calls `_advance_chunk` method

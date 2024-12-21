@@ -4,5 +4,5 @@ from xoinvader import keys
 
 
 # pylint: disable=missing-docstring
-def test_keys():
+def test_keys() -> None:
     assert keys

@@ -2,7 +2,6 @@
 
 from eaf.state import State
 
-from xoinvader import app
 from xoinvader.gui import (
     MenuItemContainer,
     MenuItemWidget,
@@ -16,7 +15,7 @@ from xoinvader.utils import Point
 
 
 class PauseMenuState(State):
-    def __init__(self, app):
+    def __init__(self, app) -> None:
         super().__init__(app)
 
         self.add(TextWidget(Point(4, 4), "Pause"))
@@ -50,19 +49,19 @@ class PauseMenuState(State):
             },
         )
 
-    def notify(self, text, pos=Point(15, 15)):
+    def notify(self, text, pos=Point(15, 15)) -> None:
         self.add(
             PopUpNotificationWidget(
                 pos, text, callback=lambda w: self.remove(w)
             )
         )
 
-    def events(self):
+    def events(self) -> None:
         self._events.handle()
 
 
 class GameOverState(State):
-    def __init__(self, app):
+    def __init__(self, app) -> None:
         super().__init__(app)
 
         self._score = "Your score: {0}"
@@ -101,7 +100,7 @@ class GameOverState(State):
     def score_callback(self):
         return self._score
 
-    def trigger(self, score):
+    def trigger(self, score) -> None:
         """Trigger the state and pass the score info to it.
 
         :param int score: last player score
@@ -109,5 +108,5 @@ class GameOverState(State):
 
         self._score = self._score.format(score)
 
-    def events(self):
+    def events(self) -> None:
         self._events.handle()
